@@ -1,0 +1,13 @@
+/* Example / Studio: illustrative brand theme. */
+[data-wk-theme='studio'] {
+  --wk-accent: #4935a3;
+  --wk-on-accent: #fff;
+  --wk-radius: 16px;
+  --wk-font: Georgia, serif;
+}
+
+[data-wk-theme='studio'][data-wk-mode='dark'],
+[data-wk-mode='dark'] [data-wk-theme='studio'] {
+  --wk-accent: #c4b6ff;
+  --wk-on-accent: #201443;
+}

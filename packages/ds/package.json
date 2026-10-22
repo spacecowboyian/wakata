@@ -1,0 +1,62 @@
+{
+  "name": "@wakata/ds",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Wakata design system (working title: DS) and its Storybook. Provisional contract; not published.",
+  "type": "module",
+  "sideEffects": [
+    "./dist/define.js",
+    "./dist/components/button/define.js",
+    "**/*.css"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./define": {
+      "types": "./dist/define.d.ts",
+      "default": "./dist/define.js"
+    },
+    "./button": {
+      "types": "./dist/components/button/index.d.ts",
+      "default": "./dist/components/button/index.js"
+    },
+    "./button/define": {
+      "types": "./dist/components/button/define.d.ts",
+      "default": "./dist/components/button/define.js"
+    },
+    "./themes.css": "./dist/themes/themes.css",
+    "./themes/*.css": "./dist/themes/*.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "licenses"
+  ],
+  "scripts": {
+    "build": "node scripts/clean.mjs && tsc -p tsconfig.build.json && node scripts/copy-css.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "storybook": "storybook dev -p 6006 --no-open",
+    "build-storybook": "storybook build",
+    "test": "pnpm build && vitest run"
+  },
+  "dependencies": {
+    "@lion/ui": "0.25.0",
+    "lit": "3.3.1"
+  },
+  "devDependencies": {
+    "@storybook/addon-a11y": "10.6.3",
+    "@storybook/addon-docs": "10.6.3",
+    "@storybook/addon-vitest": "10.6.3",
+    "@storybook/web-components-vite": "10.6.3",
+    "@vitest/browser": "4.1.12",
+    "@vitest/browser-playwright": "4.1.12",
+    "playwright": "1.64.1",
+    "storybook": "10.6.3",
+    "vite": "7.3.7",
+    "vitest": "4.1.12"
+  }
+}

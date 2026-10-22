@@ -1,0 +1,13 @@
+/* Wakata / Neutral: crisp grayscale, black primary, square corners. */
+[data-wk-theme='neutral'] {
+  --wk-accent: #171717;
+  --wk-on-accent: #fff;
+  --wk-radius: 0px;
+  --wk-font: Arial, Helvetica, sans-serif;
+}
+
+[data-wk-theme='neutral'][data-wk-mode='dark'],
+[data-wk-mode='dark'] [data-wk-theme='neutral'] {
+  --wk-accent: #eee;
+  --wk-on-accent: #171717;
+}

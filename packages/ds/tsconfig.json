@@ -1,0 +1,5 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": { "noEmit": true, "types": ["vite/client", "vitest/browser"] },
+  "include": ["src", ".storybook", "vitest.config.ts", "test"]
+}

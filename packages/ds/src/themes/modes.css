@@ -1,0 +1,32 @@
+/* Light/dark neutrals. Set data-wk-mode on a theme root (or any ancestor). */
+[data-wk-mode='light'] {
+  color-scheme: light;
+  --wk-text: #222;
+  --wk-surface: #fff;
+  --wk-border: #999;
+  --wk-focus: #111;
+  --wk-positive: #17623c;
+  --wk-on-positive: #fff;
+  --wk-danger: #a02222;
+  --wk-on-danger: #fff;
+  --wk-hover-mix: #000;
+  --wk-disabled-bg: #eee;
+  --wk-disabled-text: #777;
+  --wk-disabled-border: #ddd;
+}
+
+[data-wk-mode='dark'] {
+  color-scheme: dark;
+  --wk-text: #efefec;
+  --wk-surface: #232323;
+  --wk-border: #999;
+  --wk-focus: #fff;
+  --wk-positive: #82d5a5;
+  --wk-on-positive: #112a1b;
+  --wk-danger: #ff9e9e;
+  --wk-on-danger: #2a0a0a;
+  --wk-hover-mix: #fff;
+  --wk-disabled-bg: #303030;
+  --wk-disabled-text: #969696;
+  --wk-disabled-border: #555;
+}

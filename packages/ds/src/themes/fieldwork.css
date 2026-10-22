@@ -1,0 +1,13 @@
+/* Example / Fieldwork: illustrative brand theme. */
+[data-wk-theme='fieldwork'] {
+  --wk-accent: #285842;
+  --wk-on-accent: #fff;
+  --wk-radius: 8px;
+  --wk-font: Verdana, sans-serif;
+}
+
+[data-wk-theme='fieldwork'][data-wk-mode='dark'],
+[data-wk-mode='dark'] [data-wk-theme='fieldwork'] {
+  --wk-accent: #a1d4b4;
+  --wk-on-accent: #152c20;
+}
