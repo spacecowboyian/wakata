@@ -8,3 +8,5 @@
 - Colocate stories (`*.stories.ts`) and play-function browser tests with the component. Package/build checks live in `packages/ds/test`.
 - Do not publish, push or deploy without explicit instruction. Keep packages `private`.
 - Preserve upstream licence notices in `packages/ds/licenses`.
+
+- For contribution and promotion decisions, read `docs/ds/governance.md`. The project-local Design System Ops pack is under `.claude/skills/design-system-ops/`; Wakata-specific review guidance is `.agents/skills/wakata-ds-governance/SKILL.md`. Preserve manual approval and production-usage gates.

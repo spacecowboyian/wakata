@@ -9,15 +9,29 @@ const browser = (name: string) => ({
   instances: [{ browser: 'chromium' as const, name }],
 });
 
+// Pre-bundle Lion entries up front so Vite does not reload a running browser test.
+const optimizeDeps = {
+  include: [
+    '@lion/ui/button.js',
+    '@lion/ui/fieldset.js',
+    '@lion/ui/form-core.js',
+    '@lion/ui/form.js',
+    '@lion/ui/input.js',
+    '@lion/ui/select.js',
+  ],
+};
+
 export default defineConfig({
   test: {
     projects: [
       {
         extends: true,
+        optimizeDeps,
         plugins: [storybookTest({ configDir: new URL('./.storybook', import.meta.url).pathname })],
         test: { name: 'stories', browser: browser('stories-chromium') },
       },
       {
+        optimizeDeps,
         test: {
           name: 'package',
           include: ['test/**/*.browser.test.ts'],

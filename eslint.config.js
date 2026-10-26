@@ -4,7 +4,14 @@ import storybook from 'eslint-plugin-storybook';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['**/dist/**', '**/storybook-static/**', '**/node_modules/**'] },
+  {
+    ignores: [
+      '**/dist/**',
+      '**/storybook-static/**',
+      '**/node_modules/**',
+      '.claude/skills/design-system-ops/**',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   ...storybook.configs['flat/recommended'],

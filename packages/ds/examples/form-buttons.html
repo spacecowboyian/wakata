@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wakata form buttons (synthetic example)</title>
+    <!--
+      Plain HTML. Bare imports need a bundler or dev server that resolves @wakata/ds
+      (for example Vite run from a project that depends on it). All data is synthetic.
+    -->
+    <script type="module">
+      import '@wakata/ds/themes.css';
+      import '@wakata/ds/define';
+
+      const form = document.querySelector('form');
+      const out = document.querySelector('output');
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        out.textContent = `Submitted city: ${new FormData(form).get('city')}`;
+      });
+      form.addEventListener('reset', () => {
+        out.textContent = 'Form reset';
+      });
+    </script>
+  </head>
+  <body data-wk-theme="neutral" data-wk-mode="light">
+    <form style="display: grid; gap: 12px; max-width: 20rem">
+      <label style="display: grid; gap: 4px">
+        City
+        <input name="city" value="Oslo" required />
+      </label>
+      <div style="display: flex; gap: 12px">
+        <wk-button-submit variant="primary">Send</wk-button-submit>
+        <wk-button-reset>Reset</wk-button-reset>
+      </div>
+      <output aria-live="polite"></output>
+    </form>
+  </body>
+</html>

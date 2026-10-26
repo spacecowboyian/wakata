@@ -3,7 +3,7 @@ import type { PropertyValues } from 'lit';
 import { wkButtonStyles } from './wk-button.styles.js';
 
 export type WkButtonVariant = 'primary' | 'secondary' | 'tertiary';
-export type WkButtonIntent = 'normal' | 'positive' | 'danger';
+export type WkButtonIntent = 'normal' | 'danger';
 export type WkButtonSize = 'small' | 'medium' | 'large';
 
 /**
@@ -29,7 +29,7 @@ export class WkButton extends LionButton {
 
   /** Visual emphasis. */
   declare variant: WkButtonVariant;
-  /** Semantic intent. */
+  /** Semantic intent. `danger` marks destructive actions; affirmative actions use `variant="primary"`. */
   declare intent: WkButtonIntent;
   /** Control size. */
   declare size: WkButtonSize;

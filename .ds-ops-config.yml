@@ -1,0 +1,17 @@
+# Supported keys from Design System Ops v2.0.0 ds-ops-config.example.yml.
+# Integrations remain disabled by omission; this configuration reads local files.
+system:
+  name: Wakata
+  framework: web-components
+  styling: css-vars
+  theming: true
+  component_paths:
+    - packages/ds/src/components
+  tokens:
+    - packages/ds/src/tokens
+  token_format: custom
+
+agent_instructions:
+  path: AGENTS.md
+  pointers:
+    - .github/copilot-instructions.md

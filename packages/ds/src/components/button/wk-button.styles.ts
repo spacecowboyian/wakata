@@ -32,11 +32,6 @@ export const wkButtonStyles = css`
     text-decoration: underline;
     text-underline-offset: 4px;
   }
-  :host([intent='positive']) {
-    --_bg: var(--wk-positive, #17623c);
-    --_fg: var(--wk-on-positive, #fff);
-    --_border: var(--wk-positive, #17623c);
-  }
   :host([intent='danger']) {
     --_fg: var(--wk-danger, #a02222);
     --_border: var(--wk-danger, #a02222);
@@ -49,7 +44,6 @@ export const wkButtonStyles = css`
     background: color-mix(in srgb, var(--_bg) 90%, var(--wk-text, #222) 10%);
   }
   :host([variant='primary']:hover),
-  :host([intent='positive']:hover),
   :host([variant='primary'][intent='danger']:hover) {
     background: color-mix(in srgb, var(--_bg) 86%, var(--wk-hover-mix, #000) 14%);
   }

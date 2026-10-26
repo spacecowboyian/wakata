@@ -1,21 +1,13 @@
-/* Company wireframe: keeps typography and dimensions, squares corners, grays the accent.
-   Must stay last so it wins over theme rules, including nested theme scopes. */
-[data-wk-wireframe='true'],
-[data-wk-wireframe='true'] [data-wk-theme] {
-  --wk-accent: #171717;
-  --wk-on-accent: #fff;
-  --wk-radius: 0px;
+@import './modes.css';
+
+/* Wireframe inherits through brand and mode scopes. Explicit false opts out;
+   a deeper true starts a new wireframe scope. Semantic feedback stays intact. */
+[data-wk-wireframe='true'] {
+  --_wk-wireframe-off: ;
+  --_wk-wireframe-on: initial;
 }
 
-:is(
-  [data-wk-mode='dark'][data-wk-wireframe='true'],
-  [data-wk-mode='dark'] [data-wk-wireframe='true']
-),
-:is(
-    [data-wk-mode='dark'][data-wk-wireframe='true'],
-    [data-wk-mode='dark'] [data-wk-wireframe='true']
-  )
-  [data-wk-theme] {
-  --wk-accent: #eee;
-  --wk-on-accent: #171717;
+[data-wk-wireframe='false'] {
+  --_wk-wireframe-off: initial;
+  --_wk-wireframe-on: ;
 }

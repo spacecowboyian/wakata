@@ -1,0 +1,289 @@
+{
+  "fixture": "tests/fixtures/sample-ds",
+  "cases": [
+    {
+      "id": "tier-leakage",
+      "skill": "token-audit",
+      "prompt": "Use the design-system-ops token-audit skill to audit the design tokens in this repository.",
+      "finds": [
+        "card.border",
+        "color.gray.200"
+      ],
+      "why": "card.border aliases a primitive directly, skipping the semantic tier (color.border.default)."
+    },
+    {
+      "id": "hardcoded-hex",
+      "skill": "token-compliance",
+      "prompt": "Use the design-system-ops token-compliance skill to check the components in src/components for hardcoded values.",
+      "finds": [
+        "#1a73e8",
+        "Card.module.css"
+      ],
+      "must_not_flag": [
+        [
+          "currentColor"
+        ],
+        [
+          "transparent"
+        ],
+        [
+          "tokens.css"
+        ]
+      ],
+      "why": "Card's title colour is a raw hex that isn't in the palette. currentColor, transparent and the token source file itself are not violations."
+    },
+    {
+      "id": "undocumented-component",
+      "skill": "docs-coverage",
+      "prompt": "Use the design-system-ops docs-coverage skill to check which components in this repository are documented. Treat the *.stories.tsx files as the documentation surface.",
+      "finds": [
+        "Tooltip"
+      ],
+      "why": "Tooltip is exported from src/index.ts but has no story."
+    },
+    {
+      "id": "tooltip-a11y",
+      "skill": "accessibility-per-component",
+      "prompt": "Use the design-system-ops accessibility-per-component skill to audit the Tooltip component in src/components/Tooltip.",
+      "finds": [
+        "aria-describedby",
+        "1.4.13"
+      ],
+      "why": "The trigger doesn't reference the tooltip with aria-describedby, and the bubble is always shown rather than appearing on hover and focus (WCAG 1.4.13)."
+    },
+    {
+      "id": "dark-theme-controls",
+      "skill": "theme-audit",
+      "prompt": "Use the design-system-ops theme-audit skill to audit the light and dark themes in src/styles/tokens.css.",
+      "finds": [
+        "--card-border"
+      ],
+      "must_not_flag": [
+        [
+          "surface-raised",
+          "darker"
+        ],
+        [
+          "--space-inset"
+        ],
+        [
+          "--space-gap"
+        ]
+      ],
+      "why": "--card-border is a raw value with no dark override, so cards keep a light border in dark mode. Correct behaviour that must not be flagged: the raised surface is lighter than the base in dark mode, and spacing inherits from :root."
+    },
+    {
+      "id": "flattened-install",
+      "skill": "system-health",
+      "layout": "flattened",
+      "expect": "stop",
+      "prompt": "Use the system-health skill to assess the health of this design system.",
+      "finds": [
+        "incomplete"
+      ],
+      "why": "Reproduces the reported bug: system-health installed on its own, as npx skills install does, with no knowledge-notes/ beside it. The skill must stop at its self-check and say the install is incomplete, not produce an assessment without its reference material."
+    },
+    {
+      "id": "route-token-compliance",
+      "skill": "token-compliance",
+      "expect": "route",
+      "prompt": "Are there any hardcoded colours or spacing values in our components that should be using design tokens?",
+      "finds": [],
+      "why": "A plain request that doesn't name a skill must route to token-compliance, not a neighbouring skill."
+    },
+    {
+      "id": "route-token-audit",
+      "skill": "token-audit",
+      "expect": "route",
+      "prompt": "Is our design token architecture set up well? Look at how the tiers are structured.",
+      "finds": [],
+      "why": "A plain request that doesn't name a skill must route to token-audit, not a neighbouring skill."
+    },
+    {
+      "id": "route-design-to-code",
+      "skill": "design-to-code-check",
+      "expect": "route",
+      "prompt": "Does our Card component match its design spec? The spec: 16px padding, 8px corner radius, a 1px border in the default border colour, and the title in the default text colour.",
+      "finds": [],
+      "why": "A plain request that doesn't name a skill must route to design-to-code-check, not a neighbouring skill."
+    },
+    {
+      "id": "route-drift",
+      "skill": "drift-detection",
+      "expect": "route",
+      "prompt": "Across this codebase, where have we drifted away from what the design system intended?",
+      "finds": [],
+      "why": "A plain request that doesn't name a skill must route to drift-detection, not a neighbouring skill."
+    },
+    {
+      "id": "route-stakeholder-brief",
+      "skill": "stakeholder-brief",
+      "expect": "route",
+      "prompt": "Write a short update for our VP of Product on where the design system stands this quarter.",
+      "finds": [],
+      "why": "A plain request that doesn't name a skill must route to stakeholder-brief, not a neighbouring skill."
+    },
+    {
+      "id": "route-system-pitch",
+      "skill": "system-pitch",
+      "expect": "route",
+      "prompt": "Help me build the business case to fund a dedicated design system team next year.",
+      "finds": [],
+      "why": "A plain request that doesn't name a skill must route to system-pitch, not a neighbouring skill."
+    },
+    {
+      "id": "route-engineering-onboarding",
+      "skill": "onboarding",
+      "expect": "route",
+      "prompt": "Write a getting-started guide for a frontend engineer who joins our team next week.",
+      "finds": [],
+      "why": "A plain request that doesn't name a skill must route to onboarding, not a neighbouring skill."
+    },
+    {
+      "id": "route-designer-onboarding",
+      "skill": "onboarding",
+      "expect": "route",
+      "prompt": "Write a getting-started guide for a product designer who joins our team next week.",
+      "finds": [],
+      "why": "A plain request that doesn't name a skill must route to onboarding, not a neighbouring skill."
+    },
+    {
+      "id": "release-chain",
+      "skill": "release-check",
+      "expect": "chain",
+      "prompt": "/design-system-ops:release-check Button \u2014 a new component release. Design spec: primary and secondary variants; padding var(--space-gap) by var(--space-inset); 6px corner radius; primary uses the action colour with on-action text; secondary is transparent with an action-coloured label and border.",
+      "chain": [
+        "design-to-code-check",
+        "accessibility-per-component",
+        "token-compliance",
+        "ai-component-description",
+        "usage-guidelines",
+        "change-communication"
+      ],
+      "finds": [
+        "Button"
+      ],
+      "why": "The release pipeline must load all six chained skills and produce one combined report with a single Scope block, per the chained-run rules."
+    },
+    {
+      "id": "release-gate-stop",
+      "skill": "release-check",
+      "expect": "chain",
+      "prompt": "/design-system-ops:release-check Tooltip \u2014 a new component release. Design spec: a small bubble with var(--space-gap) padding, a 4px corner radius, the default text colour as its background and the base surface colour as its text.",
+      "chain": [
+        "design-to-code-check"
+      ],
+      "not_after_gate": [
+        "token-compliance",
+        "ai-component-description",
+        "usage-guidelines",
+        "change-communication"
+      ],
+      "finds": [
+        "BLOCKED"
+      ],
+      "why": "Tooltip isn't a working tooltip yet (the bubble is always visible, and its trigger isn't linked with aria-describedby), so a gate must block it: the release is BLOCKED and the documentation and announcement steps never run. Either gate may catch it \u2014 design-to-code checks focus and keyboard behaviour too."
+    },
+    {
+      "id": "route-design-to-code-2",
+      "skill": "design-to-code-check",
+      "expect": "route",
+      "prompt": "Can you check our Button implementation lines up with what design specified? They asked for 8px by 16px padding, a 6px radius and the action colour for the primary variant.",
+      "finds": [],
+      "why": "A second wording that doesn't name a skill must also route to design-to-code-check. It guards against tuning the description to one test sentence.",
+      "known_gap": "Measured on 2026-09-23: 0 of 3 with every description tried. Quick checks with the spec pasted in are usually done without the skill; run /design-system-ops:design-to-code-check by name for the full report."
+    },
+    {
+      "id": "route-stakeholder-brief-2",
+      "skill": "stakeholder-brief",
+      "expect": "route",
+      "prompt": "Our CPO keeps asking how the design system is going. Can you write something I could send her this week?",
+      "finds": [],
+      "why": "A second wording that doesn't name a skill must also route to stakeholder-brief. It guards against tuning the description to one test sentence."
+    },
+    {
+      "id": "route-design-to-code-3",
+      "skill": "design-to-code-check",
+      "expect": "route",
+      "prompt": "Before we ship the new Tooltip, can you QA the build against the mockups? Padding should be 8px, corners 4px, dark background with light text.",
+      "finds": [],
+      "why": "A third wording, written before the description was revised, must also route to design-to-code-check. It's the unseen check on whether the description captures the intent rather than a phrase.",
+      "known_gap": "Measured on 2026-09-23: 0 of 3 with every description tried. Quick checks with the spec pasted in are usually done without the skill; run /design-system-ops:design-to-code-check by name for the full report."
+    },
+    {
+      "id": "route-design-qa-release",
+      "skill": "design-to-code-check",
+      "expect": "route",
+      "prompt": "We're about to ship Button and Card in the next release. Can you do a proper design QA on both against the specs below, and tell me what engineering needs to fix versus what design needs to clarify? Button: primary and secondary variants, 8px by 16px padding, 6px radius, a 2px focus ring in the action colour, and hover darkens the fill. Card: 16px padding, 8px radius, a 1px border in the default border colour, the title in the default text colour, and the raised surface as its background.",
+      "finds": [],
+      "why": "A realistic, substantive design QA request (several components or a handover, with a release or sign-off at stake) should reach design-to-code-check. If these route and the quick one-component asks don't, the gap only affects quick questions."
+    },
+    {
+      "id": "route-design-qa-handover",
+      "skill": "design-to-code-check",
+      "expect": "route",
+      "prompt": "Design handed over the Tooltip spec last sprint and engineering says it's done. Before we sign it off, review the implementation against the handover: shows on hover and keyboard focus, hides on Escape, 8px padding, 4px radius, dark background with light text, a 150ms fade and a max width of 240px.",
+      "finds": [],
+      "why": "A realistic, substantive design QA request (several components or a handover, with a release or sign-off at stake) should reach design-to-code-check. If these route and the quick one-component asks don't, the gap only affects quick questions."
+    },
+    {
+      "id": "route-design-qa-components",
+      "skill": "design-to-code-check",
+      "expect": "route",
+      "prompt": "Can you run a pre-release visual QA of our three components against the design specs? Button: 8px by 16px padding, 6px radius. Card: 16px padding, 8px radius, 1px default border. Tooltip: 8px padding, 4px radius, dark background. Flag anything that doesn't match and say whether it's a build bug or a gap in the spec.",
+      "finds": [],
+      "why": "A realistic, substantive design QA request (several components or a handover, with a release or sign-off at stake) should reach design-to-code-check. If these route and the quick one-component asks don't, the gap only affects quick questions."
+    },
+    {
+      "id": "duplicate-components",
+      "skill": "component-audit",
+      "prompt": "Use the design-system-ops component-audit skill to audit the component library in this repository.",
+      "finds": [
+        "Modal",
+        "Dialog"
+      ],
+      "why": "Modal and Dialog are both exported and solve the same problem (an interrupting overlay with a heading, body and close action) with different prop names (open/onClose/title vs isOpen/onDismiss/heading); the audit must report the pair as duplication."
+    },
+    {
+      "id": "consumer-drift",
+      "skill": "drift-detection",
+      "prompt": "Use the design-system-ops drift-detection skill to find where the checkout app in apps/checkout has drifted from the design system in this repository.",
+      "finds": [
+        "CheckoutButton",
+        "--card-padding"
+      ],
+      "why": "apps/checkout re-implements Button locally with raw values (CheckoutButton) instead of importing it, and overrides the card-padding token in Summary.module.css. Both are drift; with no git history in the fixture copy, the classification should be honest (Unclassified or evidence-based), not invented."
+    },
+    {
+      "id": "health-baseline",
+      "skill": "system-health",
+      "expect": "produces",
+      "prompt": "Use the design-system-ops system-health skill to assess the health of this design system.",
+      "finds": [
+        "Tooltip",
+        "Managed"
+      ],
+      "why": "A health report on the fixture names the undocumented Tooltip under Documentation and infers the maturity stage from evidence: a versioned package with tiered tokens and uneven docs, no contribution process, is Managed."
+    },
+    {
+      "id": "describe-button",
+      "skill": "ai-component-description",
+      "expect": "produces",
+      "prompt": "Use the design-system-ops ai-component-description skill to write the six-section description for the Button component in src/components/Button.",
+      "finds": [
+        "PROPS",
+        "variant",
+        "secondary"
+      ],
+      "why": "The description must be built from the source: Button's one documented prop is variant with values primary and secondary, and the output uses the uppercase section headers."
+    },
+    {
+      "id": "route-agent-instructions",
+      "skill": "agent-instructions",
+      "expect": "route",
+      "prompt": "Claude keeps picking the wrong components and typing raw hex values when it works in this repo. Can you write the instructions file that tells coding agents how to use our design system?",
+      "finds": [],
+      "why": "A plain request for an agent instructions file must route to agent-instructions, not to codebase-index or usage-guidelines."
+    }
+  ]
+}

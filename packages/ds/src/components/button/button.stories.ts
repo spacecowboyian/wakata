@@ -14,7 +14,7 @@ interface ButtonArgs {
 }
 
 const variants: WkButtonVariant[] = ['primary', 'secondary', 'tertiary'];
-const intents: WkButtonIntent[] = ['normal', 'positive', 'danger'];
+const intents: WkButtonIntent[] = ['normal', 'danger'];
 const sizes: WkButtonSize[] = ['small', 'medium', 'large'];
 
 const row = 'display:flex;flex-wrap:wrap;gap:16px;align-items:center';
@@ -244,7 +244,6 @@ export const ThemeComparison: Story = {
               (variant) =>
                 html`<wk-button variant=${variant} @click=${args.onClick}>${variant}</wk-button>`,
             )}
-            <wk-button intent="positive" @click=${args.onClick}>Approve</wk-button>
             <wk-button intent="danger" @click=${args.onClick}>Delete</wk-button>
           </div>`,
       )}
@@ -262,7 +261,9 @@ export const ScopedThemes: Story = {
     },
   },
   render: (args) =>
-    html`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+    html`<div
+      style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,10rem),1fr));gap:16px"
+    >
       ${(['neutral', 'studio', 'fieldwork'] as const).map(
         (theme) =>
           html`<div
@@ -284,6 +285,21 @@ export const ScopedThemes: Story = {
   },
 };
 
+export const ScopedThemesNarrow: Story = {
+  ...ScopedThemes,
+  name: 'Scoped themes at narrow width',
+  decorators: [(story) => html`<div data-testid="narrow" style="width:320px">${story()}</div>`],
+  play: async ({ canvasElement }) => {
+    const host = canvasElement.querySelector('[data-testid=narrow]') as HTMLElement;
+    await expect(host.scrollWidth).toBeLessThanOrEqual(host.clientWidth);
+    for (const cell of host.querySelectorAll('[data-wk-theme]')) {
+      await expect(cell.getBoundingClientRect().right).toBeLessThanOrEqual(
+        host.getBoundingClientRect().right,
+      );
+    }
+  },
+};
+
 export const DarkTheme: Story = {
   globals: { mode: 'dark' },
   render: (args) =>
@@ -292,7 +308,6 @@ export const DarkTheme: Story = {
         (variant) =>
           html`<wk-button variant=${variant} @click=${args.onClick}>${variant}</wk-button>`,
       )}
-      <wk-button intent="positive" @click=${args.onClick}>Approve</wk-button>
       <wk-button intent="danger" @click=${args.onClick}>Delete</wk-button>
       <wk-button disabled @click=${args.onClick}>Unavailable</wk-button>
     </div>`,
