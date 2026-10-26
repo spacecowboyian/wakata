@@ -4,14 +4,16 @@ Wakata design system (working title DS) and its Storybook. Private and provision
 
 ## Exports
 
-| Import                     | Contents                                                         |
-| -------------------------- | ---------------------------------------------------------------- |
-| `@wakata/ds`               | `WkButton`, types, `wkTokens`, theme names. **No registration.** |
-| `@wakata/ds/button`        | Button class and styles only                                     |
-| `@wakata/ds/define`        | Registers all DS elements (idempotent)                           |
-| `@wakata/ds/button/define` | Registers `wk-button` (`defineWkButton()` is safe to call twice) |
-| `@wakata/ds/themes.css`    | Neutral/Studio/Fieldwork themes, light/dark modes, wireframe     |
-| `@wakata/ds/themes/*.css`  | Individual theme files                                           |
+| Import                         | Contents                                                                |
+| ------------------------------ | ----------------------------------------------------------------------- |
+| `@wakata/ds`                   | `WkButton`, types, `wkTokens`, theme names. **No registration.**        |
+| `@wakata/ds/button`            | Button class and styles only                                            |
+| `@wakata/ds/text-field`        | TextField class, styles and types only                                  |
+| `@wakata/ds/define`            | Registers all DS elements (idempotent)                                  |
+| `@wakata/ds/button/define`     | Registers `wk-button` (`defineWkButton()` is safe to call twice)        |
+| `@wakata/ds/text-field/define` | Registers `wk-text-field` (`defineWkTextField()` is safe to call twice) |
+| `@wakata/ds/themes.css`        | Neutral/Studio/Fieldwork themes, light/dark modes, wireframe            |
+| `@wakata/ds/themes/*.css`      | Individual theme files                                                  |
 
 ```ts
 import '@wakata/ds/themes.css';
@@ -44,6 +46,33 @@ Subclasses of Lion's `LionButtonSubmit` / `LionButtonReset`. They act on the clo
 
 Runnable synthetic example: `examples/form-buttons.html` (needs a bundler or dev server to resolve `@wakata/ds`).
 
+## `wk-text-field`
+
+`WkTextField` extends Lion's `LionInput` and uses `WkScalarFieldMixin`, so its string value,
+validation, external errors, events, serialization and reset behavior share the form foundation
+above. The native `<input>` stays in light DOM.
+
+| Property / attribute             | Purpose                                                                                                                                                 |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `type`                           | `text` (default), `email` or `password`; keeps the corresponding native input semantics. Email also uses Lion's `IsEmail` validator.                    |
+| `name`, `value`                  | Native form name and canonical scalar-string value. Programmatic value changes update the view, model and serialization without `wk-input`/`wk-change`. |
+| `label` / `slot="label"`         | Visible accessible name. A placeholder is not a label.                                                                                                  |
+| `help-text` / `slot="help-text"` | Persistent description associated with the native input.                                                                                                |
+| `required`                       | Native required state and Lion `Required` validation. An empty optional field is valid, including optional email.                                       |
+| `disabled`                       | Native disabled state; not focusable and excluded from `FormData`.                                                                                      |
+| `readonly`                       | Native read-only state; remains focusable and included in `FormData`.                                                                                   |
+| `error`                          | External/server error text, associated through Lion's public description helpers and cleared on reset.                                                  |
+
+User edits emit bubbling, composed `wk-input` and `wk-change` events with `{ value, name }`.
+Use `wk-input` to update framework state and `wk-change` for commit notification; do not update
+state from both. Password values are not logged or included in the example.
+
+The component is registered by `@wakata/ds/define`, or separately with
+`@wakata/ds/text-field/define`. `examples/text-field.html` is a minimal synthetic native-form
+fixture using `wk-form` and the existing submit/reset buttons. Its submit event is an attempt
+notification: consumers must guard Lion validation errors, pending validation and external errors
+before processing. It does not demonstrate a React or Angular wrapper.
+
 ## Form infrastructure (`@wakata/ds/form`, `@wakata/ds/form/define`)
 
 | Export                       | Purpose                                                                                                               |
@@ -75,6 +104,6 @@ Mode changes select the built-in palette for that mode; a new theme or explicit 
 
 ## Validation status
 
-Covered: Lion inheritance, Enter/Space once each, disabled/loading suppression, loading geometry and restore, Tab skipping disabled, independent theme scopes, built-package imports and registration, and automated axe checks in representative light/dark themes (Chromium).
+Covered: Lion inheritance; TextField text/email/password native types, validation, required and optional empty values, disabled/readonly behavior, event silence for programmatic updates/reset, external errors, FormData, reset and a guarded form attempt; Enter/Space once each, disabled/loading suppression, loading geometry and restore, Tab skipping disabled, independent theme scopes, built-package imports and registration, and automated axe checks in representative light/dark themes (Chromium).
 
-The form/theme regression fixes and submit/reset variants passed the 25 October 2026 Chromium browser run (54 tests across 6 files). Pending: screen-reader/assistive-technology testing, cross-browser testing and framework (React/Angular) wrappers. Automated axe results are not full WCAG validation.
+Automated TextField browser coverage runs in Chromium only. Pending: manual keyboard/focus/name/state checks, assistive-technology testing, cross-browser testing, zoom/reflow and contrast review, and framework (React/Angular) wrappers. Automated axe results are not full WCAG validation.

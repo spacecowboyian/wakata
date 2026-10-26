@@ -5,9 +5,12 @@ test('class entry points do not register the element', async () => {
   expect(customElements.get('wk-button')).toBeUndefined();
   const pkg = await import('@wakata/ds');
   const button = await import('@wakata/ds/button');
+  const textField = await import('@wakata/ds/text-field');
   expect(pkg.WkButton).toBe(button.WkButton);
+  expect(pkg.WkTextField).toBe(textField.WkTextField);
   expect(Object.keys(pkg)).toContain('wkTokens');
   expect(customElements.get('wk-button')).toBeUndefined();
+  expect(customElements.get('wk-text-field')).toBeUndefined();
 });
 
 test('define entry points register once and tolerate repeats', async () => {
@@ -15,8 +18,12 @@ test('define entry points register once and tolerate repeats', async () => {
   await import('@wakata/ds/button/define');
   await import('@wakata/ds/define');
   const { defineWkButton } = await import('@wakata/ds/button/define');
+  const { WkTextField } = await import('@wakata/ds/text-field');
+  const { defineWkTextField } = await import('@wakata/ds/text-field/define');
   expect(() => defineWkButton()).not.toThrow();
+  expect(() => defineWkTextField()).not.toThrow();
   expect(customElements.get('wk-button')).toBe(WkButton);
+  expect(customElements.get('wk-text-field')).toBe(WkTextField);
 });
 
 test('unsupported positive intent never renders green or a distinct action colour', async () => {

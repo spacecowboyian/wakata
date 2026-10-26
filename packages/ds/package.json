@@ -7,6 +7,7 @@
   "sideEffects": [
     "./dist/define.js",
     "./dist/components/button/define.js",
+    "./dist/components/text-field/define.js",
     "**/*.css"
   ],
   "main": "./dist/index.js",
@@ -27,6 +28,14 @@
     "./button/define": {
       "types": "./dist/components/button/define.d.ts",
       "default": "./dist/components/button/define.js"
+    },
+    "./text-field": {
+      "types": "./dist/components/text-field/index.d.ts",
+      "default": "./dist/components/text-field/index.js"
+    },
+    "./text-field/define": {
+      "types": "./dist/components/text-field/define.d.ts",
+      "default": "./dist/components/text-field/define.js"
     },
     "./form": {
       "types": "./dist/form/index.d.ts",

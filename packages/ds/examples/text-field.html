@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wakata TextField form (synthetic example)</title>
+    <!--
+      Plain HTML. Bare imports need a bundler or dev server that resolves @wakata/ds
+      (for example Vite run from a project that depends on it). All data is synthetic.
+    -->
+    <script type="module">
+      import '@wakata/ds/themes.css';
+      import '@wakata/ds/define';
+
+      const form = document.querySelector('wk-form');
+      const field = document.querySelector('wk-text-field');
+      const output = document.querySelector('output');
+      form.addEventListener('submit', () => {
+        if (form.hasFeedbackFor.includes('error') || field.error || field.isPending) {
+          output.textContent = 'Please correct the field before continuing.';
+          return;
+        }
+        output.textContent = 'Form accepted.';
+      });
+    </script>
+  </head>
+  <body data-wk-theme="neutral" data-wk-mode="light">
+    <wk-form>
+      <form novalidate style="display: grid; gap: 12px; max-width: 24rem">
+        <wk-text-field
+          name="email"
+          type="email"
+          label="Email address"
+          help-text="Use a synthetic address for this example."
+          required
+        ></wk-text-field>
+        <div style="display: flex; gap: 12px">
+          <wk-button-submit variant="primary">Continue</wk-button-submit>
+          <wk-button-reset>Reset</wk-button-reset>
+        </div>
+        <output aria-live="polite"></output>
+      </form>
+    </wk-form>
+  </body>
+</html>
