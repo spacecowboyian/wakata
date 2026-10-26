@@ -9,6 +9,7 @@ interface TextFieldArgs {
   required: boolean;
   disabled: boolean;
   readOnly: boolean;
+  placeholder: string;
   helpText: string;
   error: string;
 }
@@ -52,6 +53,7 @@ framework-wrapper checks have not been run.
       description: 'Native disabled behavior; excluded from FormData.',
     },
     readOnly: { control: 'boolean', name: 'readonly', description: 'Native read-only behavior.' },
+    placeholder: { control: 'text', description: 'Native input hint; not a label.' },
     helpText: { control: 'text', description: 'Persistent help text.' },
     error: { control: 'text', description: 'External error text.' },
   },
@@ -61,6 +63,7 @@ framework-wrapper checks have not been run.
     required: false,
     disabled: false,
     readOnly: false,
+    placeholder: '',
     helpText: '',
     error: '',
   },
@@ -72,6 +75,7 @@ framework-wrapper checks have not been run.
       ?required=${args.required}
       ?disabled=${args.disabled}
       ?readonly=${args.readOnly}
+      placeholder=${args.placeholder}
       help-text=${args.helpText}
       error=${args.error}
     ></wk-text-field>`,
@@ -81,6 +85,20 @@ export default meta;
 type Story = StoryObj<TextFieldArgs>;
 
 export const Playground: Story = {};
+
+export const Empty: Story = {
+  args: {
+    label: 'Work email',
+    type: 'email',
+    placeholder: 'name@example.test',
+    helpText: 'We will use this address for account updates.',
+  },
+  play: async ({ canvasElement }) => {
+    const input = within(canvasElement).getByRole('textbox', { name: 'Work email' });
+    await expect(input).toHaveValue('');
+    await expect(input).toHaveAttribute('placeholder', 'name@example.test');
+  },
+};
 
 export const Focus: Story = {
   play: async ({ canvasElement }) => {
@@ -130,6 +148,30 @@ export const ReadOnly: Story = {
     const field = canvasElement.querySelector('wk-text-field') as WkTextField;
     await field.updateComplete;
     await expect(field.querySelector('input')!.readOnly).toBe(true);
+  },
+};
+
+export const DisabledAndReadOnly: Story = {
+  name: 'Disabled and read-only',
+  render: () =>
+    html`<div style="display:grid;gap:16px;max-width:32rem">
+      <wk-text-field
+        name="disabledValue"
+        label="Disabled"
+        value="Unavailable value"
+        disabled
+      ></wk-text-field>
+      <wk-text-field
+        name="readOnlyValue"
+        label="Read only"
+        value="Available to copy and submit"
+        readonly
+      ></wk-text-field>
+    </div>`,
+  play: async ({ canvasElement }) => {
+    const fields = [...canvasElement.querySelectorAll('wk-text-field')] as WkTextField[];
+    await expect(fields[0]?.querySelector('input')?.disabled).toBe(true);
+    await expect(fields[1]?.querySelector('input')?.readOnly).toBe(true);
   },
 };
 
