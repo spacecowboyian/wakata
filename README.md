@@ -8,15 +8,16 @@ Node >=22.12 (see `.nvmrc`) and pnpm 10.33.0 (`corepack enable`).
 
 ## Commands
 
-| Command                | What it does                                            |
-| ---------------------- | ------------------------------------------------------- |
-| `pnpm install`         | Install from `pnpm-lock.yaml`                           |
-| `pnpm storybook`       | Storybook dev server on http://localhost:6006           |
-| `pnpm build`           | Build `@wakata/ds` (ESM + declarations + theme CSS)     |
-| `pnpm build-storybook` | Static Storybook to `packages/ds/storybook-static`      |
-| `pnpm test`            | Build, then run browser tests (Chromium via Playwright) |
-| `pnpm lint`            | ESLint and Prettier check                               |
-| `pnpm typecheck`       | TypeScript across the workspace                         |
+| Command                 | What it does                                                                     |
+| ----------------------- | -------------------------------------------------------------------------------- |
+| `pnpm install`          | Install from `pnpm-lock.yaml`                                                    |
+| `pnpm storybook`        | Storybook dev server on http://localhost:6006                                    |
+| `pnpm build`            | Build `@wakata/ds` (ESM + declarations + theme CSS)                              |
+| `pnpm build-storybook`  | Static Storybook to `packages/ds/storybook-static`                               |
+| `pnpm test`             | Build, then run browser tests (Chromium via Playwright)                          |
+| `pnpm lint`             | ESLint and Prettier check                                                        |
+| `pnpm typecheck`        | TypeScript across the workspace                                                  |
+| `pnpm check:boundaries` | Package layers and generated-output rules ([architecture](docs/architecture.md)) |
 
 First test run needs a browser: `pnpm --filter @wakata/ds exec playwright install chromium`.
 

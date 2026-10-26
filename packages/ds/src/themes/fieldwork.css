@@ -1,13 +1,11 @@
+@import './modes.css';
+
 /* Example / Fieldwork: illustrative brand theme. */
 [data-wk-theme='fieldwork'] {
-  --wk-accent: #285842;
-  --wk-on-accent: #fff;
-  --wk-radius: 8px;
+  --_wk-brand-accent-light: #285842;
+  --_wk-brand-on-accent-light: #fff;
+  --_wk-brand-accent-dark: #a1d4b4;
+  --_wk-brand-on-accent-dark: #152c20;
+  --_wk-brand-radius: 8px;
   --wk-font: Verdana, sans-serif;
-}
-
-[data-wk-theme='fieldwork'][data-wk-mode='dark'],
-[data-wk-mode='dark'] [data-wk-theme='fieldwork'] {
-  --wk-accent: #a1d4b4;
-  --wk-on-accent: #152c20;
 }

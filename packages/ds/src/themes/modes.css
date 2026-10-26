@@ -1,5 +1,16 @@
-/* Light/dark neutrals. Set data-wk-mode on a theme root (or any ancestor). */
+/* Private inherited switches use the guaranteed-invalid initial value versus an empty
+   token list. Resolve public tokens at each explicit scope, never from an ancestor
+   selector: a light scope inside dark must win at any nesting depth. */
+:where(:root) {
+  --_wk-light: initial;
+  --_wk-dark: ;
+  --_wk-wireframe-off: initial;
+  --_wk-wireframe-on: ;
+}
+
 [data-wk-mode='light'] {
+  --_wk-light: initial;
+  --_wk-dark: ;
   color-scheme: light;
   --wk-text: #222;
   --wk-surface: #fff;
@@ -16,6 +27,8 @@
 }
 
 [data-wk-mode='dark'] {
+  --_wk-light: ;
+  --_wk-dark: initial;
   color-scheme: dark;
   --wk-text: #efefec;
   --wk-surface: #232323;
@@ -29,4 +42,26 @@
   --wk-disabled-bg: #303030;
   --wk-disabled-text: #969696;
   --wk-disabled-border: #555;
+}
+
+[data-wk-theme],
+[data-wk-mode],
+[data-wk-wireframe] {
+  --_wk-accent-light: var(--_wk-wireframe-off, var(--_wk-brand-accent-light, #171717))
+    var(--_wk-wireframe-on, #171717);
+  --_wk-accent-dark: var(--_wk-wireframe-off, var(--_wk-brand-accent-dark, #eee))
+    var(--_wk-wireframe-on, #eee);
+  --_wk-on-accent-light: var(--_wk-wireframe-off, var(--_wk-brand-on-accent-light, #fff))
+    var(--_wk-wireframe-on, #fff);
+  --_wk-on-accent-dark: var(--_wk-wireframe-off, var(--_wk-brand-on-accent-dark, #171717))
+    var(--_wk-wireframe-on, #171717);
+  --wk-accent: var(--_wk-light, var(--_wk-accent-light)) var(--_wk-dark, var(--_wk-accent-dark));
+  --wk-on-accent: var(--_wk-light, var(--_wk-on-accent-light))
+    var(--_wk-dark, var(--_wk-on-accent-dark));
+}
+
+/* A mode-only scope changes colors, not inherited geometry. */
+[data-wk-theme],
+[data-wk-wireframe] {
+  --wk-radius: var(--_wk-wireframe-off, var(--_wk-brand-radius, 0px)) var(--_wk-wireframe-on, 0px);
 }

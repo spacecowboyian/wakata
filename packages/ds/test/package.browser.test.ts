@@ -19,6 +19,26 @@ test('define entry points register once and tolerate repeats', async () => {
   expect(customElements.get('wk-button')).toBe(WkButton);
 });
 
+test('unsupported positive intent never renders green or a distinct action colour', async () => {
+  await import('@wakata/ds/define');
+  const make = (intent?: string) => {
+    const el = document.createElement('wk-button');
+    el.setAttribute('variant', 'primary');
+    if (intent) el.setAttribute('intent', intent);
+    el.textContent = 'Save';
+    document.body.append(el);
+    return el;
+  };
+  const plain = make();
+  const invalid = make('positive');
+  const danger = make('danger');
+  await Promise.all([plain, invalid, danger].map((e) => e.updateComplete));
+  expect(getComputedStyle(invalid).backgroundColor).toBe(getComputedStyle(plain).backgroundColor);
+  expect(getComputedStyle(invalid).backgroundColor).not.toBe('rgb(23, 98, 60)');
+  expect(getComputedStyle(danger).backgroundColor).toBe('rgb(160, 34, 34)');
+  for (const e of [plain, invalid, danger]) e.remove();
+});
+
 test('built element is a real LionButton with documented defaults', async () => {
   const { LionButton } = await import('@lion/ui/button.js');
   const { WkButton } = await import('@wakata/ds');

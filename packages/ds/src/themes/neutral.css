@@ -1,13 +1,11 @@
+@import './modes.css';
+
 /* Wakata / Neutral: crisp grayscale, black primary, square corners. */
 [data-wk-theme='neutral'] {
-  --wk-accent: #171717;
-  --wk-on-accent: #fff;
-  --wk-radius: 0px;
+  --_wk-brand-accent-light: #171717;
+  --_wk-brand-on-accent-light: #fff;
+  --_wk-brand-accent-dark: #eee;
+  --_wk-brand-on-accent-dark: #171717;
+  --_wk-brand-radius: 0px;
   --wk-font: Arial, Helvetica, sans-serif;
-}
-
-[data-wk-theme='neutral'][data-wk-mode='dark'],
-[data-wk-mode='dark'] [data-wk-theme='neutral'] {
-  --wk-accent: #eee;
-  --wk-on-accent: #171717;
 }

@@ -16,8 +16,16 @@ export const wkTokens = [
   { name: '--wk-focus', fallback: '#111', description: 'Focus ring colour.' },
   { name: '--wk-accent', fallback: '#171717', description: 'Primary variant background.' },
   { name: '--wk-on-accent', fallback: '#fff', description: 'Text on the accent colour.' },
-  { name: '--wk-positive', fallback: '#17623c', description: 'Positive intent background.' },
-  { name: '--wk-on-positive', fallback: '#fff', description: 'Text on the positive colour.' },
+  {
+    name: '--wk-positive',
+    fallback: '#17623c',
+    description: 'Positive/success feedback and status only; never a Button action.',
+  },
+  {
+    name: '--wk-on-positive',
+    fallback: '#fff',
+    description: 'Text on the positive feedback colour.',
+  },
   { name: '--wk-danger', fallback: '#a02222', description: 'Danger intent text and border.' },
   {
     name: '--wk-on-danger',
