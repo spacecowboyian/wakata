@@ -17,14 +17,15 @@ production adoption or a shared production promotion.
 
 ## Automated results on this branch
 
-| Check                                                                           | Result                                                                                                   |
-| ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `pnpm test`                                                                     | 148 DS tests (package and Storybook), 8 React, 6 Angular in Chromium; mode-switch HTML smoke also passes |
-| `WK_BROWSER=firefox pnpm --filter @wakata/ds exec vitest run --project package` | 87/87 package tests                                                                                      |
-| `WK_BROWSER=webkit pnpm --filter @wakata/ds exec vitest run --project package`  | 87/87 package tests                                                                                      |
-| React fixture with `WK_BROWSER=firefox` and `WK_BROWSER=webkit`                 | 8/8 in each engine                                                                                       |
-| Angular fixture with `WK_BROWSER=firefox` and `WK_BROWSER=webkit`               | 6/6 in each engine                                                                                       |
-| `pnpm typecheck`, `pnpm lint`, `pnpm build-storybook`, `pnpm check:boundaries`  | Pass on the final branch revision                                                                        |
+| Check                                                                           | Result                                                                                                       |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `pnpm test`                                                                     | 148 DS tests (package and Storybook), 8 React, 6 Angular in Chromium; mode-switch HTML smoke also passes     |
+| `WK_BROWSER=firefox pnpm --filter @wakata/ds exec vitest run --project package` | 87/87 package tests                                                                                          |
+| `WK_BROWSER=webkit pnpm --filter @wakata/ds exec vitest run --project package`  | 87/87 package tests                                                                                          |
+| React fixture with `WK_BROWSER=firefox` and `WK_BROWSER=webkit`                 | 8/8 in each engine                                                                                           |
+| Angular fixture with `WK_BROWSER=firefox` and `WK_BROWSER=webkit`               | 6/6 in each engine                                                                                           |
+| `pnpm typecheck`, `pnpm lint`, `pnpm build-storybook`, `pnpm check:boundaries`  | Pass on the final branch revision                                                                            |
+| `pnpm --filter @wakata/ds exec node scripts/check-slice-visual.mjs`             | Three hosts at phone/desktop light/dark; 320 px and CSS zoom reflow; reduced motion; matching phone geometry |
 
 The integrated HTML test covers the synthetic invalid → correction → review → cancel,
 reopen and confirm flow. It now exercises neutral, studio and fieldwork themes in light
@@ -37,6 +38,13 @@ The native input and select remain in light DOM for forms and accessibility. A h
 `!important` rule can override their slotted styles; the reset test demonstrates this
 boundary. The components do not promise immunity from arbitrary host CSS.
 
+The [host visual captures](../../packages/ds/review/slice/README.md) cover phone and
+desktop light/dark states in all three hosts, plus a narrow CSS-zoom state. An
+independent review found matching layout and no obvious clipping in those captures.
+The script checks geometry, target height and overflow; Ian has not yet accepted these
+as final visual references. CSS zoom 2 at a 640 px viewport approximates a 320 px
+effective layout width. It is not a browser-zoom or physical-device test.
+
 Playwright WebKit on macOS skips a plain native radio on Tab with its default keyboard
 preference; Option+Tab reaches it. The mode-switch test uses that native traversal key
 in this engine, then verifies focus, arrow-key changes and event propagation. This is
@@ -47,9 +55,10 @@ not a manual Safari or VoiceOver result.
 - Manual Mac Safari with VoiceOver: names, required/error announcements, tab and radio
   behavior, Select, dialog focus containment and return. Record the OS/browser/VoiceOver
   versions, script, reviewer and sanitized observations.
-- Narrow and desktop visual comparison to the approved references across all three
-  hosts; long content, zoom/reflow, reduced motion, target and contrast review. The
-  existing phone captures in #44 are examples, not final sign-off or real-device proof.
+- Owner review of the new host captures against approved references; long-content,
+  actual browser zoom, contrast and real-device review. Narrow reflow, reduced motion
+  and target dimensions have automated evidence, but the screenshots and phone captures
+  in #44 are examples, not final sign-off or real-device proof.
 - An explicit gate decision with owner and known limitations. The current branch tests
   cannot by themselves close #14 or certify shared production use.
 - Windows/NVDA was deferred by Ian on 27 October 2026 and remains untested. Research
