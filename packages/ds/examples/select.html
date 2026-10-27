@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wakata Select (synthetic form)</title>
+    <script type="module">
+      import '@wakata/ds/themes.css';
+      import '@wakata/ds/define';
+      const wrapper = document.querySelector('wk-form');
+      const field = document.querySelector('wk-select');
+      const form = document.querySelector('form');
+      const output = document.querySelector('output');
+      wrapper.addEventListener('submit', () => {
+        if (wrapper.hasFeedbackFor.includes('error') || field.isPending || field.error) {
+          output.textContent = 'Choose a destination before continuing.';
+          field.focus();
+          return;
+        }
+        output.textContent = `Synthetic destination: ${new FormData(form).get('destination')}`;
+      });
+      form.addEventListener('reset', () => {
+        output.textContent = '';
+      });
+    </script>
+  </head>
+  <body data-wk-theme="neutral" data-wk-mode="light">
+    <!-- Serve with a bundler/dev server that resolves @wakata/ds. -->
+    <wk-form>
+      <form novalidate style="display: grid; gap: 12px; max-width: 24rem">
+        <wk-select
+          name="destination"
+          label="Destination"
+          help-text="Synthetic destinations only."
+          required
+        >
+          <select slot="input">
+            <option value="">Choose a destination</option>
+            <option value="oslo">Oslo</option>
+            <option value="bergen">Bergen</option>
+          </select>
+        </wk-select>
+        <div style="display: flex; gap: 8px">
+          <wk-button-submit variant="primary">Continue</wk-button-submit>
+          <wk-button-reset>Reset</wk-button-reset>
+        </div>
+        <output aria-live="polite"></output>
+      </form>
+    </wk-form>
+  </body>
+</html>

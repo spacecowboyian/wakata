@@ -5,9 +5,8 @@
   "description": "Wakata design system (working title: DS) and its Storybook. Provisional contract; not published.",
   "type": "module",
   "sideEffects": [
-    "./dist/define.js",
-    "./dist/components/button/define.js",
-    "./dist/components/text-field/define.js",
+    "./src/**/define.ts",
+    "./dist/**/define.js",
     "**/*.css"
   ],
   "main": "./dist/index.js",
@@ -37,6 +36,14 @@
       "types": "./dist/components/text-field/define.d.ts",
       "default": "./dist/components/text-field/define.js"
     },
+    "./select": {
+      "types": "./dist/components/select/index.d.ts",
+      "default": "./dist/components/select/index.js"
+    },
+    "./select/define": {
+      "types": "./dist/components/select/define.d.ts",
+      "default": "./dist/components/select/define.js"
+    },
     "./form": {
       "types": "./dist/form/index.d.ts",
       "default": "./dist/form/index.js"
@@ -57,7 +64,8 @@
     "build": "node scripts/clean.mjs && tsc -p tsconfig.build.json && node scripts/copy-css.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "storybook": "storybook dev -p 6006 --no-open",
-    "build-storybook": "storybook build",
+    "build-storybook": "storybook build && node scripts/check-storybook.mjs",
+    "test:storybook-build": "node scripts/check-storybook.mjs",
     "test": "pnpm build && vitest run"
   },
   "dependencies": {
