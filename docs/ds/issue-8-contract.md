@@ -1,5 +1,10 @@
 # Wakata DS issue #8: baseline and slice contract
 
+**27 October 2026 update:** The [#8/#9 resolution record](issue-8-9-resolution.md)
+freezes the provisional Card and Dialog implementation contracts and reconciles
+the shared mode-switching gate. It supersedes older open-gate and scheduling
+statements below where they conflict; historical test results remain historical.
+
 Status: **owner visual/accessibility review approved; technical gate remains open.** Ian approved the reviewed baseline on 2026-10-25. Exact device/test coverage was not specified. The 2026-10-25 follow-up patch is applied to this checkout, preserving existing uncommitted work. A subsequent Chromium run passed 54 tests across 6 files; the earlier local-server permission failure is historical. See [the application and verification record](issue-8-verification.md). Earlier provisional-review wording below is historical. Written 2026-10-24 against Lion `@lion/ui` 0.25.0 and Lit 3.3.1 as installed. Sources: this checkout, installed Lion source, and the earlier proposal (its positive Button contract is withdrawn, see below). Everything here is synthetic and non-secret.
 
 ## 1. Owner decisions recorded (2026-10-24)
@@ -119,7 +124,10 @@ One control, not a Storybook-only toolbar item: a labelled native radio group in
 - Light / Dark: explicit override, stored site-wide in `localStorage` under one key; returning to System deletes the key.
 - It writes the resolved value to `data-wk-mode` on the document root; local theme roots may still set their own `data-wk-mode`.
 - The token CSS has no `prefers-color-scheme` rule today; the control (or Storybook) resolves system to an attribute. A no-JS CSS fallback is optional later.
-- Implementation is **not** part of #9–#13; it is built before the #14 gate. Storybook's toolbar already offers System/Light/Dark for stories.
+- The first-party shared control is remaining #9 work and must be implemented and
+  verified before Card/Dialog can claim their shared-switching criteria. Storybook's
+  toolbar exercises theme states but is not this control. #14 verifies the same
+  control in HTML, React and Angular.
 
 ## 7. Versioned validation matrix
 
