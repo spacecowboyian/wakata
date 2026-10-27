@@ -157,6 +157,16 @@ shadow; wireframe changes the theme radius without changing geometry. The
 backdrop keeps Lion's modal dimming. No arbitrary overlay configuration API
 is exposed.
 
+`examples/request-review.html` is a synthetic phase-1 request/review fixture
+(Card, Form, Text Field, Select, Button, Dialog, Mode Switch). Run it with
+`pnpm --filter @wakata/ds exec vite --open /examples/request-review.html`
+(any dev server that resolves `@wakata/ds` works), and its flow with
+`pnpm --filter @wakata/ds exec vitest run --project package test/request-review.browser.test.ts`.
+The studio theme scope wraps `wk-dialog` at its origin so the overlay inherits it.
+Phase-1 limits: Chromium automated tests only; synthetic data, no network or
+storage; no manual assistive-technology testing (Windows/NVDA deferred and
+untested), no real-device, React or Angular coverage; this is not gate completion.
+
 `examples/dialog.html` is a synthetic runnable fixture. Storybook's
 `Components/Dialog / Review Dialog` combines a real Wakata Button and Card
 with a nested theme and a named/described review modal. Chromium browser tests
