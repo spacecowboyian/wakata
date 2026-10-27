@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en" data-wk-theme="neutral">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wakata request/review (synthetic phase 1 fixture)</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 24px;
+        background: var(--wk-surface);
+        color: var(--wk-text);
+        font-family: var(--wk-font);
+      }
+      main {
+        display: grid;
+        gap: 16px;
+        max-width: 32rem;
+        margin-inline: auto;
+      }
+      form {
+        display: grid;
+        gap: 12px;
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+    </style>
+    <script type="module">
+      import '@wakata/ds/themes.css';
+      import '@wakata/ds/define';
+      import '@wakata/ds/mode-switch/define';
+      import { initRequestReview } from './request-review.js';
+      initRequestReview(document.querySelector('main'));
+    </script>
+  </head>
+  <body>
+    <!-- Serve with a bundler/dev server that resolves @wakata/ds. Synthetic data only. -->
+    <main>
+      <wk-mode-switch></wk-mode-switch>
+      <wk-card>
+        <h1 slot="heading">Synthetic travel request</h1>
+        <wk-form>
+          <form novalidate>
+            <wk-text-field
+              id="rr-name"
+              name="traveller"
+              label="Traveller name"
+              help-text="Synthetic name only."
+              required
+            ></wk-text-field>
+            <wk-select id="rr-destination" name="destination" label="Destination" required>
+              <select slot="input">
+                <option value="">Choose a destination</option>
+                <option value="oslo">Oslo</option>
+                <option value="bergen">Bergen</option>
+              </select>
+            </wk-select>
+            <div class="actions">
+              <wk-button-submit id="rr-submit" variant="primary">Review request</wk-button-submit>
+              <wk-button-reset>Reset</wk-button-reset>
+            </div>
+            <output id="rr-status" aria-live="polite"></output>
+          </form>
+        </wk-form>
+        <div slot="actions">
+          <!-- Nested theme root at the dialog origin: the overlay takes its effective theme from here. -->
+          <div id="rr-scope" data-wk-theme="studio">
+            <wk-dialog>
+              <wk-button id="rr-reopen" slot="invoker" disabled>Reopen review</wk-button>
+              <section slot="content" aria-labelledby="rr-title" aria-describedby="rr-desc">
+                <h2 id="rr-title">Review request</h2>
+                <p id="rr-desc">Mock only: <span id="rr-summary"></span>. Nothing is sent.</p>
+                <div class="actions">
+                  <wk-button id="rr-cancel">Cancel</wk-button>
+                  <wk-button id="rr-confirm" variant="primary">Confirm</wk-button>
+                </div>
+              </section>
+            </wk-dialog>
+          </div>
+        </div>
+      </wk-card>
+    </main>
+  </body>
+</html>
