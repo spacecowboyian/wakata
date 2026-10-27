@@ -12,7 +12,7 @@
     "storybook": "pnpm --filter @wakata/ds storybook",
     "build": "pnpm -r --if-present build",
     "build-storybook": "pnpm --filter @wakata/ds build-storybook",
-    "test": "pnpm -r --if-present test",
+    "test": "pnpm -r --workspace-concurrency=1 --if-present test",
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
     "typecheck": "pnpm -r --if-present typecheck",
