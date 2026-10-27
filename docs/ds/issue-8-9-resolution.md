@@ -21,7 +21,7 @@ reviewer. None of these decisions promotes a shared production component.
   TextField; [PR #32](https://github.com/spacecowboyian/wakata/pull/32) proved
   the real Select. Both merged after CI, with real-form tests and review
   screenshots. #32's final local run passed 92/92 tests across the package.
-- The current implementation has no first-party shared System/Light/Dark
+- At the time of this decision, the implementation had no first-party shared System/Light/Dark
   control, Card or Dialog. Storybook's mode toolbar is a test aid, not an
   application switching affordance.
 - Manual assistive-technology, real-device and React/Angular consumer evidence
@@ -103,10 +103,21 @@ reviewer. None of these decisions promotes a shared production component.
 
 ## Closure and governance
 
-#8's provisional source/contract gate can close when this decision record is
-merged and linked from #8, with #9 and #12–#14/#20 retaining their explicitly
-assigned implementation and validation work. #9 remains open for the shared
-mode control above. Form-button `loading` and icon slots stay outside the
+The remaining #9 control is now implemented locally as the provisional
+`wk-mode-switch`, with class-only and explicit-registration package entries,
+native fieldset/radios, document-wide state/persistence, live System mode and
+local theme-root precedence. See [`packages/ds/README.md`](../../packages/ds/README.md#wk-mode-switch-provisional-supporting-control)
+for the public contract and runnable synthetic HTML example. Browser tests,
+Storybook states/play checks and the HTML smoke fixture cover the implementation;
+phone-width review images are in `packages/ds/review/mode-switch/`.
+This record does not close a GitHub issue, claim final owner visual approval,
+or promote production use. Manual AT, Firefox/WebKit, real-device and framework
+integration evidence remain absent and assigned to #14/#20 as above.
+
+#8's provisional source/contract gate closed when this decision record was
+merged and linked from #8. This PR supplies #9's remaining shared mode control;
+#12–#14/#20 retain their explicitly assigned implementation and validation
+work. Form-button `loading` and icon slots stay outside the
 initial contract; boolean controls belong to #17. Do not mark unrun manual AT,
 real-device, Firefox/WebKit, React/Angular, reference-render or production-use
 checks passed. The current work is provisional; shared promotion still needs

@@ -2,4 +2,5 @@
 import './components/button/define.js';
 import './components/text-field/define.js';
 import './components/select/define.js';
+import './components/mode-switch/define.js';
 import './form/define.js';

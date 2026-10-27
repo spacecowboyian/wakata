@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en" data-wk-theme="neutral">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wakata colour mode (synthetic example)</title>
+    <script type="module">
+      import '@wakata/ds/themes.css';
+      import '@wakata/ds/mode-switch/define';
+      document.addEventListener('wk-mode-change', (event) => {
+        document.querySelector('output').textContent =
+          `Choice: ${event.detail.mode}; resolved: ${event.detail.resolvedMode}`;
+      });
+    </script>
+    <style>
+      body {
+        margin: 0;
+        padding: 48px 24px;
+        background: color-mix(in srgb, var(--wk-text) 4%, var(--wk-surface));
+        color: var(--wk-text);
+        font-family: var(--wk-font);
+        font-size: 1rem;
+        line-height: 1.5;
+      }
+      main {
+        display: grid;
+        gap: 24px;
+        max-width: 46rem;
+        margin-inline: auto;
+      }
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+      h1 {
+        margin-block: 8px;
+        font-size: 2rem;
+        line-height: 1.2;
+        letter-spacing: -0.025em;
+      }
+      h2 {
+        font-size: 1.125rem;
+        line-height: 1.3;
+      }
+      .eyebrow {
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .description,
+      .note,
+      .activity {
+        color: color-mix(in srgb, var(--wk-text) 80%, var(--wk-surface));
+      }
+      .description {
+        max-width: 58ch;
+      }
+      section {
+        display: grid;
+        align-content: start;
+        gap: 16px;
+        min-inline-size: 0;
+        padding: 24px;
+        background: var(--wk-surface);
+        color: var(--wk-text);
+        font-family: var(--wk-font);
+        border: 1px solid color-mix(in srgb, var(--wk-border) 50%, var(--wk-surface));
+        border-radius: 12px;
+      }
+      .section-heading {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px 16px;
+      }
+      .scope {
+        padding: 3px 8px;
+        border: 1px solid var(--wk-border);
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+      .activity {
+        display: grid;
+        gap: 4px;
+        padding-block-start: 16px;
+        border-block-start: 1px solid color-mix(in srgb, var(--wk-border) 40%, var(--wk-surface));
+        font-size: 0.875rem;
+      }
+      .activity-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+      .examples {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .examples-label {
+        margin-block-end: 12px;
+      }
+      .local-example {
+        border: 1px dashed var(--wk-border);
+        border-radius: 0;
+      }
+      .note {
+        font-size: 0.8125rem;
+      }
+      code {
+        font-size: 0.95em;
+        overflow-wrap: anywhere;
+      }
+      @media (max-width: 40rem) {
+        body {
+          padding: 24px 12px;
+        }
+        main {
+          gap: 20px;
+        }
+        section {
+          padding: 16px;
+        }
+        .examples {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Serve with a bundler/dev server that resolves @wakata/ds. -->
+    <main>
+      <header>
+        <p class="eyebrow">Wakata / Settings demo</p>
+        <h1>Appearance</h1>
+        <p class="description">
+          One site-wide choice, shown across three themes. System follows your device; Light and
+          Dark persist on this site.
+        </p>
+      </header>
+
+      <section aria-labelledby="site-heading">
+        <div class="section-heading">
+          <h2 id="site-heading">Site appearance</h2>
+          <span class="scope">Site-wide</span>
+        </div>
+        <p class="description">
+          Neutral theme. Choose the colour mode shared by every control below.
+        </p>
+        <wk-mode-switch></wk-mode-switch>
+        <div class="activity">
+          <span class="activity-label">Last interaction</span>
+          <output aria-live="polite">Choose a mode to see its event.</output>
+        </div>
+      </section>
+
+      <div>
+        <p class="eyebrow examples-label">Theme examples / Same shared choice</p>
+        <div class="examples">
+          <section data-wk-theme="studio" aria-labelledby="studio-heading">
+            <div class="section-heading">
+              <h2 id="studio-heading">Studio</h2>
+              <span class="scope">Follows site</span>
+            </div>
+            <p class="description">A different theme, inheriting the site colour mode.</p>
+            <wk-mode-switch></wk-mode-switch>
+          </section>
+          <section
+            class="local-example"
+            data-wk-theme="fieldwork"
+            data-wk-mode="light"
+            data-wk-wireframe="true"
+            aria-labelledby="local-heading"
+          >
+            <div class="section-heading">
+              <h2 id="local-heading">Fieldwork</h2>
+              <span class="scope">Fixed light / Wireframe</span>
+            </div>
+            <p class="description">
+              This panel stays light. Its control still changes the shared site choice.
+            </p>
+            <wk-mode-switch></wk-mode-switch>
+          </section>
+        </div>
+      </div>
+
+      <footer class="note">
+        Synthetic example, not production settings. Page framing only; the
+        <code>wk-mode-switch</code> controls are unchanged.
+      </footer>
+    </main>
+  </body>
+</html>
