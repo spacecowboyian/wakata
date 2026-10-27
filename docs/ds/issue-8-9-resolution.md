@@ -77,14 +77,19 @@ reviewer. None of these decisions promotes a shared production component.
 
 ## Shared System / Light / Dark contract for remaining #9 work
 
-- Provide one first-party accessible control for applications: a native radio
-  group in a fieldset with legend "Colour mode" and choices System, Light and
-  Dark. It is supporting infrastructure, not another component family or a
-  replacement for Storybook's toolbar. Use native radio keyboard behavior.
+- Provide `wk-mode-switch` as a first-party supporting control, with a native
+  radio group in a fieldset, legend "Colour mode" and choices System, Light and
+  Dark. It is not another component family or a replacement for Storybook's
+  toolbar. Use native radio keyboard behavior. Public `mode` accepts
+  `system | light | dark` and defaults to `system`; reflect it as an attribute.
+  User changes emit one bubbling, composed `wk-mode-change` event with
+  `{ mode, resolvedMode }` (`resolvedMode` is `light | dark`); programmatic
+  writes do not emit a user-change event.
 - System is the default, follows `prefers-color-scheme` live and removes any
   stored override. Light and Dark set `data-wk-mode` on the document root and
-  persist one site-wide override under a versioned Wakata storage key. If
-  storage is unavailable, the current page keeps its in-memory choice. An
+  persist one site-wide override under `wakata:color-mode:v1`. If storage is
+  unavailable, the current page keeps its in-memory choice. Multiple switch
+  instances in the same document reflect the same choice. An
   explicit local `data-wk-mode` still overrides the document root for its
   subtree. No-JavaScript fallback and SSR/hydration guarantees are outside
   this provisional contract.
