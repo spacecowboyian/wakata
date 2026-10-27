@@ -1,5 +1,6 @@
 // Class and token exports only: importing this module never registers custom elements.
 export * from './components/button/index.js';
+export * from './components/card/index.js';
 export * from './components/text-field/index.js';
 export * from './components/select/index.js';
 export * from './components/mode-switch/index.js';
