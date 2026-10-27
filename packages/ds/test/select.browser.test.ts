@@ -61,6 +61,31 @@ test('real LionSelect has an empty optional prompt, name, help and native form v
   expect(new FormData(form).get('destination')).toBe('');
 });
 
+test('decorative chevron leaves the native 280px select as the only hit target', async () => {
+  const { field, select } = await mount();
+  field.style.width = '280px';
+  await settle(field);
+  const control = getComputedStyle(select);
+  expect(control.appearance).toBe('none');
+  expect(control.paddingRight).toBe('52px');
+  expect(control.backgroundImage).toContain('linear-gradient');
+  expect(select.getBoundingClientRect().height).toBeGreaterThanOrEqual(44);
+  expect(field.scrollWidth).toBeLessThanOrEqual(field.clientWidth);
+  field.focus();
+  expect(document.activeElement).toBe(select);
+});
+
+test('the native select fill respects a rounded dark container', async () => {
+  const { field, select } = await mount();
+  field.style.setProperty('--wk-radius', '16px');
+  field.style.setProperty('--wk-surface', '#222');
+  field.style.setProperty('--wk-text', '#fff');
+  const container = field.shadowRoot!.querySelector<HTMLElement>('.input-group__container')!;
+  expect(getComputedStyle(container).borderRadius).toBe('16px');
+  expect(getComputedStyle(select).borderRadius).toBe('15px');
+  expect(getComputedStyle(select).backgroundColor).toBe('rgb(34, 34, 34)');
+});
+
 test('default, programmatic, unavailable values and reset agree without user events', async () => {
   const { host, field, select, form } = await mount('oslo');
   const events: Event[] = [];

@@ -39,13 +39,28 @@ export const wkSelectStyles = css`
     width: 100%;
     min-width: 0;
     min-height: 44px;
-    padding: 8px 12px;
+    padding-block: 8px;
+    padding-inline: 12px 52px;
     border: 0;
-    border-radius: inherit;
-    background: var(--wk-surface, #fff);
+    border-radius: max(0px, calc(var(--wk-radius, 0px) - 1px));
+    appearance: none;
+    background-color: var(--wk-surface, #fff);
+    background-image:
+      linear-gradient(45deg, transparent 42%, currentColor 42% 58%, transparent 58%),
+      linear-gradient(-45deg, transparent 42%, currentColor 42% 58%, transparent 58%);
+    background-size: 8px 8px;
+    background-position:
+      right 26px center,
+      right 18px center;
+    background-repeat: no-repeat;
     color: var(--wk-text, #222);
     font: inherit;
     line-height: 24px;
+  }
+  ::slotted(select[slot='input']:open) {
+    background-image:
+      linear-gradient(-45deg, transparent 42%, currentColor 42% 58%, transparent 58%),
+      linear-gradient(45deg, transparent 42%, currentColor 42% 58%, transparent 58%);
   }
   ::slotted(select[slot='input']:focus-visible) {
     outline: 2px solid var(--wk-focus, #111);
@@ -61,15 +76,22 @@ export const wkSelectStyles = css`
   :host([disabled]) .input-group__container {
     border-color: var(--wk-disabled-border, #ddd);
     background: var(--wk-disabled-bg, #eee);
+    color: var(--wk-disabled-text, #777);
   }
   :host([disabled]) ::slotted(select[slot='input']) {
-    background: var(--wk-disabled-bg, #eee);
+    background-color: var(--wk-disabled-bg, #eee);
     color: var(--wk-disabled-text, #777);
     cursor: not-allowed;
   }
   @media (forced-colors: active) {
     .input-group__container {
       border-color: CanvasText;
+    }
+    ::slotted(select[slot='input']),
+    ::slotted(select[slot='input']:open) {
+      appearance: auto;
+      background-image: none;
+      color: CanvasText;
     }
     ::slotted(select[slot='input']:focus-visible) {
       outline-color: Highlight;
