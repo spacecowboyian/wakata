@@ -13,6 +13,7 @@ const browser = (name: string) => ({
 const optimizeDeps = {
   include: [
     '@lion/ui/button.js',
+    '@lion/ui/dialog.js',
     '@lion/ui/fieldset.js',
     '@lion/ui/form-core.js',
     '@lion/ui/form.js',
