@@ -1,6 +1,10 @@
 import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
 
+const requested = (globalThis as { process?: { env: Record<string, string | undefined> } }).process
+  ?.env.WK_BROWSER;
+const browser = (['firefox', 'webkit'] as const).find((name) => name === requested) ?? 'chromium';
+
 export default defineConfig({
   esbuild: { jsx: 'automatic' },
   optimizeDeps: {
@@ -25,7 +29,7 @@ export default defineConfig({
       enabled: true,
       headless: true,
       provider: playwright(),
-      instances: [{ browser: 'chromium', name: 'react-chromium' }],
+      instances: [{ browser, name: `react-${browser}` }],
     },
   },
 });

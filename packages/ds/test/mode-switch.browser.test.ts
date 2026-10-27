@@ -73,7 +73,13 @@ test('native keyboard, focus, exact event payload and composed propagation; peer
   document.addEventListener('wk-mode-change', onChange);
   try {
     before.focus();
-    await userEvent.keyboard('{Tab}');
+    // macOS WebKit's default Tab behavior skips native radio controls.
+    // Option+Tab traverses all controls, as verified against a plain native radio.
+    const tab =
+      navigator.userAgent.includes('Macintosh') && navigator.userAgent.includes('AppleWebKit')
+        ? '{Alt>}{Tab}{/Alt}'
+        : '{Tab}';
+    await userEvent.keyboard(tab);
     expect(element.shadowRoot!.activeElement).toBe(radio(element, 'system'));
     expect(getComputedStyle(radio(element, 'system')).outlineStyle).not.toBe('none');
     await userEvent.keyboard('{ArrowRight}');
@@ -88,7 +94,7 @@ test('native keyboard, focus, exact event payload and composed propagation; peer
     expect(events[1]!.detail).toEqual({ mode: 'dark', resolvedMode: 'dark' });
     expect(document.documentElement.dataset.wkMode).toBe('dark');
     expect(localStorage.getItem(key)).toBe('dark');
-    await userEvent.keyboard('{Tab}');
+    await userEvent.keyboard(tab);
     expect(element.shadowRoot!.activeElement).toBeNull();
   } finally {
     document.removeEventListener('wk-mode-change', onChange);

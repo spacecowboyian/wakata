@@ -15,11 +15,13 @@ import { initRequestReview } from '../examples/request-review.js';
 type El = HTMLElement & { updateComplete: Promise<unknown>; [k: string]: unknown };
 const tick = () => new Promise<void>((r) => setTimeout(r, 50));
 const mounts: HTMLElement[] = [];
+const styles: HTMLStyleElement[] = [];
 afterEach(async () => {
   document
     .querySelectorAll('wk-dialog')
     .forEach((d) => (d as unknown as { close(): Promise<void> }).close());
   mounts.splice(0).forEach((m) => m.remove());
+  styles.splice(0).forEach((style) => style.remove());
 });
 
 async function mount() {
@@ -38,7 +40,7 @@ async function mount() {
       .filter((e) => e.updateComplete)
       .map((e) => e.updateComplete),
   );
-  return { root, q, api, dialog: root.querySelector<El & { opened: boolean }>('wk-dialog')! };
+  return { host, root, q, api, dialog: root.querySelector<El & { opened: boolean }>('wk-dialog')! };
 }
 const submitForm = async (root: HTMLElement) => {
   await userEvent.click(root.querySelector<El>('#rr-submit')!);
@@ -121,4 +123,61 @@ test('overlay retains the nested theme root', async () => {
   // Content has no theme of its own; it inherits the dialog origin's scope.
   expect(title.closest('[data-wk-theme]')?.getAttribute('data-wk-theme')).toBe('studio');
   expect(origin?.contains(title)).toBe(true);
+});
+
+for (const [theme, lightAccent, darkAccent] of [
+  ['neutral', 'rgb(23, 23, 23)', 'rgb(238, 238, 238)'],
+  ['studio', 'rgb(73, 53, 163)', 'rgb(196, 182, 255)'],
+  ['fieldwork', 'rgb(40, 88, 66)', 'rgb(161, 212, 180)'],
+] as const) {
+  test(`${theme} request/review keeps its palette and nested dialog theme in both modes`, async () => {
+    const { host, root, q, dialog } = await mount();
+    host.dataset.wkTheme = theme;
+    q('rr-submit').style.transition = 'none';
+    for (const [mode, accent] of [
+      ['light', lightAccent],
+      ['dark', darkAccent],
+    ] as const) {
+      host.dataset.wkMode = mode;
+      expect(getComputedStyle(q('rr-submit')).backgroundColor).toBe(accent);
+      expect(getComputedStyle(dialog).getPropertyValue('--wk-accent').trim()).toBe(
+        mode === 'light' ? '#4935a3' : '#c4b6ff',
+      );
+    }
+    q<El>('rr-name').value = 'Ada Example';
+    q<El>('rr-destination').value = 'oslo';
+    await tick();
+    await submitForm(root);
+    await tick();
+    expect(dialog.opened).toBe(true);
+    expect(q('rr-summary').textContent).toBe('Ada Example → oslo');
+  });
+}
+
+test('a representative host reset preserves form controls; important light-DOM rules cross the boundary', async () => {
+  const reset = document.createElement('style');
+  reset.textContent = `
+    *, *::before, *::after { box-sizing: border-box; }
+    button, input, select { margin: 0; border: 0; background: transparent; font: inherit; }
+    body { font-family: Georgia, serif; line-height: 1.6; }
+  `;
+  document.head.append(reset);
+  styles.push(reset);
+  const { root, q, dialog } = await mount();
+  const input = q('rr-name').querySelector('input')!;
+  const select = q('rr-destination').querySelector('select')!;
+  expect(input.getBoundingClientRect().height).toBeGreaterThanOrEqual(44);
+  expect(select.getBoundingClientRect().height).toBeGreaterThanOrEqual(44);
+  expect(q('rr-submit').getBoundingClientRect().height).toBeGreaterThanOrEqual(44);
+  await userEvent.type(input, 'Ada Example');
+  await userEvent.selectOptions(select, 'oslo');
+  await submitForm(root);
+  await tick();
+  expect(dialog.opened).toBe(true);
+  expect(q('rr-summary').textContent).toBe('Ada Example → oslo');
+
+  // Slotted native controls remain in light DOM. Host !important rules can override them.
+  reset.textContent +=
+    'wk-text-field > input[slot="input"] { color: rgb(255, 0, 255) !important; }';
+  expect(getComputedStyle(input).color).toBe('rgb(255, 0, 255)');
 });
