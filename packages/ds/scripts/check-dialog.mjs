@@ -40,9 +40,11 @@ try {
   page.on('pageerror', (error) => errors.push(error.message));
   const base = `http://127.0.0.1:${server.address().port}`;
 
-  const openReview = async (mode, width, height) => {
+  const openReview = async (mode, width, height, theme = 'fieldwork', wireframe = 'false') => {
     await page.setViewportSize({ width, height });
-    await page.goto(`${base}/iframe.html?id=components-dialog--review-dialog&viewMode=story`);
+    await page.goto(
+      `${base}/iframe.html?id=components-dialog--review-dialog&viewMode=story&globals=theme:${theme};mode:${mode}`,
+    );
     await page.waitForFunction(() =>
       Boolean(
         customElements.get('wk-dialog') && document.querySelector('#storybook-root wk-dialog'),
@@ -52,17 +54,20 @@ try {
       () =>
         document.querySelector('#storybook-root wk-dialog')?.dataset.reviewPlayComplete === 'true',
     );
-    await page.evaluate(async (resolvedMode) => {
-      const origin = document.querySelector('[data-review-origin]');
-      const dialog = document.querySelector('wk-dialog');
-      delete dialog.dataset.reviewPlayComplete;
-      origin.dataset.wkMode = resolvedMode;
-      origin.dataset.wkWireframe = 'false';
-      origin.dataset.wkTheme = 'studio';
-      origin.style.removeProperty('--wk-font');
-      if (!dialog.opened) await dialog.open();
-      await document.fonts.ready;
-    }, mode);
+    await page.evaluate(
+      async ([resolvedMode, resolvedTheme, resolvedWireframe]) => {
+        const origin = document.querySelector('[data-review-origin]');
+        const dialog = document.querySelector('wk-dialog');
+        delete dialog.dataset.reviewPlayComplete;
+        origin.dataset.wkMode = resolvedMode;
+        origin.dataset.wkWireframe = resolvedWireframe;
+        origin.dataset.wkTheme = resolvedTheme;
+        origin.style.removeProperty('--wk-font');
+        if (!dialog.opened) await dialog.open();
+        await document.fonts.ready;
+      },
+      [mode, theme, wireframe],
+    );
     await page.waitForFunction(() => {
       const content = document.querySelector('[data-wk-dialog-content]');
       return content?.getAttribute('aria-modal') === 'true';
@@ -75,6 +80,13 @@ try {
         describedby: content.getAttribute('aria-describedby'),
         width: content.getBoundingClientRect().width,
         fontFamily: getComputedStyle(content).fontFamily,
+        radius: getComputedStyle(content).borderRadius,
+        padding: getComputedStyle(content).padding,
+        height: content.getBoundingClientRect().height,
+        actions: [...content.querySelectorAll('wk-button')].map((button) => ({
+          width: button.getBoundingClientRect().width,
+          height: button.getBoundingClientRect().height,
+        })),
         originFont: getComputedStyle(document.querySelector('[data-review-origin]'))
           .getPropertyValue('--wk-font')
           .trim(),
@@ -87,18 +99,36 @@ try {
         scrollLocked: document.body.classList.contains('overlays-scroll-lock'),
       };
     });
+    const font = {
+      neutral: 'Arial, Helvetica, sans-serif',
+      studio: 'Georgia, serif',
+      fieldwork: 'Verdana, sans-serif',
+    }[theme];
     assert.equal(measures.role, 'dialog');
-    assert.equal(measures.originFont, 'Georgia, serif');
-    assert.equal(measures.fontFamily, 'Georgia, serif');
+    assert.equal(measures.originFont, font);
+    assert.equal(measures.fontFamily, font);
+    assert.equal(
+      measures.radius,
+      wireframe === 'true' ? '0px' : { neutral: '0px', studio: '16px', fieldwork: '8px' }[theme],
+    );
     assert.equal(measures.labelledby, 'review-dialog-title');
     assert.equal(measures.describedby, 'review-dialog-description');
     assert.equal(measures.nativeModal, true);
     assert.equal(measures.scrollLocked, true);
     assert.equal(measures.scrollWidth <= measures.clientWidth, true);
     assert.equal(measures.width <= width, true);
+    assert.equal(measures.width <= width - 48, true, 'at least 24px side gutters');
+    if (width <= 600) {
+      assert.equal(measures.actions.length, 2);
+      for (const action of measures.actions) {
+        assert.equal(action.height >= 44, true, 'phone action target is at least 44px tall');
+        assert.equal(action.width >= 44, true, 'phone action target is at least 44px wide');
+      }
+    }
+    return measures;
   };
-  const capture = async (mode, width, height, filename) => {
-    await openReview(mode, width, height);
+  const capture = async (mode, width, height, filename, theme = 'fieldwork') => {
+    await openReview(mode, width, height, theme);
     await page.screenshot({ path: resolve(review, filename), animations: 'disabled' });
   };
 
@@ -106,6 +136,46 @@ try {
   await capture('dark', 1440, 1000, 'review-desktop-dark.png');
   await capture('light', 390, 844, 'review-phone-light.png');
   await capture('dark', 390, 844, 'review-phone-dark.png');
+  for (const theme of ['neutral', 'studio']) {
+    for (const mode of ['light', 'dark']) {
+      await capture(mode, 390, 844, `review-phone-${theme}-${mode}.png`, theme);
+    }
+  }
+
+  const regular = await openReview('light', 390, 844);
+  const wireframe = await openReview('light', 390, 844, 'fieldwork', 'true');
+  assert.deepEqual(
+    [wireframe.width, wireframe.height, wireframe.padding],
+    [regular.width, regular.height, regular.padding],
+    'wireframe keeps panel geometry',
+  );
+
+  await page.setViewportSize({ width: 320, height: 568 });
+  await page.goto(
+    `${base}/iframe.html?id=components-dialog--long-content-and-narrow-reflow&viewMode=story`,
+  );
+  await page.waitForFunction(
+    () => document.querySelector('wk-dialog')?.dataset.longPlayComplete === 'true',
+  );
+  await page.evaluate(async () => document.querySelector('wk-dialog').open());
+  const narrow = await page.evaluate(() => {
+    const content = document.querySelector('[data-wk-dialog-content]');
+    const rect = content.getBoundingClientRect();
+    return {
+      left: rect.left,
+      right: rect.right,
+      top: rect.top,
+      bottom: rect.bottom,
+      pageWidth: document.documentElement.scrollWidth,
+    };
+  });
+  assert.equal(narrow.left >= 0 && narrow.right <= 320, true);
+  assert.equal(narrow.top >= 0 && narrow.bottom <= 568, true);
+  assert.equal(narrow.pageWidth <= 320, true);
+  await page.screenshot({
+    path: resolve(review, 'review-long-narrow.png'),
+    animations: 'disabled',
+  });
 
   await openReview('light', 960, 720);
   await page.addStyleTag({

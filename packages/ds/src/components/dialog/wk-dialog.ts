@@ -18,6 +18,36 @@ export class WkDialog extends LionDialog {
     :host {
       display: contents;
     }
+    dialog[data-overlay-outer-wrapper] > .overlays__backdrop--animation-in {
+      animation: wk-backdrop-fade-in 300ms;
+      opacity: 0.18;
+    }
+    dialog[data-overlay-outer-wrapper] > .overlays__backdrop--animation-out {
+      animation: wk-backdrop-fade-out 300ms;
+      opacity: 0;
+    }
+    @keyframes wk-backdrop-fade-in {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 0.18;
+      }
+    }
+    @keyframes wk-backdrop-fade-out {
+      from {
+        opacity: 0.18;
+      }
+      to {
+        opacity: 0;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      dialog[data-overlay-outer-wrapper] > .overlays__backdrop--animation-in,
+      dialog[data-overlay-outer-wrapper] > .overlays__backdrop--animation-out {
+        animation-duration: 1ms;
+      }
+    }
   `;
 
   #contentRoot?: HTMLElement;
