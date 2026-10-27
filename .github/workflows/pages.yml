@@ -1,0 +1,199 @@
+name: Storybook Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/ds/**'
+      - 'package.json'
+      - 'pnpm-workspace.yaml'
+      - 'pnpm-lock.yaml'
+      - '.nvmrc'
+      - '.npmrc'
+      - '.gitignore'
+      - '.gitattributes'
+      - 'tsconfig*.json'
+      - 'eslint.config.*'
+      - '.prettier*'
+      - 'scripts/pages-site*'
+      - '.github/workflows/pages.yml'
+  pull_request_target:
+    branches: [main]
+    types: [opened, reopened, synchronize, closed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name != 'pull_request_target' ||
+       github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      operation: ${{ steps.plan.outputs.operation }}
+      sha: ${{ steps.plan.outputs.sha }}
+      number: ${{ steps.plan.outputs.number }}
+    steps:
+      - uses: actions/github-script@v7
+        id: plan
+        with:
+          script: |
+            if (context.eventName !== 'pull_request_target') {
+              core.setOutput('operation', 'main');
+              core.setOutput('sha', context.sha);
+              return;
+            }
+            const pr = context.payload.pull_request;
+            if (!/^[1-9]\d*$/.test(String(pr.number))) throw new Error('Invalid PR number');
+            core.setOutput('number', pr.number);
+            if (context.payload.action === 'closed') {
+              core.setOutput('operation', 'remove');
+              return;
+            }
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              ...context.repo, pull_number: pr.number, per_page: 100
+            });
+            const affectsStorybook = name =>
+              /^(packages\/ds\/|scripts\/pages-site|\.github\/workflows\/pages\.yml$)/.test(name) ||
+              /^(package\.json|pnpm-workspace\.yaml|pnpm-lock\.yaml|\.nvmrc|\.npmrc|\.gitignore|\.gitattributes|tsconfig[^/]*\.json|eslint\.config\.[^/]+|\.prettier[^/]*)$/.test(name);
+            if (files.some(file => affectsStorybook(file.filename) ||
+                (file.previous_filename && affectsStorybook(file.previous_filename)))) {
+              core.setOutput('operation', 'preview');
+              core.setOutput('sha', pr.head.sha);
+            } else {
+              core.notice('No Storybook-affecting changes; no preview build needed.');
+            }
+
+  build:
+    needs: prepare
+    if: needs.prepare.outputs.operation == 'main' || needs.prepare.outputs.operation == 'preview'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.sha }}
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @wakata/ds exec playwright install --with-deps chromium
+      - run: pnpm build-storybook
+      - run: pnpm --filter @wakata/ds exec node scripts/check-pages.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: storybook-build
+          path: packages/ds/storybook-static
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    needs: [prepare, build]
+    if: >-
+      always() && !cancelled() && needs.prepare.result == 'success' &&
+      (needs.prepare.outputs.operation == 'remove' || needs.build.result == 'success')
+    runs-on: ubuntu-latest
+    concurrency:
+      group: storybook-pages-publish
+      cancel-in-progress: false
+      queue: max
+    permissions:
+      contents: write
+      pull-requests: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # Only main's code runs with write permissions, never code from the artifact.
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          path: trusted
+          persist-credentials: false
+      - run: node --test trusted/scripts/pages-site.test.mjs
+      - uses: actions/github-script@v7
+        id: current
+        env:
+          OPERATION: ${{ needs.prepare.outputs.operation }}
+          PR_NUMBER: ${{ needs.prepare.outputs.number }}
+          BUILD_SHA: ${{ needs.prepare.outputs.sha }}
+        with:
+          script: |
+            let operation = process.env.OPERATION;
+            if (operation === 'main') {
+              const { data } = await github.rest.git.getRef({ ...context.repo, ref: 'heads/main' });
+              if (data.object.sha !== process.env.BUILD_SHA) operation = 'skip';
+            } else {
+              if (!/^[1-9]\d*$/.test(process.env.PR_NUMBER)) throw new Error('Invalid PR number');
+              const { data: pr } = await github.rest.pulls.get({
+                ...context.repo, pull_number: Number(process.env.PR_NUMBER)
+              });
+              if (pr.head.repo?.full_name !== process.env.GITHUB_REPOSITORY ||
+                  pr.base.ref !== 'main') operation = 'skip';
+              else if (pr.state === 'closed') operation = 'remove';
+              else if (operation === 'remove' || pr.head.sha !== process.env.BUILD_SHA) operation = 'skip';
+            }
+            core.notice(`Pages operation: ${operation} (stale or ineligible builds are skipped).`);
+            core.setOutput('operation', operation);
+      - uses: actions/download-artifact@v4
+        if: steps.current.outputs.operation == 'main' || steps.current.outputs.operation == 'preview'
+        with:
+          name: storybook-build
+          path: bundle
+      - uses: actions/checkout@v4
+        if: steps.current.outputs.operation != 'skip'
+        with:
+          ref: main
+          path: storage
+      - name: Load or bootstrap static storage
+        if: steps.current.outputs.operation != 'skip'
+        working-directory: storage
+        run: |
+          set +e
+          git ls-remote --exit-code origin refs/heads/gh-pages
+          status=$?
+          set -e
+          if [ "$status" -eq 0 ]; then
+            git fetch --depth=1 origin gh-pages
+            git checkout -B gh-pages FETCH_HEAD
+          elif [ "$status" -eq 2 ]; then
+            git switch --orphan gh-pages
+          else
+            exit "$status"
+          fi
+      - name: Update static files and store complete site
+        if: steps.current.outputs.operation != 'skip'
+        env:
+          OPERATION: ${{ steps.current.outputs.operation }}
+          PR_NUMBER: ${{ needs.prepare.outputs.number }}
+        run: |
+          node trusted/scripts/pages-site.mjs storage "$OPERATION" "$PR_NUMBER" bundle
+          cd storage
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add --all
+          if ! git diff --cached --quiet || ! git rev-parse --verify HEAD >/dev/null 2>&1; then
+            git commit -m "Update static Storybook site"
+            git push origin HEAD:gh-pages
+          fi
+      - uses: actions/configure-pages@v5
+        if: steps.current.outputs.operation != 'skip'
+      - uses: actions/upload-pages-artifact@v4
+        if: steps.current.outputs.operation != 'skip'
+        with:
+          path: storage
+      - name: Deploy Storybook
+        if: steps.current.outputs.operation != 'skip'
+        id: deployment
+        uses: actions/deploy-pages@v4
