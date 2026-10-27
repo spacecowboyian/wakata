@@ -50,15 +50,39 @@ preference; Option+Tab reaches it. The mode-switch test uses that native travers
 in this engine, then verifies focus, arrow-key changes and event propagation. This is
 not a manual Safari or VoiceOver result.
 
+## Direct Safari spot check on merged `main`
+
+On 27 October 2026, a clean checkout of `3c95c6e` was built with
+`pnpm install --offline --frozen-lockfile` and `pnpm --filter @wakata/ds build`,
+then served locally with Vite. In Safari 26.3 on macOS 15.7.6, the plain HTML
+`examples/request-review.html` fixture showed the native input and Select with
+their names in Safari's accessibility inspection. Submitting an empty request
+displayed the correction status. Entering a synthetic name and selecting Oslo
+opened the review Dialog; Escape closed it and returned focus to Review request.
+Tab moved focus to Cancel while the Dialog was open.
+
+Safari's actual page zoom was set to 200% using its Page Menu. At the tested
+desktop window size, the form remained usable and a long synthetic name wrapped
+inside the Dialog without visible clipping. This is a desktop spot check, not a
+narrow-window, real-device or all-host zoom result. During both normal and 200%
+Dialog checks, the native accessibility-inspection tool returned an HTML-content
+node without dialog descendants while the Dialog was open, despite visible
+Dialog controls and keyboard focus. That observation needs investigation with
+VoiceOver; it is not treated as proof of either a screen-reader failure or pass.
+VoiceOver was not successfully activated or reviewed in this check. Safari zoom
+was restored to 100% afterwards.
+
 ## Required evidence still missing
 
 - Manual Mac Safari with VoiceOver: names, required/error announcements, tab and radio
   behavior, Select, dialog focus containment and return. Record the OS/browser/VoiceOver
   versions, script, reviewer and sanitized observations.
-- Owner review of the new host captures against approved references; long-content,
-  actual browser zoom, contrast and real-device review. Narrow reflow, reduced motion
-  and target dimensions have automated evidence, but the screenshots and phone captures
-  in #44 are examples, not final sign-off or real-device proof.
+- Owner review of the new host captures against approved references; long-content
+  across hosts, narrow-window browser zoom, contrast and real-device review. The
+  Safari desktop 200% spot check above covers only one host/window. Narrow
+  reflow, reduced motion and target dimensions have automated evidence, but the
+  screenshots and phone captures in #44 are examples, not final sign-off or
+  real-device proof.
 - An explicit gate decision with owner and known limitations. The current branch tests
   cannot by themselves close #14 or certify shared production use.
 - Windows/NVDA was deferred by Ian on 27 October 2026 and remains untested. Research
