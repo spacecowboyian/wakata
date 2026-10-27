@@ -30,16 +30,20 @@ const closeReview = (event: Event): void => {
 };
 
 const reviewStyles = `
-  .review-page { box-sizing:border-box; width:min(100%, 960px); margin:0 auto; padding:24px; color:var(--wk-text); background:var(--wk-surface); }
+  .review-page { box-sizing:border-box; width:min(100%, 960px); min-height:calc(100vh - 48px); margin:0 auto; padding:24px; color:var(--wk-text); background:var(--wk-surface); font-family:var(--wk-font); }
   .review-header { display:flex; align-items:center; justify-content:space-between; gap:16px; }
   .review-page h1, .review-page h2 { overflow-wrap:anywhere; }
+  .review-page h1 { margin:4px 0 0; font-size:clamp(1.5rem, 3vw, 2rem); line-height:1.2; }
+  .review-header p { margin:0; font-size:12px; font-weight:700; letter-spacing:.08em; }
   .review-summary { max-width:65ch; line-height:1.55; }
-  .review-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:12px; margin-block-start:20px; }
-  .review-actions > * { min-width:8rem; }
+  .review-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; margin-block-start:24px; }
+  .review-actions > * { min-width:8.5rem; }
   @media(max-width:600px) {
+    .review-page { padding:20px; }
     .review-header { align-items:flex-start; flex-direction:column; }
-    .review-actions { justify-content:stretch; }
-    .review-actions > * { flex:1 1 8rem; }
+    [data-wk-dialog-content] .review-actions { flex-direction:column; }
+    [data-wk-dialog-content] .review-actions > * { width:100%; }
+    .review-page wk-card .review-actions > * { flex:1 1 8rem; }
   }
 `;
 
@@ -59,13 +63,7 @@ export const ReviewDialog: Story = {
     <style>
       ${reviewStyles}
     </style>
-    <main
-      class="review-page"
-      data-wk-theme="studio"
-      data-review-origin
-      @click=${closeReview}
-      style="--wk-font: Georgia, serif; background:var(--wk-surface);color:var(--wk-text)"
-    >
+    <main class="review-page" data-wk-theme="fieldwork" data-review-origin @click=${closeReview}>
       <header class="review-header">
         <div>
           <p>WAKATA WORKSPACE</p>
@@ -84,14 +82,6 @@ export const ReviewDialog: Story = {
           <wk-button variant="primary">Save settings</wk-button>
         </div>
       </wk-card>
-      <div
-        data-wk-theme="fieldwork"
-        data-wk-mode="dark"
-        data-nested-theme
-        style="padding:12px;background:var(--wk-surface);color:var(--wk-text)"
-      >
-        <p>Nested Fieldwork preview remains independent of the dialog origin.</p>
-      </div>
       <wk-dialog>
         <wk-button slot="invoker">Review changes</wk-button>
         <section
@@ -148,7 +138,7 @@ export const ReviewDialog: Story = {
     await waitForClosedContent(dialog, content);
     await expect(dialog.opened).toBe(false);
     await expect(content.hasAttribute('data-wk-dialog-content')).toBe(false);
-    root.dataset.wkTheme = 'studio';
+    root.dataset.wkTheme = 'fieldwork';
     root.dataset.wkWireframe = 'false';
     root.style.removeProperty('--wk-font');
     for (const label of ['Cancel', 'Confirm changes']) {
@@ -189,5 +179,6 @@ export const LongContentAndNarrowReflow: Story = {
     );
     await expect(getComputedStyle(content).padding).toBe('24px');
     await dialog.close();
+    dialog.dataset.longPlayComplete = 'true';
   },
 };

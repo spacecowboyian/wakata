@@ -151,11 +151,12 @@ The global Lion overlay carries the origin's effective theme, mode and
 wireframe attributes plus computed supported `--wk-*` tokens, including
 typography and consumer overrides. These refresh while open when an origin
 ancestor's relevant attributes change or when the System color preference
-changes. The content root uses 24px padding, a 32rem maximum width,
-viewport-constrained scrolling, the theme surface/border/radius and a modal
-shadow; wireframe changes the theme radius without changing geometry. The
-backdrop keeps Lion's modal dimming. No arbitrary overlay configuration API
-is exposed.
+changes. The content root uses 24px padding, a 28rem maximum width, 24px
+viewport gutters and viewport-constrained scrolling. It follows the theme
+surface/border/radius with a restrained modal shadow; dark mode lifts the
+panel surface slightly. Wireframe changes the theme radius without changing
+geometry. The backdrop uses a lighter dim than Lion's default. No arbitrary
+overlay configuration API is exposed.
 
 `examples/request-review.html` is a synthetic phase-1 request/review fixture
 (Card, Form, Text Field, Select, Button, Dialog, Mode Switch). Run it with
@@ -169,9 +170,9 @@ untested), no real-device, React or Angular coverage; this is not gate completio
 
 `examples/dialog.html` is a synthetic runnable fixture. Storybook's
 `Components/Dialog / Review Dialog` combines a real Wakata Button and Card
-with a nested theme and a named/described review modal. Chromium browser tests
+with a named/described review modal in the Fieldwork theme. Chromium browser tests
 verify that Cancel and Confirm changes only close this synthetic example;
-neither performs a business action. Review screenshots use Studio typography,
+neither performs a business action. Review screenshots use Fieldwork typography,
 while the story separately checks a live typography override.
 Chromium browser tests
 cover repeated lifecycle, keyboard containment, Escape/backdrop behavior,
