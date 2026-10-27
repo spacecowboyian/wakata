@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en" data-wk-theme="neutral" data-wk-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wakata Dialog review</title>
+  </head>
+  <body>
+    <main>
+      <h1>Workspace preferences</h1>
+      <p>Review synthetic workspace changes before saving.</p>
+      <wk-dialog>
+        <wk-button slot="invoker">Review changes</wk-button>
+        <section
+          slot="content"
+          aria-labelledby="review-title"
+          aria-describedby="review-description"
+        >
+          <h2 id="review-title">Review workspace changes</h2>
+          <p id="review-description">These example changes affect only a synthetic workspace.</p>
+          <div class="actions">
+            <wk-button>Cancel</wk-button>
+            <wk-button variant="primary">Confirm changes</wk-button>
+          </div>
+        </section>
+      </wk-dialog>
+    </main>
+    <script type="module">
+      import '@wakata/ds/themes.css';
+      import '@wakata/ds/define';
+    </script>
+  </body>
+</html>

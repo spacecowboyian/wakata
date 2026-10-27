@@ -36,6 +36,14 @@
       "types": "./dist/components/card/define.d.ts",
       "default": "./dist/components/card/define.js"
     },
+    "./dialog": {
+      "types": "./dist/components/dialog/index.d.ts",
+      "default": "./dist/components/dialog/index.js"
+    },
+    "./dialog/define": {
+      "types": "./dist/components/dialog/define.d.ts",
+      "default": "./dist/components/dialog/define.js"
+    },
     "./text-field": {
       "types": "./dist/components/text-field/index.d.ts",
       "default": "./dist/components/text-field/index.js"
@@ -80,7 +88,7 @@
     "build": "node scripts/clean.mjs && tsc -p tsconfig.build.json && node scripts/copy-css.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "storybook": "storybook dev -p 6006 --no-open",
-    "build-storybook": "storybook build && node scripts/check-storybook.mjs && node scripts/check-card.mjs",
+    "build-storybook": "storybook build && node scripts/check-storybook.mjs && node scripts/check-card.mjs && node scripts/check-dialog.mjs",
     "test:storybook-build": "node scripts/check-storybook.mjs",
     "test": "pnpm build && vitest run && node scripts/check-mode-switch.mjs"
   },
