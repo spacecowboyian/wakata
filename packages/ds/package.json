@@ -90,6 +90,8 @@
     "storybook": "storybook dev -p 6006 --no-open",
     "build-storybook": "storybook build && node scripts/check-storybook.mjs && node scripts/check-card.mjs && node scripts/check-dialog.mjs",
     "test:storybook-build": "node scripts/check-storybook.mjs",
+    "test:dialog:firefox": "WK_BROWSER=firefox vitest run --project package test/dialog.browser.test.ts test/dialog-actions.browser.test.ts",
+    "test:dialog:webkit": "WK_BROWSER=webkit vitest run --project package test/dialog.browser.test.ts test/dialog-actions.browser.test.ts",
     "test": "pnpm build && vitest run && node scripts/check-mode-switch.mjs"
   },
   "dependencies": {
