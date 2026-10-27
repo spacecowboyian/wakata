@@ -6,6 +6,9 @@ test('class entry points do not register the element', async () => {
   const pkg = await import('@wakata/ds');
   const button = await import('@wakata/ds/button');
   const textField = await import('@wakata/ds/text-field');
+  const select = await import('@wakata/ds/select');
+  expect(pkg.WkSelect).toBe(select.WkSelect);
+  expect(customElements.get('wk-select')).toBeUndefined();
   expect(pkg.WkButton).toBe(button.WkButton);
   expect(pkg.WkTextField).toBe(textField.WkTextField);
   expect(Object.keys(pkg)).toContain('wkTokens');
@@ -22,6 +25,9 @@ test('define entry points register once and tolerate repeats', async () => {
   const { defineWkTextField } = await import('@wakata/ds/text-field/define');
   expect(() => defineWkButton()).not.toThrow();
   expect(() => defineWkTextField()).not.toThrow();
+  const { defineWkSelect } = await import('@wakata/ds/select/define');
+  expect(() => defineWkSelect()).not.toThrow();
+  expect(customElements.get('wk-select')).toBe((await import('@wakata/ds/select')).WkSelect);
   expect(customElements.get('wk-button')).toBe(WkButton);
   expect(customElements.get('wk-text-field')).toBe(WkTextField);
 });

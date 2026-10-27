@@ -73,6 +73,60 @@ fixture using `wk-form` and the existing submit/reset buttons. Its submit event 
 notification: consumers must guard Lion validation errors, pending validation and external errors
 before processing. It does not demonstrate a React or Angular wrapper.
 
+## `wk-select`
+
+`WkSelect` extends Lion 0.25.0 `LionSelect` through `WkScalarFieldMixin` and
+`WkFieldController`. Import classes/styles from `@wakata/ds/select` (no registration);
+import `@wakata/ds/select/define` or `@wakata/ds/define` to register.
+
+```html
+<wk-select name="destination" label="Destination" required help-text="Choose one destination.">
+  <select slot="input">
+    <option value="">Choose a destination</option>
+    <option value="oslo">Oslo</option>
+    <option value="bergen">Bergen</option>
+  </select>
+</wk-select>
+```
+
+Supply one native single `<select slot="input">` with direct `<option>` children,
+unique explicit string values and a first, enabled `value=""` prompt. The prompt is
+an empty value, not a label; required rejects it, optional accepts it. Keeping it
+enabled allows users to clear a selection. There is no `placeholder` attribute/API
+on the host: the empty option is the native placeholder path.
+
+Host `label`/label slot, `help-text`/help-text slot, `name`, `required`, `disabled`
+and external `error` follow the shared field contract. Disabled is native,
+unfocusable and omitted from FormData. Required uses both native constraints and
+Lion Required validation, with Lion's existing feedback timing. External error
+text is described by the control and keeps it aria-invalid until cleared/reset.
+
+The canonical scalar `value` defaults to `''` with the prompt above. A host
+`value="bergen"` attribute sets the initial reset default. An explicit scalar
+`value` property set before connection, after supplying the options, takes
+precedence over that attribute. Later
+`field.value = 'bergen'` updates view/model/serialization without user events.
+Unknown values normalize to `''` (no selected option). Reset through `wk-form`
+restores the initial model and clears external error/interaction state. Do not
+rely on option `selected` attributes as a separate Wakata default-value API.
+Use `wk-input` with `{value,name}` for user state updates and `wk-change` only for
+commit notification, not a second update path. Native input/change still bubble.
+
+`examples/select.html` and the Select Real Form story exercise synthetic native
+FormData and guarded submit attempts. Native form reset alone is not the Lion
+model-reset path; wrap the form in `wk-form`. No readonly, multiselect, search,
+combobox widget, optgroup/custom option rendering or custom popup contract is
+introduced. The accessibility role of the native single select is `combobox`;
+that does not make this a searchable ARIA combobox implementation. Native menus
+and their keyboard interaction, wrapping and popup styling vary by OS/browser;
+closed long labels may truncate. Components retain native appearance and read
+existing theme tokens, with a 44px minimum control height and visible focus.
+
+Chromium keyboard coverage exercises focus, native type-ahead selection and its
+scalar events/FormData. In local headless Chromium on macOS, ArrowDown/Enter and
+Space/ArrowDown/Enter did not change even a bare native select; popup keyboard
+navigation remains unverified, not replaced by a custom key handler.
+
 ## Form infrastructure (`@wakata/ds/form`, `@wakata/ds/form/define`)
 
 | Export                       | Purpose                                                                                                               |
@@ -103,6 +157,13 @@ Set on a theme root (`data-wk-theme="neutral|studio|fieldwork"`, `data-wk-mode="
 Mode changes select the built-in palette for that mode; a new theme or explicit wireframe scope selects its own appearance. Put public token overrides on each boundary where they must apply (for example `[data-wk-theme="studio"][data-wk-mode="dark"] { --wk-accent: …; }`). An inherited one-off accent override does not define a custom light/dark palette. Mode-only boundaries preserve inherited radius; changing theme or wireframe can reset it. Private `--_wk-*` resolver properties are not a supported customization API.
 
 ## Validation status
+
+`pnpm build-storybook` also runs a Chromium smoke gate against the generated
+static iframe at 375px. It checks element registration and upgraded Select
+selected, required/invalid, disabled and real-form stories (not just native
+controls). Re-run against an existing build with
+`pnpm --filter @wakata/ds test:storybook-build`. Source and built `define` modules
+are explicitly side-effectful; class-only package imports remain registration-free.
 
 Covered: Lion inheritance; TextField text/email/password native types, validation, required and optional empty values, disabled/readonly behavior, event silence for programmatic updates/reset, external errors, FormData, reset and a guarded form attempt; Enter/Space once each, disabled/loading suppression, loading geometry and restore, Tab skipping disabled, independent theme scopes, built-package imports and registration, and automated axe checks in representative light/dark themes (Chromium).
 
