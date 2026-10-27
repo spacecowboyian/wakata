@@ -1,4 +1,4 @@
-import{b as o}from"./iframe-Bm78vWjB.js";import"./preload-helper-PPVm8Dsz.js";const{expect:n,userEvent:w,waitFor:g,within:y}=__STORYBOOK_MODULE_TEST__,s=()=>o`
+import{b as o}from"./iframe-rLVFa9xC.js";import"./preload-helper-PPVm8Dsz.js";const{expect:n,userEvent:w,waitFor:k,within:y}=__STORYBOOK_MODULE_TEST__,s=()=>o`
   <option value="">Choose a destination</option>
   <option value="oslo">Oslo</option>
   <option value="bergen">Bergen</option>
@@ -8,7 +8,7 @@ import{b as o}from"./iframe-Bm78vWjB.js";import"./preload-helper-PPVm8Dsz.js";co
         ${s()}
       </select>
     </wk-select>
-  `,parameters:{docs:{description:{component:'Single native select using Lion and the shared scalar field facade. Supply a select in slot="input", direct option children with unique string values, and an empty first option for the prompt. No readonly, search, multiselect or custom popup. Native menus vary by OS; long option text may truncate in the closed control. Use wk-input for value updates and wk-change only for commit notification.'}}}},i={play:async({canvasElement:t})=>{await n(y(t).getByRole("combobox",{name:"Destination"})).toHaveValue("")}},l={render:()=>o`
+  `,parameters:{docs:{description:{component:'Single native select using Lion and the shared scalar field facade. Supply a select in slot="input", direct option children with unique string values, and an empty first option for the prompt. The closed control has a decorative chevron; the picker remains native. Browsers supporting select:open turn it upward while open; other browsers retain the downward chevron. No readonly, search, multiselect or custom popup. Native menus vary by OS; long option text may truncate in the closed control. Use wk-input for value updates and wk-change only for commit notification.'}}}},i={play:async({canvasElement:t})=>{await n(y(t).getByRole("combobox",{name:"Destination"})).toHaveValue("")}},l={render:()=>o`
     <wk-select name="destination" label="Destination" value="bergen">
       <select slot="input">
         ${s()}
@@ -20,7 +20,7 @@ import{b as o}from"./iframe-Bm78vWjB.js";import"./preload-helper-PPVm8Dsz.js";co
         ${s()}
       </select>
     </wk-select>
-  `,play:async({canvasElement:t})=>{const e=t.querySelector("wk-select");e.submitted=!0,await e.validate(),await n(e.querySelector("select")).toHaveAttribute("aria-invalid","true"),await g(async()=>{const a=e.querySelector('[slot="feedback"]')?.shadowRoot?.textContent;await n(a).toContain("Please select an option."),await n(a).not.toContain("Please configure an error message")})}},c={render:()=>o`
+  `,play:async({canvasElement:t})=>{const e=t.querySelector("wk-select");e.submitted=!0,await e.validate(),await n(e.querySelector("select")).toHaveAttribute("aria-invalid","true"),await k(async()=>{const a=e.querySelector('[slot="feedback"]')?.shadowRoot?.textContent;await n(a).toContain("Please select an option."),await n(a).not.toContain("Please configure an error message")})}},c={render:()=>o`
     <wk-select name="destination" label="Destination" disabled value="oslo">
       <select slot="input">
         ${s()}
@@ -65,7 +65,7 @@ import{b as o}from"./iframe-Bm78vWjB.js";import"./preload-helper-PPVm8Dsz.js";co
         </div>
       </form>
     </wk-form>
-  `,play:async({canvasElement:t})=>{const e=y(t),a=t.querySelector("wk-select");await w.click(e.getByText("Continue")),await n(a.hasFeedbackFor).toContain("error");const k=e.getByRole("combobox",{name:"Destination"});await w.selectOptions(k,"oslo"),await n(new FormData(t.querySelector("form")).get("destination")).toBe("oslo"),await w.click(e.getByText("Reset")),await n(k).toHaveValue(""),await n(a.submitted).toBe(!1)}},u={render:()=>o`
+  `,play:async({canvasElement:t})=>{const e=y(t),a=t.querySelector("wk-select");await w.click(e.getByText("Continue")),await n(a.hasFeedbackFor).toContain("error");const h=e.getByRole("combobox",{name:"Destination"});await w.selectOptions(h,"oslo"),await n(new FormData(t.querySelector("form")).get("destination")).toBe("oslo"),await w.click(e.getByText("Reset")),await n(h).toHaveValue(""),await n(a.submitted).toBe(!1)}},u={render:()=>o`
     <div
       style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr));gap:16px"
     >
