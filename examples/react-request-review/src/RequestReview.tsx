@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type FormEvent } from 'react';
 import '@wakata/ds/themes.css';
 import '@wakata/ds/define';
 import '@wakata/ds/mode-switch/define';
@@ -11,20 +11,37 @@ import type { WkDialog } from '@wakata/ds/dialog';
 function useWkField<T extends HTMLElement & { value: string }>(
   value: string,
   onValue: (v: string) => void,
+  externalValue?: string,
 ) {
   const ref = useRef<T>(null);
   const handler = useRef(onValue);
+  const lastInput = useRef<string | null>(null);
+  const lastExternal = useRef(externalValue);
   handler.current = onValue;
   useEffect(() => {
     const el = ref.current!;
-    const on = (e: Event) => handler.current((e as CustomEvent<{ value: string }>).detail.value);
+    const on = (e: Event) => {
+      const next = (e as CustomEvent<{ value: string }>).detail.value;
+      lastInput.current = next;
+      handler.current(next);
+    };
     el.addEventListener('wk-input', on);
     return () => el.removeEventListener('wk-input', on);
   }, []);
-  useEffect(() => {
+  useLayoutEffect(() => {
     const el = ref.current!;
+    if (lastExternal.current !== externalValue) {
+      lastExternal.current = externalValue;
+      lastInput.current = null;
+      if (externalValue !== undefined && el.value !== externalValue) el.value = externalValue;
+      return;
+    }
+    // React may commit an older keystroke after the native input has moved on.
+    // Never echo that stale state back over the latest user value.
+    if (lastInput.current !== null && value !== lastInput.current) return;
     if (el.value !== value) el.value = value;
-  }, [value]);
+    lastInput.current = null;
+  }, [value, externalValue]);
   return ref;
 }
 
@@ -57,12 +74,15 @@ export function RequestReview({
     if (destinationValue !== undefined) setDestination(destinationValue);
   }, [destinationValue]);
   const [status, setStatus] = useState('');
+  useEffect(() => {
+    setStatus((current) => (current.startsWith('Please correct') ? '' : current));
+  }, [name, destination]);
   const [reviewReady, setReviewReady] = useState(false);
   const [processing, setProcessing] = useState(false);
   const busy = useRef(false);
   const validating = useRef(false);
-  const nameRef = useWkField<WkTextField>(name, setName);
-  const destRef = useWkField<WkSelect>(destination, setDestination);
+  const nameRef = useWkField<WkTextField>(name, setName, traveller);
+  const destRef = useWkField<WkSelect>(destination, setDestination, destinationValue);
   const dialogRef = useRef<WkDialog>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const wrapperRef = useRef<HTMLElement & { hasFeedbackFor: string[] }>(null);

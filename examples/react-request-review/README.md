@@ -29,4 +29,4 @@ Element identity/imports, programmatic vs `wk-input`, user edits, required/disab
 
 `IS_REACT_ACT_ENVIRONMENT` is enabled only inside explicit `act()` boundaries (render/unmount). Real browser events update React outside act, so the flag is not set globally.
 
-Chromium only, headless. No manual assistive-technology, real-device, SSR, hydration or production evidence. **Angular reactive-form example: not done (missing).**
+Chromium only, headless. No manual assistive-technology, real-device, SSR, hydration or production evidence. Angular reactive-form coverage is in the sibling example and has a documented detached-host mounting constraint.

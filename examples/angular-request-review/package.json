@@ -1,0 +1,29 @@
+{
+  "name": "@wakata/example-angular-request-review",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Angular reactive-forms evidence slice reusing the real @wakata/ds elements. Synthetic data only.",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5174",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "pnpm --filter @wakata/ds build && vitest run"
+  },
+  "dependencies": {
+    "@angular/common": "22.2.3",
+    "@angular/compiler": "22.2.3",
+    "@angular/core": "22.2.3",
+    "@angular/forms": "22.2.3",
+    "@angular/platform-browser": "22.2.3",
+    "@wakata/ds": "workspace:*",
+    "rxjs": "7.8.2",
+    "zone.js": "0.16.0"
+  },
+  "devDependencies": {
+    "@vitest/browser": "4.1.12",
+    "@vitest/browser-playwright": "4.1.12",
+    "playwright": "1.64.1",
+    "vite": "7.3.7",
+    "vitest": "4.1.12"
+  }
+}

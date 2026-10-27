@@ -87,6 +87,17 @@ test('user edits flow through wk-input once; programmatic writes emit nothing', 
   expect(q('rr-summary').textContent).toBe('Ada → ');
 });
 
+test('rapid typing keeps the latest native value and React summary', async () => {
+  const { host, q } = await mount();
+  const text = 'Ada Example Long Name';
+  await userEvent.type(q('rr-name').querySelector('input')!, text);
+  await tick();
+  expect(q('rr-name').querySelector('input')!.value).toBe(text);
+  expect(q<El>('rr-name').value).toBe(text);
+  expect(new FormData(host.querySelector('form')!).get('traveller')).toBe(text);
+  expect(q('rr-summary').textContent).toBe(`${text} → `);
+});
+
 test('parent-driven props update element, native input, FormData and summary without events', async () => {
   const { host, q, render } = await mount();
   let events = 0;
@@ -171,6 +182,7 @@ test('invalid -> correction -> review -> cancel / reopen / confirm, repeated sub
   expect(q<El>('rr-reopen').disabled).toBe(true);
 
   await fill(q);
+  expect(q('rr-status').textContent).toBe('');
   await submit(q);
   expect(dialog.opened).toBe(true);
   expect(q('rr-summary').textContent).toBe('Ada Example → oslo');

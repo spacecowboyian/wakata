@@ -70,9 +70,10 @@ test('invalid -> correction -> review -> cancel / reopen / confirm', async () =>
   expect(status.textContent).not.toContain('Ready');
   expect(q<El>('rr-reopen').disabled).toBe(true);
 
-  name.value = 'Ada Example';
-  dest.value = 'oslo';
+  await userEvent.type(name.querySelector('input')!, 'Ada Example');
+  await userEvent.selectOptions(dest.querySelector('select')!, 'oslo');
   await tick();
+  expect(status.textContent).toBe('');
   await submitForm(root);
   await tick();
   expect(dialog.opened).toBe(true);

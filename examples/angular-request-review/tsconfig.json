@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "experimentalDecorators": true,
+    "verbatimModuleSyntax": false,
+    "types": ["vite/client", "vitest/browser"]
+  },
+  "include": ["src", "test", "vitest.config.ts"]
+}

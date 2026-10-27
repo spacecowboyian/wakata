@@ -1,4 +1,4 @@
-import { afterEach, expect, test } from 'vitest';
+import { afterEach, expect, test, vi } from 'vitest';
 import { userEvent } from 'vitest/browser';
 import type { WkTextField } from '@wakata/ds/text-field';
 import type { WkForm } from '@wakata/ds/form';
@@ -82,9 +82,12 @@ test('email validation rejects malformed values and permits valid and optional e
 });
 
 test('required is enforced by native and Lion validation while optional empty values stay valid', async () => {
-  const { fields } = await mount(`
-    <wk-text-field name="optional" label="Optional"></wk-text-field>
-    <wk-text-field name="required" label="Required" required></wk-text-field>`);
+  const { host, fields } = await mount(`
+    <wk-form><form novalidate>
+      <wk-text-field name="optional" label="Optional"></wk-text-field>
+      <wk-text-field name="required" label="Required" required></wk-text-field>
+      <wk-button-submit>Submit</wk-button-submit>
+    </form></wk-form>`);
   const optional = fieldAt(fields, 0);
   const required = fieldAt(fields, 1);
   await optional.validate();
@@ -95,6 +98,13 @@ test('required is enforced by native and Lion validation while optional empty va
   expect(control(required).checkValidity()).toBe(false);
   expect(control(required).getAttribute('aria-required')).toBe('true');
   expect(required.hasFeedbackFor).toContain('error');
+  await userEvent.click(host.querySelector('wk-button-submit')!);
+  await settle(required);
+  await vi.waitFor(() =>
+    expect(required.querySelector('lion-validation-feedback')?.shadowRoot?.textContent).toContain(
+      'Please enter a value.',
+    ),
+  );
 
   required.value = 'Provided';
   await required.validate();

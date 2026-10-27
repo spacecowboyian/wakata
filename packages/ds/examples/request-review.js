@@ -20,6 +20,11 @@ export function initRequestReview(root, { completionMs = 600 } = {}) {
   const say = (text) => {
     status.textContent = text;
   };
+  const clearCorrection = () => {
+    if (status.textContent.startsWith('Please correct')) say('');
+  };
+  name.addEventListener('wk-input', clearCorrection);
+  destination.addEventListener('wk-input', clearCorrection);
   // Native constraint validation (form has novalidate) plus Lion validation state.
   const invalidNative = () => [...form.elements].find((el) => !el.checkValidity?.());
   const hasLionErrors = () =>
