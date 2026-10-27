@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en" data-wk-theme="neutral" data-wk-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wakata Card synthetic example</title>
+    <script type="module">
+      import '@wakata/ds/themes.css';
+      import '@wakata/ds/define';
+    </script>
+    <style>
+      body {
+        box-sizing: border-box;
+        max-width: 56rem;
+        margin: 0 auto;
+        padding: 24px;
+        background: var(--wk-surface);
+        color: var(--wk-text);
+        font-family: var(--wk-font);
+      }
+      form {
+        margin: 24px 0;
+      }
+      .body,
+      .fields {
+        display: grid;
+        gap: 16px;
+      }
+      .fields {
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <wk-mode-switch></wk-mode-switch>
+    <h1>Workspace settings</h1>
+    <wk-form>
+      <form>
+        <wk-card>
+          <h2 slot="heading">Workspace profile</h2>
+          <div class="body">
+            <p>Update your team's shared profile and default region.</p>
+            <div class="fields">
+              <wk-text-field
+                name="workspace"
+                label="Workspace name"
+                value="Northwind Studio"
+                required
+              ></wk-text-field>
+              <wk-text-field
+                name="email"
+                label="Contact email"
+                type="email"
+                value="team@example.test"
+                required
+              ></wk-text-field>
+              <wk-select name="region" label="Default region" required>
+                <select slot="input">
+                  <option value="">Choose a region</option>
+                  <option value="north">Northern region</option>
+                  <option value="coast">Coastal region</option>
+                </select>
+              </wk-select>
+            </div>
+          </div>
+          <div slot="actions" class="actions">
+            <wk-button-reset>Reset</wk-button-reset>
+            <wk-button-submit variant="primary">Save settings</wk-button-submit>
+          </div>
+        </wk-card>
+      </form>
+    </wk-form>
+  </body>
+</html>

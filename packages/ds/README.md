@@ -4,18 +4,20 @@ Wakata design system (working title DS) and its Storybook. Private and provision
 
 ## Exports
 
-| Import                          | Contents                                                                |
-| ------------------------------- | ----------------------------------------------------------------------- |
-| `@wakata/ds`                    | `WkButton`, types, `wkTokens`, theme names. **No registration.**        |
-| `@wakata/ds/button`             | Button class and styles only                                            |
-| `@wakata/ds/text-field`         | TextField class, styles and types only                                  |
-| `@wakata/ds/define`             | Registers all DS elements (idempotent)                                  |
-| `@wakata/ds/button/define`      | Registers `wk-button` (`defineWkButton()` is safe to call twice)        |
-| `@wakata/ds/text-field/define`  | Registers `wk-text-field` (`defineWkTextField()` is safe to call twice) |
-| `@wakata/ds/mode-switch`        | Mode switch class, styles and event/mode types; no registration         |
-| `@wakata/ds/mode-switch/define` | Registers `wk-mode-switch` (idempotent)                                 |
-| `@wakata/ds/themes.css`         | Neutral/Studio/Fieldwork themes, light/dark modes, wireframe            |
-| `@wakata/ds/themes/*.css`       | Individual theme files                                                  |
+| Import                          | Contents                                                                   |
+| ------------------------------- | -------------------------------------------------------------------------- |
+| `@wakata/ds`                    | `WkButton`, `WkCard`, types, `wkTokens`, theme names. **No registration.** |
+| `@wakata/ds/button`             | Button class and styles only                                               |
+| `@wakata/ds/text-field`         | TextField class, styles and types only                                     |
+| `@wakata/ds/define`             | Registers all DS elements (idempotent)                                     |
+| `@wakata/ds/button/define`      | Registers `wk-button` (`defineWkButton()` is safe to call twice)           |
+| `@wakata/ds/card`               | Card class only; no registration                                           |
+| `@wakata/ds/card/define`        | Registers `wk-card` (`defineWkCard()` is safe to call twice)               |
+| `@wakata/ds/text-field/define`  | Registers `wk-text-field` (`defineWkTextField()` is safe to call twice)    |
+| `@wakata/ds/mode-switch`        | Mode switch class, styles and event/mode types; no registration            |
+| `@wakata/ds/mode-switch/define` | Registers `wk-mode-switch` (idempotent)                                    |
+| `@wakata/ds/themes.css`         | Neutral/Studio/Fieldwork themes, light/dark modes, wireframe               |
+| `@wakata/ds/themes/*.css`       | Individual theme files                                                     |
 
 ```ts
 import '@wakata/ds/themes.css';
@@ -74,6 +76,51 @@ The component is registered by `@wakata/ds/define`, or separately with
 fixture using `wk-form` and the existing submit/reset buttons. Its submit event is an attempt
 notification: consumers must guard Lion validation errors, pending validation and external errors
 before processing. It does not demonstrate a React or Angular wrapper.
+
+## `wk-card` (provisional presentational primitive)
+
+`WkCard` is a Lit primitive, not a Lion component. Import its class and styles
+through `@wakata/ds/card` without registering the custom element, or register it
+explicitly with `@wakata/ds/card/define`; `@wakata/ds/define` also registers it.
+Registration is idempotent.
+
+```html
+<wk-card>
+  <h2 slot="heading">Workspace profile</h2>
+  <p>Review and update your workspace details.</p>
+  <div slot="actions">
+    <wk-button-submit variant="primary">Save changes</wk-button-submit>
+  </div>
+</wk-card>
+```
+
+Provide a native heading at the level appropriate to the surrounding page in
+`slot="heading"`, body content in the default slot, and an optional grouped
+action area in `slot="actions"`. Body-only cards are valid. The Card generates
+no heading, landmark, accessible name or role and has no tabindex, click,
+loading or navigation behavior. Actions retain their own names, focus and
+activation; the container is not an interactive control.
+
+The surface reads `--wk-surface` and `--wk-text`, uses a 1px `--wk-border`,
+`--wk-radius`, 16px fixed internal padding and 12px between occupied sections.
+It has no shadow or Card-specific styling knobs. The host owns width, outer
+spacing and layout. Wireframe keeps geometry and typography while inheriting
+the theme's wireframe treatment. Consumer-provided images need meaningful alt
+text when informative; the synthetic Composition / Current Slice fixture keeps
+its logo grayscale and its decorative placeholder hidden from assistive
+technology. Card does not introduce a media component family.
+
+Storybook's `Components/Card` includes body-only, heading/body, actions,
+long-content/narrow reflow, every theme in light and dark with wireframe on
+and off, nested themes, and **Composition / Current Slice**, which composes the
+real Card with TextField, Select, form buttons and the mode switch in a
+synthetic settings form. `packages/ds/review/card/` contains Chromium review
+captures for desktop/phone light and dark composition and essential Card
+states; `pnpm build-storybook` regenerates them and verifies narrow overflow,
+Card geometry, and browser errors. This is automated Chromium evidence only:
+manual assistive-technology, zoom/contrast, Firefox/WebKit, real-device and
+framework checks remain unrun. The component remains provisional and is not
+evidence of production adoption or promotion.
 
 ## `wk-select`
 
