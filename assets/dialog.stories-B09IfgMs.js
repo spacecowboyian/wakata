@@ -1,26 +1,24 @@
-import{b as u}from"./iframe-rLVFa9xC.js";import"./preload-helper-PPVm8Dsz.js";const{expect:e,userEvent:c,within:w}=__STORYBOOK_MODULE_TEST__,h={title:"Components/Dialog",tags:["autodocs"],parameters:{docs:{description:{component:"\n`wk-dialog` is a provisional modal built on Lion 0.25's public dialog API. Its content root needs a title via `aria-label` or `aria-labelledby`; `aria-describedby` references IDs inside that root. The modal traps focus, makes background content unavailable, locks page scrolling, closes on Escape and does not close from its backdrop.\n"}}}},g=n=>{if(!n.composedPath().some(t=>t instanceof HTMLElement&&t.hasAttribute("data-review-close")))return;n.currentTarget.querySelector("wk-dialog").close()},m=`
-  .review-page { box-sizing:border-box; width:min(100%, 960px); margin:0 auto; padding:24px; color:var(--wk-text); background:var(--wk-surface); }
+import{b as g}from"./iframe-BF3Vf-kz.js";import"./preload-helper-PPVm8Dsz.js";const{expect:e,userEvent:c,within:w}=__STORYBOOK_MODULE_TEST__,k={title:"Components/Dialog",tags:["autodocs"],parameters:{docs:{description:{component:"\n`wk-dialog` is a provisional modal built on Lion 0.25's public dialog API. Its content root needs a title via `aria-label` or `aria-labelledby`; `aria-describedby` references IDs inside that root. The modal traps focus, makes background content unavailable, locks page scrolling, closes on Escape and does not close from its backdrop.\n"}}}},m=n=>{if(!n.composedPath().some(t=>t instanceof HTMLElement&&t.hasAttribute("data-review-close")))return;n.currentTarget.querySelector("wk-dialog").close()},u=`
+  .review-page { box-sizing:border-box; width:min(100%, 960px); min-height:calc(100vh - 48px); margin:0 auto; padding:24px; color:var(--wk-text); background:var(--wk-surface); font-family:var(--wk-font); }
   .review-header { display:flex; align-items:center; justify-content:space-between; gap:16px; }
   .review-page h1, .review-page h2 { overflow-wrap:anywhere; }
+  .review-page h1 { margin:4px 0 0; font-size:clamp(1.5rem, 3vw, 2rem); line-height:1.2; }
+  .review-header p { margin:0; font-size:12px; font-weight:700; letter-spacing:.08em; }
   .review-summary { max-width:65ch; line-height:1.55; }
-  .review-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:12px; margin-block-start:20px; }
-  .review-actions > * { min-width:8rem; }
+  .review-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; margin-block-start:24px; }
+  .review-actions > * { min-width:8.5rem; }
   @media(max-width:600px) {
+    .review-page { padding:20px; }
     .review-header { align-items:flex-start; flex-direction:column; }
-    .review-actions { justify-content:stretch; }
-    .review-actions > * { flex:1 1 8rem; }
+    [data-wk-dialog-content] .review-actions { flex-direction:column; }
+    [data-wk-dialog-content] .review-actions > * { width:100%; }
+    .review-page wk-card .review-actions > * { flex:1 1 8rem; }
   }
-`,p=async(n,o)=>{const t=Date.now()+1500;for(;n.hasAttribute("opened")||o.hasAttribute("data-wk-dialog-content");){if(Date.now()>=t)throw new Error("Dialog did not finish closing.");await new Promise(a=>setTimeout(a,20))}},r={name:"Review Dialog / Combined Slice",render:()=>u`
+`,p=async(n,o)=>{const t=Date.now()+1500;for(;n.hasAttribute("opened")||o.hasAttribute("data-wk-dialog-content");){if(Date.now()>=t)throw new Error("Dialog did not finish closing.");await new Promise(a=>setTimeout(a,20))}},r={name:"Review Dialog / Combined Slice",render:()=>g`
     <style>
-      ${m}
+      ${u}
     </style>
-    <main
-      class="review-page"
-      data-wk-theme="studio"
-      data-review-origin
-      @click=${g}
-      style="--wk-font: Georgia, serif; background:var(--wk-surface);color:var(--wk-text)"
-    >
+    <main class="review-page" data-wk-theme="fieldwork" data-review-origin @click=${m}>
       <header class="review-header">
         <div>
           <p>WAKATA WORKSPACE</p>
@@ -39,14 +37,6 @@ import{b as u}from"./iframe-rLVFa9xC.js";import"./preload-helper-PPVm8Dsz.js";co
           <wk-button variant="primary">Save settings</wk-button>
         </div>
       </wk-card>
-      <div
-        data-wk-theme="fieldwork"
-        data-wk-mode="dark"
-        data-nested-theme
-        style="padding:12px;background:var(--wk-surface);color:var(--wk-text)"
-      >
-        <p>Nested Fieldwork preview remains independent of the dialog origin.</p>
-      </div>
       <wk-dialog>
         <wk-button slot="invoker">Review changes</wk-button>
         <section
@@ -65,7 +55,7 @@ import{b as u}from"./iframe-rLVFa9xC.js";import"./preload-helper-PPVm8Dsz.js";co
         </section>
       </wk-dialog>
     </main>
-  `,play:async({canvasElement:n})=>{const o=w(n),t=n.querySelector("wk-dialog"),a=n.querySelector('[slot="content"]');await e(o.getByText("Review changes")).toBeVisible(),await t.open(),await e(t.opened).toBe(!0),await e(a.getAttribute("role")).toBe("dialog"),await e(a.getAttribute("aria-modal")).toBe("true"),await e(a.getAttribute("aria-labelledby")).toBe("review-dialog-title"),await e(a.getAttribute("aria-describedby")).toBe("review-dialog-description"),await e(a.contains(document.activeElement)).toBe(!0),await e(document.body.classList.contains("overlays-scroll-lock")).toBe(!0),await c.tab(),await e(a.contains(document.activeElement)).toBe(!0);const i=n.querySelector("[data-review-origin]");i.dataset.wkMode="dark",i.dataset.wkWireframe="true",i.dataset.wkTheme="fieldwork",i.style.setProperty("--wk-font","monospace"),await new Promise(l=>setTimeout(l,0)),await e(a.dataset.wkMode).toBe("dark"),await e(a.dataset.wkTheme).toBe("fieldwork"),await e(a.dataset.wkWireframe).toBe("true"),await e(getComputedStyle(a).fontFamily).toContain("monospace"),await e(getComputedStyle(a).borderRadius).toBe("0px");const d=t.shadowRoot?.querySelector(".overlays__backdrop");d&&await c.click(d),await e(t.opened).toBe(!0),a.dispatchEvent(new KeyboardEvent("keyup",{key:"Escape",bubbles:!0,composed:!0})),await p(t,a),await e(t.opened).toBe(!1),await e(a.hasAttribute("data-wk-dialog-content")).toBe(!1),i.dataset.wkTheme="studio",i.dataset.wkWireframe="false",i.style.removeProperty("--wk-font");for(const l of["Cancel","Confirm changes"])await t.open(),await c.click(w(a).getByText(l)),await p(t,a),await e(t.opened).toBe(!1);t.dataset.reviewPlayComplete="true"}},s={render:()=>u`
+  `,play:async({canvasElement:n})=>{const o=w(n),t=n.querySelector("wk-dialog"),a=n.querySelector('[slot="content"]');await e(o.getByText("Review changes")).toBeVisible(),await t.open(),await e(t.opened).toBe(!0),await e(a.getAttribute("role")).toBe("dialog"),await e(a.getAttribute("aria-modal")).toBe("true"),await e(a.getAttribute("aria-labelledby")).toBe("review-dialog-title"),await e(a.getAttribute("aria-describedby")).toBe("review-dialog-description"),await e(a.contains(document.activeElement)).toBe(!0),await e(document.body.classList.contains("overlays-scroll-lock")).toBe(!0),await c.tab(),await e(a.contains(document.activeElement)).toBe(!0);const i=n.querySelector("[data-review-origin]");i.dataset.wkMode="dark",i.dataset.wkWireframe="true",i.dataset.wkTheme="fieldwork",i.style.setProperty("--wk-font","monospace"),await new Promise(l=>setTimeout(l,0)),await e(a.dataset.wkMode).toBe("dark"),await e(a.dataset.wkTheme).toBe("fieldwork"),await e(a.dataset.wkWireframe).toBe("true"),await e(getComputedStyle(a).fontFamily).toContain("monospace"),await e(getComputedStyle(a).borderRadius).toBe("0px");const d=t.shadowRoot?.querySelector(".overlays__backdrop");d&&await c.click(d),await e(t.opened).toBe(!0),a.dispatchEvent(new KeyboardEvent("keyup",{key:"Escape",bubbles:!0,composed:!0})),await p(t,a),await e(t.opened).toBe(!1),await e(a.hasAttribute("data-wk-dialog-content")).toBe(!1),i.dataset.wkTheme="fieldwork",i.dataset.wkWireframe="false",i.style.removeProperty("--wk-font");for(const l of["Cancel","Confirm changes"])await t.open(),await c.click(w(a).getByText(l)),await p(t,a),await e(t.opened).toBe(!1);t.dataset.reviewPlayComplete="true"}},s={render:()=>g`
     <main style="width:min(100%, 960px);margin-inline:auto">
       <wk-dialog>
         <button slot="invoker">Open long review</button>
@@ -81,19 +71,13 @@ import{b as u}from"./iframe-rLVFa9xC.js";import"./preload-helper-PPVm8Dsz.js";co
         </section>
       </wk-dialog>
     </main>
-  `,play:async({canvasElement:n})=>{const o=n.querySelector("wk-dialog"),t=n.querySelector('[slot="content"]');await o.open(),await e(t.scrollWidth).toBeLessThanOrEqual(t.clientWidth),await e(document.documentElement.scrollWidth).toBeLessThanOrEqual(document.documentElement.clientWidth),await e(getComputedStyle(t).padding).toBe("24px"),await o.close()}},b=["ReviewDialog","LongContentAndNarrowReflow"];r.parameters={...r.parameters,docs:{...r.parameters?.docs,source:{originalSource:`{
+  `,play:async({canvasElement:n})=>{const o=n.querySelector("wk-dialog"),t=n.querySelector('[slot="content"]');await o.open(),await e(t.scrollWidth).toBeLessThanOrEqual(t.clientWidth),await e(document.documentElement.scrollWidth).toBeLessThanOrEqual(document.documentElement.clientWidth),await e(getComputedStyle(t).padding).toBe("24px"),await o.close(),o.dataset.longPlayComplete="true"}},b=["ReviewDialog","LongContentAndNarrowReflow"];r.parameters={...r.parameters,docs:{...r.parameters?.docs,source:{originalSource:`{
   name: 'Review Dialog / Combined Slice',
   render: () => html\`
     <style>
       \${reviewStyles}
     </style>
-    <main
-      class="review-page"
-      data-wk-theme="studio"
-      data-review-origin
-      @click=\${closeReview}
-      style="--wk-font: Georgia, serif; background:var(--wk-surface);color:var(--wk-text)"
-    >
+    <main class="review-page" data-wk-theme="fieldwork" data-review-origin @click=\${closeReview}>
       <header class="review-header">
         <div>
           <p>WAKATA WORKSPACE</p>
@@ -112,14 +96,6 @@ import{b as u}from"./iframe-rLVFa9xC.js";import"./preload-helper-PPVm8Dsz.js";co
           <wk-button variant="primary">Save settings</wk-button>
         </div>
       </wk-card>
-      <div
-        data-wk-theme="fieldwork"
-        data-wk-mode="dark"
-        data-nested-theme
-        style="padding:12px;background:var(--wk-surface);color:var(--wk-text)"
-      >
-        <p>Nested Fieldwork preview remains independent of the dialog origin.</p>
-      </div>
       <wk-dialog>
         <wk-button slot="invoker">Review changes</wk-button>
         <section
@@ -178,7 +154,7 @@ import{b as u}from"./iframe-rLVFa9xC.js";import"./preload-helper-PPVm8Dsz.js";co
     await waitForClosedContent(dialog, content);
     await expect(dialog.opened).toBe(false);
     await expect(content.hasAttribute('data-wk-dialog-content')).toBe(false);
-    root.dataset.wkTheme = 'studio';
+    root.dataset.wkTheme = 'fieldwork';
     root.dataset.wkWireframe = 'false';
     root.style.removeProperty('--wk-font');
     for (const label of ['Cancel', 'Confirm changes']) {
@@ -217,5 +193,6 @@ import{b as u}from"./iframe-rLVFa9xC.js";import"./preload-helper-PPVm8Dsz.js";co
     await expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(document.documentElement.clientWidth);
     await expect(getComputedStyle(content).padding).toBe('24px');
     await dialog.close();
+    dialog.dataset.longPlayComplete = 'true';
   }
-}`,...s.parameters?.docs?.source}}};export{s as LongContentAndNarrowReflow,r as ReviewDialog,b as __namedExportsOrder,h as default};
+}`,...s.parameters?.docs?.source}}};export{s as LongContentAndNarrowReflow,r as ReviewDialog,b as __namedExportsOrder,k as default};
