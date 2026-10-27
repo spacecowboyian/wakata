@@ -86,6 +86,36 @@ try {
     assert.deepEqual(errors, [], `${story}: browser errors`);
     console.log(`PASS ${story}: upgraded components at 375px`);
   }
+  for (const state of ['system', 'light', 'dark', 'shared-choice', 'narrow']) {
+    const story = `supporting-mode-switch--${state}`;
+    await page.goto(`${base}/iframe.html?id=${story}&viewMode=story`);
+    const element = page.locator('#storybook-root wk-mode-switch').first();
+    await element.waitFor();
+    await page.waitForFunction(() => {
+      const element = document.querySelector('#storybook-root wk-mode-switch');
+      return Boolean(
+        customElements.get('wk-mode-switch') && element?.shadowRoot?.querySelector('fieldset'),
+      );
+    });
+    const expected = state === 'shared-choice' ? 'dark' : state === 'narrow' ? 'system' : state;
+    await page.waitForFunction(
+      (mode) =>
+        [...document.querySelectorAll('#storybook-root wk-mode-switch')].every(
+          (element) =>
+            element.mode === mode &&
+            element.shadowRoot.querySelector(`input[value="${mode}"]`).checked,
+        ),
+      expected,
+    );
+    assert.equal(await element.getAttribute('mode'), expected, `${story}: reflected mode`);
+    assert.equal(
+      await element.evaluate((element) => element.scrollWidth <= element.clientWidth),
+      true,
+      `${story}: no horizontal overflow`,
+    );
+    assert.deepEqual(errors, [], `${story}: browser errors`);
+    console.log(`PASS ${story}: upgraded native group at 375px`);
+  }
 } finally {
   await browser?.close();
   await new Promise((resolve, reject) =>

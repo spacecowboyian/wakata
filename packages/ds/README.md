@@ -4,16 +4,18 @@ Wakata design system (working title DS) and its Storybook. Private and provision
 
 ## Exports
 
-| Import                         | Contents                                                                |
-| ------------------------------ | ----------------------------------------------------------------------- |
-| `@wakata/ds`                   | `WkButton`, types, `wkTokens`, theme names. **No registration.**        |
-| `@wakata/ds/button`            | Button class and styles only                                            |
-| `@wakata/ds/text-field`        | TextField class, styles and types only                                  |
-| `@wakata/ds/define`            | Registers all DS elements (idempotent)                                  |
-| `@wakata/ds/button/define`     | Registers `wk-button` (`defineWkButton()` is safe to call twice)        |
-| `@wakata/ds/text-field/define` | Registers `wk-text-field` (`defineWkTextField()` is safe to call twice) |
-| `@wakata/ds/themes.css`        | Neutral/Studio/Fieldwork themes, light/dark modes, wireframe            |
-| `@wakata/ds/themes/*.css`      | Individual theme files                                                  |
+| Import                          | Contents                                                                |
+| ------------------------------- | ----------------------------------------------------------------------- |
+| `@wakata/ds`                    | `WkButton`, types, `wkTokens`, theme names. **No registration.**        |
+| `@wakata/ds/button`             | Button class and styles only                                            |
+| `@wakata/ds/text-field`         | TextField class, styles and types only                                  |
+| `@wakata/ds/define`             | Registers all DS elements (idempotent)                                  |
+| `@wakata/ds/button/define`      | Registers `wk-button` (`defineWkButton()` is safe to call twice)        |
+| `@wakata/ds/text-field/define`  | Registers `wk-text-field` (`defineWkTextField()` is safe to call twice) |
+| `@wakata/ds/mode-switch`        | Mode switch class, styles and event/mode types; no registration         |
+| `@wakata/ds/mode-switch/define` | Registers `wk-mode-switch` (idempotent)                                 |
+| `@wakata/ds/themes.css`         | Neutral/Studio/Fieldwork themes, light/dark modes, wireframe            |
+| `@wakata/ds/themes/*.css`       | Individual theme files                                                  |
 
 ```ts
 import '@wakata/ds/themes.css';
@@ -127,6 +129,73 @@ scalar events/FormData. In local headless Chromium on macOS, ArrowDown/Enter and
 Space/ArrowDown/Enter did not change even a bare native select; popup keyboard
 navigation remains unverified, not replaced by a custom key handler.
 
+## `wk-mode-switch` (provisional supporting control)
+
+```ts
+import '@wakata/ds/themes.css';
+import '@wakata/ds/mode-switch/define';
+```
+
+```html
+<html data-wk-theme="neutral">
+  <!-- Do not fix the body's mode if it should follow the site choice. -->
+  <body>
+    <wk-mode-switch></wk-mode-switch>
+  </body>
+</html>
+```
+
+Native radios labelled **System**, **Light**, **Dark** sit in a fieldset with
+legend **Colour mode**. Native Tab/arrow/Space behavior is preserved; labels
+have a minimum 44px height and radios have a visible keyboard focus outline.
+This Lit supporting control is deliberately not a Lion scalar form field:
+it changes a site preference, has no form value and introduces no custom radio
+keyboard implementation.
+
+The reflected `mode` property/attribute accepts `system | light | dark`.
+Without an explicit initial value it restores the stored override, otherwise
+defaults to `system`. An explicit initial property/attribute wins over storage;
+later instances without an explicit mode adopt the current shared choice.
+Invalid programmatic values throw a `TypeError`.
+
+The control writes the **resolved** `light | dark` to
+`document.documentElement.dataset.wkMode`, including in System mode. System
+follows `prefers-color-scheme: dark` live and removes the stored override.
+Light/Dark persist under `wakata:color-mode:v1`. Storage access failures warn
+and retain a shared in-memory choice for this page. Connected instances sync
+silently, including storage changes from other tabs. Disconnection removes
+listeners when no instances remain; reconnection preserves the page choice.
+An explicit local `data-wk-mode` still controls that subtree's appearance;
+switches inside it still display/change the **site-wide** choice.
+
+Only a user radio change emits one bubbling, composed `wk-mode-change` with
+`{ mode, resolvedMode }`. Programmatic property/attribute writes, persistence
+restore, peer synchronization and System preference changes emit no user event.
+Observe the document root if an application needs resolved appearance updates;
+the user event is not a continuous System-mode notification.
+
+`examples/mode-switch.html` is a real synthetic HTML page with Neutral and
+Studio inheriting site mode and a Fieldwork local light/wireframe override.
+Serve it with a bundler/dev server resolving `@wakata/ds`; unlike Storybook's
+local toolbar wrapper, it demonstrates actual document-wide switching.
+Storybook provides System/Light/Dark, shared choice, narrow and all three themes
+in light/dark with wireframe on/off.
+
+`pnpm test` runs native label/state/focus/arrow/event tests, shared-state,
+persistence and theme geometry tests, Storybook play/axe checks, and a Chromium
+HTML smoke check with reload, real media emulation and blocked-storage access.
+The HTML check can regenerate small review images with
+`cd packages/ds && node scripts/check-mode-switch.mjs --screenshots`.
+Images under `review/mode-switch/` show 375px light/dark and 280px narrow HTML
+with all three themes and a wireframe/local-mode boundary.
+
+Manual screen-reader/AT name, group, state and announcement review remains
+unrun, as do Firefox/WebKit, real-device, zoom/contrast review and React/Angular
+integration. Chromium and axe evidence is not WCAG certification. No-JavaScript
+fallback and SSR/hydration guarantees are outside this provisional contract.
+This implements remaining #9 control work, not shared production promotion or
+final visual acceptance; #14/#20 and the governance gates remain separate.
+
 ## Form infrastructure (`@wakata/ds/form`, `@wakata/ds/form/define`)
 
 | Export                       | Purpose                                                                                                               |
@@ -161,7 +230,8 @@ Mode changes select the built-in palette for that mode; a new theme or explicit 
 `pnpm build-storybook` also runs a Chromium smoke gate against the generated
 static iframe at 375px. It checks element registration and upgraded Select
 selected, required/invalid, disabled and real-form stories (not just native
-controls). Re-run against an existing build with
+controls), plus upgraded Mode Switch System/Light/Dark/shared/narrow stories.
+Re-run against an existing build with
 `pnpm --filter @wakata/ds test:storybook-build`. Source and built `define` modules
 are explicitly side-effectful; class-only package imports remain registration-free.
 

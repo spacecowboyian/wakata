@@ -2,6 +2,7 @@
 export * from './components/button/index.js';
 export * from './components/text-field/index.js';
 export * from './components/select/index.js';
+export * from './components/mode-switch/index.js';
 export * from './form/index.js';
 export * from './tokens/index.js';
 export * from './themes/index.js';

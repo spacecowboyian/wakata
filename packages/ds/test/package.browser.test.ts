@@ -7,6 +7,9 @@ test('class entry points do not register the element', async () => {
   const button = await import('@wakata/ds/button');
   const textField = await import('@wakata/ds/text-field');
   const select = await import('@wakata/ds/select');
+  const modeSwitch = await import('@wakata/ds/mode-switch');
+  expect(pkg.WkModeSwitch).toBe(modeSwitch.WkModeSwitch);
+  expect(customElements.get('wk-mode-switch')).toBeUndefined();
   expect(pkg.WkSelect).toBe(select.WkSelect);
   expect(customElements.get('wk-select')).toBeUndefined();
   expect(pkg.WkButton).toBe(button.WkButton);
@@ -27,6 +30,9 @@ test('define entry points register once and tolerate repeats', async () => {
   expect(() => defineWkTextField()).not.toThrow();
   const { defineWkSelect } = await import('@wakata/ds/select/define');
   expect(() => defineWkSelect()).not.toThrow();
+  const { defineWkModeSwitch } = await import('@wakata/ds/mode-switch/define');
+  expect(() => defineWkModeSwitch()).not.toThrow();
+  expect(customElements.get('wk-mode-switch')).toBe((await import('@wakata/ds')).WkModeSwitch);
   expect(customElements.get('wk-select')).toBe((await import('@wakata/ds/select')).WkSelect);
   expect(customElements.get('wk-button')).toBe(WkButton);
   expect(customElements.get('wk-text-field')).toBe(WkTextField);
