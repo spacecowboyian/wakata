@@ -87,7 +87,10 @@ export const wkSelectStyles = css`
     .input-group__container {
       border-color: CanvasText;
     }
-    ::slotted(select[slot='input']) {
+    ::slotted(select[slot='input']),
+    ::slotted(select[slot='input']:open) {
+      appearance: auto;
+      background-image: none;
       color: CanvasText;
     }
     ::slotted(select[slot='input']:focus-visible) {

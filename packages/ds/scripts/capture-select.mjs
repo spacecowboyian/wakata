@@ -81,6 +81,20 @@ try {
     }
     await page.close();
   }
+  const forced = await browser.newPage({
+    viewport: { width: 390, height: 600 },
+    deviceScaleFactor: 2,
+    forcedColors: 'active',
+  });
+  await forced.goto(`${origin}/iframe.html?id=components-select--empty&viewMode=story`);
+  await forced.locator('wk-select select').waitFor();
+  await forced.waitForFunction(
+    () => getComputedStyle(document.querySelector('wk-select select')).appearance === 'auto',
+  );
+  await forced
+    .locator('#storybook-root')
+    .screenshot({ path: resolve(output, 'forced-colors.png') });
+  await forced.close();
 } finally {
   await browser.close();
 }

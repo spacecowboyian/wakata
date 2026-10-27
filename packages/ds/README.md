@@ -259,6 +259,8 @@ Browsers supporting `select:open` point the chevron upward while the picker is
 open; other browsers keep the downward chevron. The chevron is not a separate
 focus or pointer target. The control reads existing theme tokens, with a 44px
 minimum height, visible focus, and an inner fill shaped to the theme's radius.
+In forced-colors mode it restores the platform arrow because forced colors
+remove CSS gradient artwork.
 
 Chromium keyboard coverage exercises focus, native type-ahead selection and its
 scalar events/FormData. In local headless Chromium on macOS, ArrowDown/Enter and
