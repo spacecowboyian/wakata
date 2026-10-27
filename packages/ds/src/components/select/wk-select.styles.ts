@@ -26,6 +26,7 @@ export const wkSelectStyles = css`
   }
   .input-group__container {
     min-width: 0;
+    min-height: 44px;
     border: 1px solid var(--wk-border, #999);
     border-radius: var(--wk-radius, 0px);
     background: var(--wk-surface, #fff);
