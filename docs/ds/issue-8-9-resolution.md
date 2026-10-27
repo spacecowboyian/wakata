@@ -114,10 +114,10 @@ This record does not close a GitHub issue, claim final owner visual approval,
 or promote production use. Manual AT, Firefox/WebKit, real-device and framework
 integration evidence remain absent and assigned to #14/#20 as above.
 
-#8's provisional source/contract gate can close when this decision record is
-merged and linked from #8, with #9 and #12–#14/#20 retaining their explicitly
-assigned implementation and validation work. #9 remains open for the shared
-mode control above. Form-button `loading` and icon slots stay outside the
+#8's provisional source/contract gate closed when this decision record was
+merged and linked from #8. This PR supplies #9's remaining shared mode control;
+#12–#14/#20 retain their explicitly assigned implementation and validation
+work. Form-button `loading` and icon slots stay outside the
 initial contract; boolean controls belong to #17. Do not mark unrun manual AT,
 real-device, Firefox/WebKit, React/Angular, reference-render or production-use
 checks passed. The current work is provisional; shared promotion still needs
