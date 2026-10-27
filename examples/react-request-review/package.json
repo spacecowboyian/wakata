@@ -1,0 +1,26 @@
+{
+  "name": "@wakata/example-react-request-review",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "React 19 controlled-form evidence slice reusing the real @wakata/ds elements. Synthetic data only.",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5173",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "pnpm --filter @wakata/ds build && vitest run"
+  },
+  "dependencies": {
+    "@wakata/ds": "workspace:*",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.2.3",
+    "@vitest/browser": "4.1.12",
+    "@vitest/browser-playwright": "4.1.12",
+    "playwright": "1.64.1",
+    "vite": "7.3.7",
+    "vitest": "4.1.12"
+  }
+}
