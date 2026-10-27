@@ -253,8 +253,12 @@ combobox widget, optgroup/custom option rendering or custom popup contract is
 introduced. The accessibility role of the native single select is `combobox`;
 that does not make this a searchable ARIA combobox implementation. Native menus
 and their keyboard interaction, wrapping and popup styling vary by OS/browser;
-closed long labels may truncate. Components retain native appearance and read
-existing theme tokens, with a 44px minimum control height and visible focus.
+closed long labels may truncate. The closed control uses a decorative chevron,
+with extra text space before it, while selection and the popup remain native.
+Browsers supporting `select:open` point the chevron upward while the picker is
+open; other browsers keep the downward chevron. The chevron is not a separate
+focus or pointer target. The control reads existing theme tokens, with a 44px
+minimum height, visible focus, and an inner fill shaped to the theme's radius.
 
 Chromium keyboard coverage exercises focus, native type-ahead selection and its
 scalar events/FormData. In local headless Chromium on macOS, ArrowDown/Enter and
