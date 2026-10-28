@@ -17,15 +17,15 @@ production adoption or a shared production promotion.
 
 ## Automated results on this branch
 
-| Check                                                                           | Result                                                                                                       |
-| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `pnpm test`                                                                     | 148 DS tests (package and Storybook), 8 React, 6 Angular in Chromium; mode-switch HTML smoke also passes     |
-| `WK_BROWSER=firefox pnpm --filter @wakata/ds exec vitest run --project package` | 87/87 package tests                                                                                          |
-| `WK_BROWSER=webkit pnpm --filter @wakata/ds exec vitest run --project package`  | 87/87 package tests                                                                                          |
-| React fixture with `WK_BROWSER=firefox` and `WK_BROWSER=webkit`                 | 8/8 in each engine                                                                                           |
-| Angular fixture with `WK_BROWSER=firefox` and `WK_BROWSER=webkit`               | 6/6 in each engine                                                                                           |
-| `pnpm typecheck`, `pnpm lint`, `pnpm build-storybook`, `pnpm check:boundaries`  | Pass on the final branch revision                                                                            |
-| `pnpm --filter @wakata/ds exec node scripts/check-slice-visual.mjs`             | Three hosts at phone/desktop light/dark; 320 px and CSS zoom reflow; reduced motion; matching phone geometry |
+| Check                                                                           | Result                                                                                                                                            |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm test`                                                                     | 148 DS tests (package and Storybook), 8 React, 6 Angular in Chromium; mode-switch HTML smoke also passes                                          |
+| `WK_BROWSER=firefox pnpm --filter @wakata/ds exec vitest run --project package` | 87/87 package tests                                                                                                                               |
+| `WK_BROWSER=webkit pnpm --filter @wakata/ds exec vitest run --project package`  | 87/87 package tests                                                                                                                               |
+| React fixture with `WK_BROWSER=firefox` and `WK_BROWSER=webkit`                 | 8/8 in each engine                                                                                                                                |
+| Angular fixture with `WK_BROWSER=firefox` and `WK_BROWSER=webkit`               | 6/6 in each engine                                                                                                                                |
+| `pnpm typecheck`, `pnpm lint`, `pnpm build-storybook`, `pnpm check:boundaries`  | Pass on the final branch revision                                                                                                                 |
+| `pnpm --filter @wakata/ds exec node scripts/check-slice-visual.mjs`             | Three hosts at phone/desktop light/dark; 320 px and CSS zoom reflow; reduced motion; matching phone geometry; scrollable long Dialog at 320 × 568 |
 
 The integrated HTML test covers the synthetic invalid → correction → review → cancel,
 reopen and confirm flow. It now exercises neutral, studio and fieldwork themes in light
@@ -44,6 +44,16 @@ independent review found matching layout and no obvious clipping in those captur
 The script checks geometry, target height and overflow; Ian has not yet accepted these
 as final visual references. CSS zoom 2 at a 640 px viewport approximates a 320 px
 effective layout width. It is not a browser-zoom or physical-device test.
+
+The same script now puts a synthetic name of 16 repeated phrases plus an
+unbroken word through the actual HTML, React and Angular form flow. At 320 × 568,
+each host renders the full name in the review Dialog, keeps the panel inside
+the viewport, scrolls its long content internally, leaves the page without
+horizontal overflow, and makes the final action reachable by scrolling. Six
+versioned captures show the initial and action-visible positions across hosts.
+The captured Dialog layout was inspected for obvious clipping. This is an
+automated browser check and visual inspection, not a real-device or screen-reader
+result.
 
 Playwright WebKit on macOS skips a plain native radio on Tab with its default keyboard
 preference; Option+Tab reaches it. The mode-switch test uses that native traversal key
@@ -77,8 +87,9 @@ was restored to 100% afterwards.
 - Manual Mac Safari with VoiceOver: names, required/error announcements, tab and radio
   behavior, Select, dialog focus containment and return. Record the OS/browser/VoiceOver
   versions, script, reviewer and sanitized observations.
-- Owner review of the new host captures against approved references; long-content
-  across hosts, narrow-window browser zoom, contrast and real-device review. The
+- Owner review of the new host captures against approved references; narrow-window
+  browser zoom, contrast and real-device review. Automated long-content coverage
+  across hosts now exists, but the owner has not accepted its visual reference. The
   Safari desktop 200% spot check above covers only one host/window. Narrow
   reflow, reduced motion and target dimensions have automated evidence, but the
   screenshots and phone captures in #44 are examples, not final sign-off or

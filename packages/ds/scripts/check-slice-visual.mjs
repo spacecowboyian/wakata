@@ -134,9 +134,69 @@ try {
           path: resolve(review, `${host.name}-narrow-zoom2.png`),
           animations: 'disabled',
         });
+        await page.evaluate(() => {
+          document.body.style.zoom = '';
+        });
+        await page.setViewportSize({ width: 320, height: 568 });
+        const longName =
+          'Avery Alexandria Example '.repeat(16) + 'Supercalifragilisticexpialidocious';
+        await page.locator('#rr-name input').fill(longName);
+        await page.locator('#rr-destination select').selectOption('oslo');
+        await page.locator('#rr-submit').click();
+        await page.waitForFunction(() => document.querySelector('wk-dialog')?.opened === true);
+        await page.waitForFunction(() =>
+          document
+            .querySelector('#rr-summary')
+            ?.textContent?.includes('Supercalifragilisticexpialidocious'),
+        );
+        const longContent = await page.evaluate(() => {
+          const panel = document.querySelector('[data-wk-dialog-content]');
+          const box = panel.getBoundingClientRect();
+          return {
+            left: box.left,
+            right: box.right,
+            top: box.top,
+            bottom: box.bottom,
+            pageWidth: document.documentElement.scrollWidth,
+            panelScrollHeight: panel.scrollHeight,
+            panelClientHeight: panel.clientHeight,
+            summary: panel.querySelector('#rr-summary')?.textContent,
+          };
+        });
+        assert.ok(
+          longContent.summary?.includes('Supercalifragilisticexpialidocious'),
+          `${host.name}: expected long name in dialog, got ${JSON.stringify(longContent.summary)}`,
+        );
+        assert.ok(longContent.left >= 0 && longContent.right <= 320);
+        assert.ok(longContent.top >= 0 && longContent.bottom <= 568);
+        assert.ok(
+          longContent.pageWidth <= 320,
+          `${host.name}: long content has no horizontal overflow`,
+        );
+        assert.ok(
+          longContent.panelScrollHeight > longContent.panelClientHeight,
+          `${host.name}: long dialog content scrolls within the panel`,
+        );
+        await page.locator('[data-wk-dialog-content]').screenshot({
+          path: resolve(review, `${host.name}-long-content-phone.png`),
+          animations: 'disabled',
+        });
+        await page.locator('#rr-confirm').scrollIntoViewIfNeeded();
+        const actionVisible = await page.locator('#rr-confirm').evaluate((button) => {
+          const buttonBox = button.getBoundingClientRect();
+          const panelBox = document
+            .querySelector('[data-wk-dialog-content]')
+            .getBoundingClientRect();
+          return buttonBox.top >= panelBox.top && buttonBox.bottom <= panelBox.bottom;
+        });
+        assert.ok(actionVisible, `${host.name}: final action is reachable by panel scrolling`);
+        await page.locator('[data-wk-dialog-content]').screenshot({
+          path: resolve(review, `${host.name}-long-content-actions-phone.png`),
+          animations: 'disabled',
+        });
         assert.deepEqual(errors, [], `${host.name}: no browser errors`);
         console.log(
-          `PASS ${host.name}: phone/desktop light/dark, narrow CSS zoom and reduced motion`,
+          `PASS ${host.name}: phone/desktop light/dark, narrow CSS zoom, reduced motion and long content`,
         );
       } finally {
         await page.close();
