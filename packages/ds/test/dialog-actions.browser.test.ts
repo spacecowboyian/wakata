@@ -236,6 +236,10 @@ test.each([
     expect(panel.top).toBeCloseTo(40, 0);
     expect(panel.bottom).toBeCloseTo(h, 0);
     expect(panel.width).toBeCloseTo(w, 0);
+    expect(getComputedStyle(title).borderBottomWidth).toBe('1px');
+    expect(getComputedStyle(actions).borderTopWidth).toBe('1px');
+    expect(title.getBoundingClientRect().width).toBeCloseTo(panel.width - 2, 0);
+    expect(actions.getBoundingClientRect().width).toBeCloseTo(panel.width - 2, 0);
     expect(body.scrollHeight).toBeGreaterThan(body.clientHeight);
     body.scrollTop = body.scrollHeight;
     expect(title.getBoundingClientRect().top).toBeCloseTo(titleTop, 0);

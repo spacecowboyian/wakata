@@ -239,7 +239,9 @@ export const LongContentAndNarrowReflow: Story = {
     await expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(
       document.documentElement.clientWidth,
     );
-    await expect(getComputedStyle(content).padding).toBe('24px');
+    await expect(getComputedStyle(content).padding).toBe(
+      window.matchMedia('(max-width: 600px)').matches ? '0px' : '24px',
+    );
     dialog.dataset.longPlayComplete = 'true';
   },
 };
