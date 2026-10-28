@@ -47,6 +47,11 @@ const reviewStyles = `
   }
 `;
 
+const sheetContextStyles = `
+  .sheet-context { margin:0 0 24px; padding:8px 12px; color:var(--wk-text); background:var(--wk-surface); font-size:12px; font-weight:700; letter-spacing:.08em; }
+  @media(max-width:600px) { .sheet-context { position:fixed; inset:0 0 auto; z-index:1; height:40px; box-sizing:border-box; margin:0; } }
+`;
+
 const waitForClosedContent = async (dialog: HTMLElement, content: HTMLElement): Promise<void> => {
   const deadline = Date.now() + 1500;
   while (dialog.hasAttribute('opened') || content.hasAttribute('data-wk-dialog-content')) {
@@ -151,20 +156,77 @@ export const ReviewDialog: Story = {
   },
 };
 
-export const LongContentAndNarrowReflow: Story = {
+export const MobileSheetShort: Story = {
+  name: 'Mobile Sheet / Short Content',
+  parameters: {
+    // Lion's native outer <dialog role="none"> triggers axe while open; #14 tracks manual AT review.
+    a11y: { test: 'todo' },
+  },
   render: () => html`
-    <main style="width:min(100%, 960px);margin-inline:auto">
+    <style>
+      ${reviewStyles}
+      ${sheetContextStyles}
+    </style>
+    <main class="review-page" data-wk-theme="fieldwork" @click=${closeReview}>
+      <header class="sheet-context">WAKATA WORKSPACE</header>
+      <h1>Workspace request</h1>
+      <p>A synthetic request is ready to review.</p>
       <wk-dialog>
-        <button slot="invoker">Open long review</button>
-        <section slot="content" aria-labelledby="long-title">
-          <h2 id="long-title">
-            Review for the cross-regional planning group and its extended collaboration schedule
-          </h2>
-          <p>
-            This synthetic, intentionally long review description verifies viewport-constrained
-            scrolling without page overflow or changes to the modal geometry.
-          </p>
-          <wk-button slot="actions" variant="primary">Confirm extended review</wk-button>
+        <wk-button slot="invoker">Open short review</wk-button>
+        <section
+          slot="content"
+          aria-labelledby="sheet-short-title"
+          aria-describedby="sheet-short-body"
+        >
+          <h2 id="sheet-short-title">Review request</h2>
+          <p id="sheet-short-body">Confirm this synthetic workspace change. Nothing is sent.</p>
+          <div class="review-actions">
+            <wk-button data-review-close>Cancel</wk-button>
+            <wk-button variant="primary" data-review-close>Confirm</wk-button>
+          </div>
+        </section>
+      </wk-dialog>
+    </main>
+  `,
+  play: async ({ canvasElement }) => {
+    const dialog = canvasElement.querySelector('wk-dialog')!;
+    await dialog.open();
+    await expect(dialog.opened).toBe(true);
+    dialog.dataset.sheetPlayComplete = 'true';
+  },
+};
+
+export const LongContentAndNarrowReflow: Story = {
+  name: 'Mobile Sheet / Long Content',
+  parameters: {
+    // Keep the sheet open for visual review; the upstream outer-dialog role remains an AT gate item.
+    a11y: { test: 'todo' },
+  },
+  render: () => html`
+    <style>
+      ${reviewStyles}
+      ${sheetContextStyles}
+    </style>
+    <main class="review-page" data-wk-theme="fieldwork" @click=${closeReview}>
+      <header class="sheet-context">WAKATA WORKSPACE</header>
+      <h1>Workspace request</h1>
+      <p>A synthetic request with a longer review is ready.</p>
+      <wk-dialog>
+        <wk-button slot="invoker">Open long review</wk-button>
+        <section slot="content" aria-labelledby="long-title" aria-describedby="long-body">
+          <h2 id="long-title">Review extended request</h2>
+          <div id="long-body">
+            <p>This synthetic request has several review notes. Nothing is sent.</p>
+            ${Array.from(
+              { length: 12 },
+              (_, index) =>
+                html`<p>Review note ${index + 1}: check the proposed workspace details.</p>`,
+            )}
+          </div>
+          <div class="review-actions">
+            <wk-button data-review-close>Cancel</wk-button>
+            <wk-button variant="primary" data-review-close>Confirm</wk-button>
+          </div>
         </section>
       </wk-dialog>
     </main>
@@ -177,8 +239,9 @@ export const LongContentAndNarrowReflow: Story = {
     await expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(
       document.documentElement.clientWidth,
     );
-    await expect(getComputedStyle(content).padding).toBe('24px');
-    await dialog.close();
+    await expect(getComputedStyle(content).padding).toBe(
+      window.matchMedia('(max-width: 600px)').matches ? '0px' : '24px',
+    );
     dialog.dataset.longPlayComplete = 'true';
   },
 };

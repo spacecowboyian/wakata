@@ -152,7 +152,12 @@ wireframe attributes plus computed supported `--wk-*` tokens, including
 typography and consumer overrides. These refresh while open when an origin
 ancestor's relevant attributes change or when the System color preference
 changes. The content root uses 24px padding, a 28rem maximum width, 24px
-viewport gutters and viewport-constrained scrolling. It follows the theme
+viewport gutters and viewport-constrained scrolling on desktop. At viewport
+widths of 600px or less, it becomes a near-full-height bottom sheet with a
+40px top reveal, a top-edge shadow and a stable height independent of content
+length. With a title, one body element and an action container as its three
+direct children, only the middle body scrolls; the title and actions stay in
+place. Other content structures remain scrollable as a whole. It follows the theme
 surface/border/radius with a restrained modal shadow; dark mode lifts the
 panel surface slightly. Wireframe changes the theme radius without changing
 geometry. The backdrop uses a lighter dim than Lion's default. No arbitrary
@@ -173,7 +178,13 @@ untested), no real-device, React or Angular coverage; this is not gate completio
 with a named/described review modal in the Fieldwork theme. Chromium browser tests
 verify that Cancel and Confirm changes only close this synthetic example;
 neither performs a business action. Review screenshots use Fieldwork typography,
-while the story separately checks a live typography override.
+while the story separately checks a live typography override. The visible
+Storybook entries `Mobile Sheet / Short Content` and `Mobile Sheet / Long
+Content` open their Dialogs for phone-width review. The long story keeps its
+title and action footer fixed while its body scrolls. Its open-state automated
+Storybook accessibility check is marked `todo`: Lion's outer native
+`<dialog role="none">` triggers an axe role violation. This known upstream
+markup issue and manual VoiceOver behavior remain #14 gate items, not passes.
 Chromium browser tests
 cover repeated lifecycle, keyboard containment, Escape/backdrop behavior,
 focus return and fallback, removed content/invokers, theme nesting/live

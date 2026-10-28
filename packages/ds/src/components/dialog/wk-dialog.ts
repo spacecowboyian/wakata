@@ -48,6 +48,11 @@ export class WkDialog extends LionDialog {
         animation-duration: 1ms;
       }
     }
+    @media (max-width: 600px) {
+      dialog[data-overlay-outer-wrapper] > .overlays__overlay-container--center {
+        align-items: flex-end;
+      }
+    }
   `;
 
   #contentRoot?: HTMLElement;
