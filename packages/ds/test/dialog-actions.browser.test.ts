@@ -250,3 +250,37 @@ test.each([
     parent.remove();
   },
 );
+
+test('short mobile viewport keeps dialog actions reachable by scrolling the sheet', async () => {
+  await page.viewport(287, 225);
+  await import('@wakata/ds/dialog/define');
+  const parent = document.createElement('div');
+  parent.dataset.wkTheme = 'fieldwork';
+  parent.innerHTML = `
+    <wk-dialog>
+      <wk-button slot="invoker">Open</wk-button>
+      <section slot="content" aria-labelledby="short-title" aria-describedby="short-body">
+        <h2 id="short-title">Review extended request</h2>
+        <div id="short-body">${'<p>Synthetic review note with long content.</p>'.repeat(8)}</div>
+        <div><wk-button>Cancel</wk-button><wk-button variant="primary">Confirm</wk-button></div>
+      </section>
+    </wk-dialog>`;
+  document.body.append(parent);
+  const dialog = parent.querySelector('wk-dialog')!;
+  const content = parent.querySelector<HTMLElement>('[slot="content"]')!;
+  const actions = content.children.item(2)!;
+  await settle(dialog);
+  await openSettled(dialog);
+  expect(content.scrollHeight).toBeGreaterThan(content.clientHeight);
+  expect(getComputedStyle(content).overflowY).toBe('auto');
+  content.scrollTop = content.scrollHeight;
+  expect(actions.getBoundingClientRect().top).toBeGreaterThanOrEqual(
+    content.getBoundingClientRect().top,
+  );
+  expect(actions.getBoundingClientRect().bottom).toBeLessThanOrEqual(
+    content.getBoundingClientRect().bottom,
+  );
+  expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(287);
+  await dialog.close();
+  parent.remove();
+});
