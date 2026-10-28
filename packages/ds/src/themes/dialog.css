@@ -75,6 +75,17 @@
     border-top: 1px solid var(--wk-border, #999);
   }
 
+  @media (max-height: 480px) {
+    [data-wk-dialog-content]:has(> :nth-child(3):last-child) {
+      display: block;
+      overflow: auto;
+    }
+
+    [data-wk-dialog-content]:has(> :nth-child(3):last-child) > :nth-child(2) {
+      overflow: visible;
+    }
+  }
+
   @keyframes wk-dialog-sheet-in {
     from {
       transform: translateY(100%);

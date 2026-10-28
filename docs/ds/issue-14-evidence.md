@@ -82,15 +82,36 @@ VoiceOver; it is not treated as proof of either a screen-reader failure or pass.
 VoiceOver was not successfully activated or reviewed in this check. Safari zoom
 was restored to 100% afterwards.
 
+## Narrow Safari zoom follow-up
+
+On 27 October 2026, Safari 26.3 on macOS 15.7.6 was resized to a narrow window
+and its Page Menu zoom set to 200%. The published long Dialog story at merge
+`e4c8021` clipped the action footer: Cancel was partly visible and Confirm was
+not reachable within the fixed sheet. The local short-height fallback lets the
+whole sheet scroll when the viewport height is at most 480 CSS px. In the same
+Safari window and at the same 200% zoom, dragging the sheet scrollbar to the
+bottom revealed both actions. The [before](../../packages/ds/review/dialog/safari-narrow-zoom-before.png),
+[after at top](../../packages/ds/review/dialog/safari-narrow-zoom-after-top.png), and
+[after at actions](../../packages/ds/review/dialog/safari-narrow-zoom-after-actions.png)
+captures show this limited check. Browser tests also assert action reachability
+at a 287 × 225 CSS px viewport in Chromium, Firefox and WebKit. The fallback
+allows the title and actions to scroll in a very short viewport because keeping
+both fixed would clip an action. Safari zoom was returned to 100% afterwards.
+This is one Storybook host in a desktop Safari window; it is not VoiceOver,
+real-device, or three-host zoom evidence. Safari's accessibility inspection for
+this Storybook story exposed the heading, body notes and action buttons; it did
+not resolve the earlier missing-descendants observation in the plain HTML host
+or establish that VoiceOver announces a modal dialog.
+
 ## Required evidence still missing
 
 - Manual Mac Safari with VoiceOver: names, required/error announcements, tab and radio
   behavior, Select, dialog focus containment and return. Record the OS/browser/VoiceOver
   versions, script, reviewer and sanitized observations.
-- Owner review of the new host captures against approved references; narrow-window
-  browser zoom, contrast and real-device review. Automated long-content coverage
+- Owner review of the new host captures against approved references; cross-host
+  narrow-window browser zoom, contrast and real-device review. Automated long-content coverage
   across hosts now exists, but the owner has not accepted its visual reference. The
-  Safari desktop 200% spot check above covers only one host/window. Narrow
+  Safari 200% spot checks above cover only two window sizes of one host. Narrow
   reflow, reduced motion and target dimensions have automated evidence, but the
   screenshots and phone captures in #44 are examples, not final sign-off or
   real-device proof.

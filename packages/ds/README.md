@@ -181,8 +181,10 @@ neither performs a business action. Review screenshots use Fieldwork typography,
 while the story separately checks a live typography override. The visible
 Storybook entries `Mobile Sheet / Short Content` and `Mobile Sheet / Long
 Content` open their Dialogs for phone-width review. The long story keeps its
-title and action footer fixed while its body scrolls. Its open-state automated
-Storybook accessibility check is marked `todo`: Lion's outer native
+title and action footer fixed while its body scrolls. At very short viewport
+heights, the whole sheet scrolls so actions remain reachable at high browser
+zoom. Its open-state automated Storybook accessibility check is marked `todo`:
+Lion's outer native
 `<dialog role="none">` triggers an axe role violation. This known upstream
 markup issue and manual VoiceOver behavior remain #14 gate items, not passes.
 Chromium browser tests
