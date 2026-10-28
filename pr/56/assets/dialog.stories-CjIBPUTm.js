@@ -1,4 +1,4 @@
-import{b as c}from"./iframe-KRbskJV4.js";import"./preload-helper-PPVm8Dsz.js";const{expect:e,userEvent:w,within:u}=__STORYBOOK_MODULE_TEST__,b={title:"Components/Dialog",tags:["autodocs"],parameters:{docs:{description:{component:"\n`wk-dialog` is a provisional modal built on Lion 0.25's public dialog API. Its content root needs a title via `aria-label` or `aria-labelledby`; `aria-describedby` references IDs inside that root. The modal traps focus, makes background content unavailable, locks page scrolling, closes on Escape and does not close from its backdrop.\n"}}}},p=n=>{if(!n.composedPath().some(t=>t instanceof HTMLElement&&t.hasAttribute("data-review-close")))return;n.currentTarget.querySelector("wk-dialog").close()},h=`
+import{b as c}from"./iframe-DkJBBbLM.js";import"./preload-helper-PPVm8Dsz.js";const{expect:e,userEvent:w,within:u}=__STORYBOOK_MODULE_TEST__,b={title:"Components/Dialog",tags:["autodocs"],parameters:{docs:{description:{component:"\n`wk-dialog` is a provisional modal built on Lion 0.25's public dialog API. Its content root needs a title via `aria-label` or `aria-labelledby`; `aria-describedby` references IDs inside that root. The modal traps focus, makes background content unavailable, locks page scrolling, closes on Escape and does not close from its backdrop.\n"}}}},p=n=>{if(!n.composedPath().some(t=>t instanceof HTMLElement&&t.hasAttribute("data-review-close")))return;n.currentTarget.querySelector("wk-dialog").close()},h=`
   .review-page { box-sizing:border-box; width:min(100%, 960px); min-height:calc(100vh - 48px); margin:0 auto; padding:24px; color:var(--wk-text); background:var(--wk-surface); font-family:var(--wk-font); }
   .review-header { display:flex; align-items:center; justify-content:space-between; gap:16px; }
   .review-page h1, .review-page h2 { overflow-wrap:anywhere; }
@@ -107,7 +107,7 @@ import{b as c}from"./iframe-KRbskJV4.js";import"./preload-helper-PPVm8Dsz.js";co
         </section>
       </wk-dialog>
     </main>
-  `,play:async({canvasElement:n})=>{const o=n.querySelector("wk-dialog"),t=n.querySelector('[slot="content"]');await o.open(),await e(t.scrollWidth).toBeLessThanOrEqual(t.clientWidth),await e(document.documentElement.scrollWidth).toBeLessThanOrEqual(document.documentElement.clientWidth),await e(getComputedStyle(t).padding).toBe("24px"),o.dataset.longPlayComplete="true"}},f=["ReviewDialog","MobileSheetShort","LongContentAndNarrowReflow"];r.parameters={...r.parameters,docs:{...r.parameters?.docs,source:{originalSource:`{
+  `,play:async({canvasElement:n})=>{const o=n.querySelector("wk-dialog"),t=n.querySelector('[slot="content"]');await o.open(),await e(t.scrollWidth).toBeLessThanOrEqual(t.clientWidth),await e(document.documentElement.scrollWidth).toBeLessThanOrEqual(document.documentElement.clientWidth),await e(getComputedStyle(t).padding).toBe(window.matchMedia("(max-width: 600px)").matches?"0px":"24px"),o.dataset.longPlayComplete="true"}},f=["ReviewDialog","MobileSheetShort","LongContentAndNarrowReflow"];r.parameters={...r.parameters,docs:{...r.parameters?.docs,source:{originalSource:`{
   name: 'Review Dialog / Combined Slice',
   render: () => html\`
     <style>
@@ -286,7 +286,7 @@ import{b as c}from"./iframe-KRbskJV4.js";import"./preload-helper-PPVm8Dsz.js";co
     await dialog.open();
     await expect(content.scrollWidth).toBeLessThanOrEqual(content.clientWidth);
     await expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(document.documentElement.clientWidth);
-    await expect(getComputedStyle(content).padding).toBe('24px');
+    await expect(getComputedStyle(content).padding).toBe(window.matchMedia('(max-width: 600px)').matches ? '0px' : '24px');
     dialog.dataset.longPlayComplete = 'true';
   }
 }`,...l.parameters?.docs?.source}}};export{l as LongContentAndNarrowReflow,s as MobileSheetShort,r as ReviewDialog,f as __namedExportsOrder,b as default};
