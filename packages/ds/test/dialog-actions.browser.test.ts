@@ -47,6 +47,11 @@ const create = async (mode = 'light') => {
 const scrollLocked = () => document.body.classList.contains('overlays-scroll-lock');
 const nativeClick = (el: HTMLElement) =>
   el.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+const openSettled = async (dialog: HTMLElement & { open(): Promise<void> }): Promise<void> => {
+  await dialog.open();
+  const content = dialog.querySelector<HTMLElement>('[slot="content"]');
+  if (content) await Promise.all(content.getAnimations().map((animation) => animation.finished));
+};
 
 afterEach(async () => {
   await page.viewport(414, 896);
@@ -60,7 +65,7 @@ test.each(['disabled', 'loading'] as const)(
     confirm.addEventListener('click', () => (activations += 1));
     confirm[state] = true;
     await confirm.updateComplete;
-    await dialog.open();
+    await openSettled(dialog);
     nativeClick(confirm);
     confirm.click();
     // Real pointer click on the visible Confirm; must not throw and must not activate.
@@ -96,7 +101,7 @@ test('repeated action and close clicks run each effect once and release focus an
     if (!(e as CustomEvent<{ opened: boolean }>).detail.opened) closedEvents += 1;
   });
   invoker.focus();
-  await dialog.open();
+  await openSettled(dialog);
   for (let i = 0; i < 4; i += 1) nativeClick(confirm);
   await settle(dialog);
   expect(confirmed).toBe(1);
@@ -106,7 +111,7 @@ test('repeated action and close clicks run each effect once and release focus an
   expect(document.activeElement).toBe(invoker);
 
   confirm.loading = false;
-  await dialog.open();
+  await openSettled(dialog);
   expect(scrollLocked()).toBe(true);
   await Promise.all([dialog.close(), dialog.close()]);
   await cancel.updateComplete;
@@ -118,7 +123,7 @@ test('repeated action and close clicks run each effect once and release focus an
 test('content replacement and a removed invoker do not strand focus or scroll lock', async () => {
   const { dialog, parent, invoker, content } = await create();
   parent.tabIndex = 0;
-  await dialog.open();
+  await openSettled(dialog);
   const replacement = content.cloneNode(true) as HTMLElement;
   content.replaceWith(replacement);
   await new Promise<void>((resolve) => setTimeout(resolve, 50));
@@ -143,7 +148,7 @@ test('current application focus survives an action-driven close', async () => {
   const { dialog, parent, confirm, invoker } = await create();
   const outside = document.createElement('button');
   document.body.append(outside);
-  await dialog.open();
+  await openSettled(dialog);
   // The app moves focus as the dialog starts closing; Dialog must not steal it back.
   dialog.addEventListener('opened-changed', (e) => {
     if (!(e as CustomEvent<{ opened: boolean }>).detail.opened) outside.focus();
@@ -181,7 +186,7 @@ test.each([
   async (mode, w, h) => {
     await page.viewport(w, h);
     const { dialog, parent, content } = await create(mode);
-    await dialog.open();
+    await openSettled(dialog);
     const style = getComputedStyle(content);
     expect(style.backgroundColor).not.toMatch(/rgba\(.*,\s*0\)$|^transparent$/);
     expect(contrast(style.color, style.backgroundColor)).toBeGreaterThanOrEqual(4.5);
@@ -189,6 +194,54 @@ test.each([
     expect(rect.left).toBeGreaterThanOrEqual(0);
     expect(rect.right).toBeLessThanOrEqual(window.innerWidth);
     expect(rect.bottom).toBeLessThanOrEqual(window.innerHeight);
+    if (w <= 600) {
+      expect(rect.top).toBeCloseTo(40, 0);
+      expect(rect.bottom).toBeCloseTo(window.innerHeight, 0);
+    }
+    await dialog.close();
+    parent.remove();
+  },
+);
+
+test.each([
+  [320, 568],
+  [390, 844],
+])(
+  'mobile sheet at %ix%i keeps its title and actions fixed while the body scrolls',
+  async (w, h) => {
+    await page.viewport(w, h);
+    await import('@wakata/ds/dialog/define');
+    const parent = document.createElement('div');
+    parent.dataset.wkTheme = 'fieldwork';
+    parent.innerHTML = `
+    <wk-dialog>
+      <wk-button slot="invoker">Open</wk-button>
+      <section slot="content" aria-labelledby="sheet-title" aria-describedby="sheet-body">
+        <h2 id="sheet-title">Review extended request</h2>
+        <div id="sheet-body">${'<p>Synthetic review note with long content.</p>'.repeat(20)}</div>
+        <div><wk-button>Cancel</wk-button><wk-button variant="primary">Confirm</wk-button></div>
+      </section>
+    </wk-dialog>`;
+    document.body.append(parent);
+    const dialog = parent.querySelector('wk-dialog')!;
+    const content = parent.querySelector<HTMLElement>('[slot="content"]')!;
+    const body = parent.querySelector<HTMLElement>('#sheet-body')!;
+    await settle(dialog);
+    await openSettled(dialog);
+    const panel = content.getBoundingClientRect();
+    const title = content.children.item(0)!;
+    const actions = content.children.item(2)!;
+    const titleTop = title.getBoundingClientRect().top;
+    const actionsBottom = actions.getBoundingClientRect().bottom;
+    expect(panel.top).toBeCloseTo(40, 0);
+    expect(panel.bottom).toBeCloseTo(h, 0);
+    expect(panel.width).toBeCloseTo(w, 0);
+    expect(body.scrollHeight).toBeGreaterThan(body.clientHeight);
+    body.scrollTop = body.scrollHeight;
+    expect(title.getBoundingClientRect().top).toBeCloseTo(titleTop, 0);
+    expect(actions.getBoundingClientRect().bottom).toBeCloseTo(actionsBottom, 0);
+    expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(w);
+    expect(scrollLocked()).toBe(true);
     await dialog.close();
     parent.remove();
   },

@@ -72,6 +72,9 @@ try {
       const content = document.querySelector('[data-wk-dialog-content]');
       return content?.getAttribute('aria-modal') === 'true';
     });
+    await page.locator('[data-wk-dialog-content]').evaluate(async (content) => {
+      await Promise.all(content.getAnimations().map((animation) => animation.finished));
+    });
     const measures = await page.evaluate(() => {
       const content = document.querySelector('[data-wk-dialog-content]');
       return {
@@ -80,9 +83,11 @@ try {
         describedby: content.getAttribute('aria-describedby'),
         width: content.getBoundingClientRect().width,
         fontFamily: getComputedStyle(content).fontFamily,
-        radius: getComputedStyle(content).borderRadius,
+        radius: getComputedStyle(content).borderTopLeftRadius,
         padding: getComputedStyle(content).padding,
         height: content.getBoundingClientRect().height,
+        top: content.getBoundingClientRect().top,
+        bottom: content.getBoundingClientRect().bottom,
         actions: [...content.querySelectorAll('wk-button')].map((button) => ({
           width: button.getBoundingClientRect().width,
           height: button.getBoundingClientRect().height,
@@ -117,8 +122,15 @@ try {
     assert.equal(measures.scrollLocked, true);
     assert.equal(measures.scrollWidth <= measures.clientWidth, true);
     assert.equal(measures.width <= width, true);
-    assert.equal(measures.width <= width - 48, true, 'at least 24px side gutters');
     if (width <= 600) {
+      assert.equal(Math.abs(measures.width - width) <= 1, true, 'mobile sheet spans the viewport');
+      assert.equal(
+        Math.abs(measures.height - (height - 40)) <= 1,
+        true,
+        'mobile sheet has fixed height',
+      );
+      assert.equal(Math.abs(measures.top - 40) <= 1, true, `mobile sheet top ${measures.top}`);
+      assert.equal(Math.abs(measures.bottom - height) <= 1, true, 'mobile sheet meets bottom edge');
       assert.equal(measures.actions.length, 2);
       for (const action of measures.actions) {
         assert.equal(action.height >= 44, true, 'phone action target is at least 44px tall');
@@ -150,6 +162,39 @@ try {
     'wireframe keeps panel geometry',
   );
 
+  const sheetGeometry = new Map();
+  for (const [story, label] of [
+    ['mobile-sheet-short', 'short'],
+    ['long-content-and-narrow-reflow', 'long'],
+  ]) {
+    for (const mode of ['light', 'dark']) {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.goto(
+        `${base}/iframe.html?id=components-dialog--${story}&viewMode=story&globals=mode:${mode}`,
+      );
+      await page.waitForFunction(
+        (key) => document.querySelector('wk-dialog')?.dataset[key] === 'true',
+        story === 'mobile-sheet-short' ? 'sheetPlayComplete' : 'longPlayComplete',
+      );
+      await page.locator('[data-wk-dialog-content]').evaluate(async (content) => {
+        await Promise.all(content.getAnimations().map((animation) => animation.finished));
+      });
+      const geometry = await page.locator('[data-wk-dialog-content]').evaluate((content) => {
+        const rect = content.getBoundingClientRect();
+        return { top: rect.top, bottom: rect.bottom, width: rect.width };
+      });
+      assert.deepEqual(geometry, { top: 40, bottom: 844, width: 390 });
+      assert.equal(await page.locator('wk-dialog').evaluate((dialog) => dialog.opened), true);
+      sheetGeometry.set(`${label}-${mode}`, geometry);
+      await page.screenshot({
+        path: resolve(review, `sheet-${label}-phone-${mode}.png`),
+        animations: 'disabled',
+      });
+    }
+  }
+  assert.deepEqual(sheetGeometry.get('short-light'), sheetGeometry.get('long-light'));
+  assert.deepEqual(sheetGeometry.get('short-dark'), sheetGeometry.get('long-dark'));
+
   await page.setViewportSize({ width: 320, height: 568 });
   await page.goto(
     `${base}/iframe.html?id=components-dialog--long-content-and-narrow-reflow&viewMode=story`,
@@ -157,9 +202,14 @@ try {
   await page.waitForFunction(
     () => document.querySelector('wk-dialog')?.dataset.longPlayComplete === 'true',
   );
-  await page.evaluate(async () => document.querySelector('wk-dialog').open());
+  await page.locator('[data-wk-dialog-content]').evaluate(async (content) => {
+    await Promise.all(content.getAnimations().map((animation) => animation.finished));
+  });
   const narrow = await page.evaluate(() => {
     const content = document.querySelector('[data-wk-dialog-content]');
+    const body = content.children[1];
+    const header = content.children[0];
+    const footer = content.children[2];
     const rect = content.getBoundingClientRect();
     return {
       left: rect.left,
@@ -167,13 +217,36 @@ try {
       top: rect.top,
       bottom: rect.bottom,
       pageWidth: document.documentElement.scrollWidth,
+      bodyScrollHeight: body.scrollHeight,
+      bodyClientHeight: body.clientHeight,
+      headerTop: header.getBoundingClientRect().top,
+      footerBottom: footer.getBoundingClientRect().bottom,
     };
   });
   assert.equal(narrow.left >= 0 && narrow.right <= 320, true);
-  assert.equal(narrow.top >= 0 && narrow.bottom <= 568, true);
+  assert.equal(Math.abs(narrow.top - 40) <= 1 && Math.abs(narrow.bottom - 568) <= 1, true);
+  assert.equal(narrow.bodyScrollHeight > narrow.bodyClientHeight, true);
   assert.equal(narrow.pageWidth <= 320, true);
   await page.screenshot({
     path: resolve(review, 'review-long-narrow.png'),
+    animations: 'disabled',
+  });
+  await page.locator('#long-body').evaluate((body) => {
+    body.scrollTop = body.scrollHeight;
+  });
+  const stationary = await page.evaluate(() => {
+    const content = document.querySelector('[data-wk-dialog-content]');
+    return {
+      headerTop: content.children[0].getBoundingClientRect().top,
+      footerBottom: content.children[2].getBoundingClientRect().bottom,
+    };
+  });
+  assert.deepEqual(stationary, {
+    headerTop: narrow.headerTop,
+    footerBottom: narrow.footerBottom,
+  });
+  await page.screenshot({
+    path: resolve(review, 'review-long-narrow-scrolled.png'),
     animations: 'disabled',
   });
 
