@@ -190,6 +190,23 @@ try {
         path: resolve(review, `sheet-${label}-phone-${mode}.png`),
         animations: 'disabled',
       });
+      for (const y of [80, 400, 830]) {
+        await page.mouse.click(2, y);
+        assert.equal(await page.locator('wk-dialog').evaluate((dialog) => dialog.opened), true);
+      }
+      await page.evaluate(() => {
+        window.__backgroundClicks = 0;
+        document.querySelector('main').addEventListener('click', () => {
+          window.__backgroundClicks += 1;
+        });
+      });
+      await page.mouse.click(20, 20);
+      await page.waitForFunction(() => document.querySelector('wk-dialog')?.opened === false);
+      assert.equal(await page.evaluate(() => window.__backgroundClicks), 0);
+      assert.equal(
+        await page.evaluate(() => document.body.classList.contains('overlays-scroll-lock')),
+        false,
+      );
     }
   }
   assert.deepEqual(sheetGeometry.get('short-light'), sheetGeometry.get('long-light'));
@@ -249,6 +266,22 @@ try {
     path: resolve(review, 'review-long-narrow-scrolled.png'),
     animations: 'disabled',
   });
+
+  await page.setViewportSize({ width: 287, height: 225 });
+  await page.goto(
+    `${base}/iframe.html?id=components-dialog--long-content-and-narrow-reflow&viewMode=story`,
+  );
+  await page.waitForFunction(
+    () => document.querySelector('wk-dialog')?.dataset.longPlayComplete === 'true',
+  );
+  assert.equal(
+    await page
+      .locator('[data-wk-dialog-content]')
+      .evaluate((content) => content.getBoundingClientRect().top >= 40),
+    true,
+  );
+  await page.mouse.click(20, 20);
+  await page.waitForFunction(() => document.querySelector('wk-dialog')?.opened === false);
 
   await openReview('light', 960, 720);
   await page.addStyleTag({
