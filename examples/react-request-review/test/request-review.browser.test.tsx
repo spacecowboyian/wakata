@@ -56,6 +56,7 @@ const submit = async (q: <T extends El>(id: string) => T) => {
 const fill = async (q: <T extends El>(id: string) => T) => {
   await userEvent.type(q('rr-name').querySelector('input')!, 'Ada Example');
   await userEvent.selectOptions(q('rr-destination').querySelector('select')!, 'oslo');
+  await userEvent.click(q('rr-channel-email').querySelector('input')!);
   await tick();
 };
 
@@ -123,6 +124,8 @@ test('parent-driven props update element, native input, FormData and summary wit
 
 test('simultaneous submits run one review; external errors block review', async () => {
   const { host, q, dialog, render } = await mount({ traveller: 'Ada', destinationValue: 'oslo' });
+  await userEvent.click(q('rr-channel-email').querySelector('input')!);
+  await tick();
   const wrapper = host.querySelector('wk-form')!;
   wrapper.dispatchEvent(new Event('submit'));
   wrapper.dispatchEvent(new Event('submit'));
@@ -239,6 +242,7 @@ test('Notes text area: multiline edits, programmatic update, review and reset', 
   expect(inputs).toBe(0);
   await userEvent.type(q('rr-name').querySelector('input')!, 'Ada');
   await userEvent.selectOptions(q('rr-destination').querySelector('select')!, 'oslo');
+  await userEvent.click(q('rr-channel-email').querySelector('input')!);
   await userEvent.type(ta, 'A{Enter}B');
   await submit(q);
   expect(q('rr-notes-summary').textContent).toBe('A\nB');

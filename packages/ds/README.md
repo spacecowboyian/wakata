@@ -4,28 +4,34 @@ Wakata design system (working title DS) and its Storybook. Private and provision
 
 ## Exports
 
-| Import                          | Contents                                                                   |
-| ------------------------------- | -------------------------------------------------------------------------- |
-| `@wakata/ds`                    | `WkButton`, `WkCard`, types, `wkTokens`, theme names. **No registration.** |
-| `@wakata/ds/button`             | Button class and styles only                                               |
-| `@wakata/ds/text-field`         | TextField class, styles and types only                                     |
-| `@wakata/ds/text-area`          | TextArea class and styles only                                             |
-| `@wakata/ds/define`             | Registers all DS elements (idempotent)                                     |
-| `@wakata/ds/button/define`      | Registers `wk-button` (`defineWkButton()` is safe to call twice)           |
-| `@wakata/ds/card`               | Card class only; no registration                                           |
-| `@wakata/ds/link`               | Link class only; no registration                                           |
-| `@wakata/ds/link/define`        | Registers `wk-link`                                                        |
-| `@wakata/ds/status`             | Status class and types only; no registration                               |
-| `@wakata/ds/status/define`      | Registers `wk-status`                                                      |
-| `@wakata/ds/card/define`        | Registers `wk-card` (`defineWkCard()` is safe to call twice)               |
-| `@wakata/ds/dialog`             | Dialog class only; no registration                                         |
-| `@wakata/ds/dialog/define`      | Registers `wk-dialog` (`defineWkDialog()` is safe to call twice)           |
-| `@wakata/ds/text-field/define`  | Registers `wk-text-field` (`defineWkTextField()` is safe to call twice)    |
-| `@wakata/ds/text-area/define`   | Registers `wk-text-area` (`defineWkTextArea()` is safe to call twice)      |
-| `@wakata/ds/mode-switch`        | Mode switch class, styles and event/mode types; no registration            |
-| `@wakata/ds/mode-switch/define` | Registers `wk-mode-switch` (idempotent)                                    |
-| `@wakata/ds/themes.css`         | Neutral/Studio/Fieldwork themes, light/dark modes, wireframe               |
-| `@wakata/ds/themes/*.css`       | Individual theme files                                                     |
+| Import                             | Contents                                                                   |
+| ---------------------------------- | -------------------------------------------------------------------------- |
+| `@wakata/ds`                       | `WkButton`, `WkCard`, types, `wkTokens`, theme names. **No registration.** |
+| `@wakata/ds/button`                | Button class and styles only                                               |
+| `@wakata/ds/text-field`            | TextField class, styles and types only                                     |
+| `@wakata/ds/text-area`             | TextArea class and styles only                                             |
+| `@wakata/ds/checkbox`              | Checkbox class and Boolean event type; no registration                     |
+| `@wakata/ds/checkbox-group`        | CheckboxGroup class; no registration                                       |
+| `@wakata/ds/switch`                | Switch class; no registration                                              |
+| `@wakata/ds/define`                | Registers all DS elements (idempotent)                                     |
+| `@wakata/ds/button/define`         | Registers `wk-button` (`defineWkButton()` is safe to call twice)           |
+| `@wakata/ds/card`                  | Card class only; no registration                                           |
+| `@wakata/ds/link`                  | Link class only; no registration                                           |
+| `@wakata/ds/link/define`           | Registers `wk-link`                                                        |
+| `@wakata/ds/status`                | Status class and types only; no registration                               |
+| `@wakata/ds/status/define`         | Registers `wk-status`                                                      |
+| `@wakata/ds/card/define`           | Registers `wk-card` (`defineWkCard()` is safe to call twice)               |
+| `@wakata/ds/dialog`                | Dialog class only; no registration                                         |
+| `@wakata/ds/dialog/define`         | Registers `wk-dialog` (`defineWkDialog()` is safe to call twice)           |
+| `@wakata/ds/text-field/define`     | Registers `wk-text-field` (`defineWkTextField()` is safe to call twice)    |
+| `@wakata/ds/text-area/define`      | Registers `wk-text-area` (`defineWkTextArea()` is safe to call twice)      |
+| `@wakata/ds/checkbox/define`       | Registers `wk-checkbox`                                                    |
+| `@wakata/ds/checkbox-group/define` | Registers `wk-checkbox-group`                                              |
+| `@wakata/ds/switch/define`         | Registers `wk-switch`                                                      |
+| `@wakata/ds/mode-switch`           | Mode switch class, styles and event/mode types; no registration            |
+| `@wakata/ds/mode-switch/define`    | Registers `wk-mode-switch` (idempotent)                                    |
+| `@wakata/ds/themes.css`            | Neutral/Studio/Fieldwork themes, light/dark modes, wireframe               |
+| `@wakata/ds/themes/*.css`          | Individual theme files                                                     |
 
 ```ts
 import '@wakata/ds/themes.css';
@@ -84,6 +90,33 @@ The component is registered by `@wakata/ds/define`, or separately with
 fixture using `wk-form` and the existing submit/reset buttons. Its submit event is an attempt
 notification: consumers must guard Lion validation errors, pending validation and external errors
 before processing. It does not demonstrate a React or Angular wrapper.
+
+## `wk-checkbox`, `wk-checkbox-group`, and `wk-switch` (provisional)
+
+Use Checkbox for consent and choices included in native form submission. A checked Checkbox
+submits its `choiceValue` under `name`; unchecked and disabled Checkboxes submit nothing.
+`choiceValue` defaults to `on`. A standalone `required` Checkbox must be checked. A required
+CheckboxGroup needs at least one child checked; its visible group label, help text and error
+describe the choices together. Set each child's `choiceValue` property for distinct submitted
+values. Give the group and each child the same `name`, so `FormData.getAll(name)` returns the
+checked choices, including when nested in `wk-form`. Indeterminate/tri-state is outside this
+contract.
+
+Switch changes an immediate setting and is not a submitted form field. It has a stable visible
+label, a `checked` Boolean property, and `disabled` behavior; it has no `required`, readonly,
+validation, or submitted value. Place it outside the native form. The native switch button
+exposes `role="switch"` and `aria-checked`.
+
+User activations emit bubbling, composed `wk-input` and `wk-change` once each. Checkbox detail
+is `{ checked, name, value }`; Switch detail is `{ checked, name }`. Programmatic `checked`
+changes and form reset emit neither event. `error` on Checkbox/CheckboxGroup is external text
+associated with the control and cleared by reset. The package root exports classes without
+registration; `@wakata/ds/define` or the corresponding component `/define` path registers each.
+
+`examples/checkbox-switch.html` is a synthetic plain HTML fixture. The React controlled and
+Angular reactive request/review examples exercise the same components. Automated browser and
+framework evidence is recorded in `docs/ds/issue-17-evidence.md`. Manual assistive technology
+and physical device evidence remains deferred to issue #59; this is not production promotion.
 
 ## `wk-text-area`
 
