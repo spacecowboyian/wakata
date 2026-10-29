@@ -39,6 +39,9 @@ export const wkRadioStyles = css`
     overflow-wrap: anywhere;
     cursor: pointer;
   }
+  ::slotted(label[slot='label']) {
+    cursor: pointer;
+  }
   .choice-field__help-text,
   .choice-field__after {
     grid-column: 2;
@@ -56,6 +59,7 @@ export const wkRadioStyles = css`
     color: var(--wk-disabled-text, #777);
   }
   :host([disabled]) ::slotted(input[slot='input']),
+  :host([disabled]) ::slotted(label[slot='label']),
   :host([disabled]) .choice-field__label {
     cursor: not-allowed;
   }

@@ -89,6 +89,21 @@ test('checked default is submitted and restored by reset', async () => {
   expect(group.value).toBe('b');
 });
 
+test('option label text shows a pointer and selects the radio when clicked', async () => {
+  const { group } = await mount(wrap(''));
+  const options = group.querySelectorAll<Radio>('wk-radio');
+  const label = options[1]!.querySelector<HTMLLabelElement>(':scope > label[slot="label"]')!;
+  expect(getComputedStyle(label).cursor).toBe('pointer');
+  await userEvent.click(label);
+  expect(group.value).toBe('phone');
+
+  const disabled = options[2]!;
+  disabled.setAttribute('disabled', '');
+  await disabled.updateComplete;
+  const disabledLabel = disabled.querySelector<HTMLLabelElement>(':scope > label[slot="label"]')!;
+  expect(getComputedStyle(disabledLabel).cursor).toBe('not-allowed');
+});
+
 test('user selection emits one wk-input and one wk-change, programmatic emits none', async () => {
   const { group } = await mount(wrap(''));
   const seen: string[] = [];

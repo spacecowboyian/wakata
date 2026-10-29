@@ -64,6 +64,16 @@ try {
       radios: el.querySelectorAll('input[type=radio]').length,
     }));
     assert.ok(metrics.radios >= 2, `${id}: options rendered`);
+    if (story === 'selected') {
+      assert.equal(
+        await group
+          .locator('wk-radio label[slot="label"]')
+          .first()
+          .evaluate((el) => getComputedStyle(el).cursor),
+        'pointer',
+        `${id}: option label text has pointer cursor`,
+      );
+    }
     assert.ok(metrics.width <= 390, `${id}: group fits phone viewport`);
     assert.equal(
       await page.evaluate(

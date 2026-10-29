@@ -15,6 +15,9 @@ CheckboxGroup shape. Owner visual/API review is pending. No production adoption 
 - HTML sets Lion's property-only `choiceValue` after custom element upgrade. The React example
   uses the existing controlled-value hook; Angular uses the existing string value accessor.
 - Styling uses existing theme tokens. No custom arrow-key handler, orientation API, or new tokens.
+- Ian's PR review found that option label text showed the default cursor. The light-DOM label now
+  gets an explicit pointer cursor (not-allowed when disabled); a browser test checks the computed
+  cursor and clicks the label to select the option.
 
 ## Evidence record
 
@@ -25,9 +28,9 @@ Vitest 4.1.12, Storybook 10.6.3.
 | Check                                                                                                          | Result                                                                                                            |
 | -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | `pnpm --dir packages/ds build`                                                                                 | Passed                                                                                                            |
-| `pnpm --dir packages/ds exec vitest run --no-file-parallelism`                                                 | 241/241 passed (package + stories, Chromium)                                                                      |
-| `WK_BROWSER=firefox pnpm --dir packages/ds exec vitest run --project package test/radio-group.browser.test.ts` | 7/7 passed                                                                                                        |
-| `WK_BROWSER=webkit pnpm --dir packages/ds exec vitest run --project package test/radio-group.browser.test.ts`  | 7/7 passed; Tab left the group, but WebKit on this Mac focused `body` rather than the next button                 |
+| `pnpm --dir packages/ds exec vitest run --no-file-parallelism`                                                 | 242/242 passed (package + stories, Chromium)                                                                      |
+| `WK_BROWSER=firefox pnpm --dir packages/ds exec vitest run --project package test/radio-group.browser.test.ts` | 8/8 passed                                                                                                        |
+| `WK_BROWSER=webkit pnpm --dir packages/ds exec vitest run --project package test/radio-group.browser.test.ts`  | 8/8 passed; Tab left the group, but WebKit on this Mac focused `body` rather than the next button                 |
 | `pnpm --dir examples/react-request-review test`                                                                | 12/12 passed (Chromium)                                                                                           |
 | `pnpm --dir examples/angular-request-review exec vitest run`                                                   | 10/10 passed (Chromium)                                                                                           |
 | `pnpm typecheck`, `pnpm lint`, `pnpm check:boundaries`                                                         | Passed                                                                                                            |
@@ -35,7 +38,7 @@ Vitest 4.1.12, Storybook 10.6.3.
 
 The default parallel `pnpm test` run had 239/240 DS tests pass and one unrelated
 ModeSwitch test lose its Vitest iframe during keyboard simulation. A serial rerun passed
-241/241 after the new RadioGroup story was added. React/Angular focused Vite runs printed
+242/242 after the RadioGroup story and cursor test were added. React/Angular focused Vite runs printed
 `optimizeDeps.include` resolution warnings for Lion paths, but assertions passed.
 
 Story IDs: `components-radio-group--default`, `--selected`, `--disabled-option`,
