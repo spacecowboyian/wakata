@@ -14,6 +14,9 @@ declare module 'react' {
       'wk-checkbox-group': El;
       'wk-radio-group': El;
       'wk-radio': El;
+      'wk-tabs': El;
+      'wk-tab': El;
+      'wk-tab-panel': El;
       'wk-switch': El;
       'wk-button': El;
       'wk-button-submit': El;

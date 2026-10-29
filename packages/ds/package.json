@@ -124,6 +124,14 @@
       "types": "./dist/components/switch/define.d.ts",
       "default": "./dist/components/switch/define.js"
     },
+    "./tabs": {
+      "types": "./dist/components/tabs/index.d.ts",
+      "default": "./dist/components/tabs/index.js"
+    },
+    "./tabs/define": {
+      "types": "./dist/components/tabs/define.d.ts",
+      "default": "./dist/components/tabs/define.js"
+    },
     "./mode-switch": {
       "types": "./dist/components/mode-switch/index.d.ts",
       "default": "./dist/components/mode-switch/index.js"
@@ -152,7 +160,7 @@
     "build": "node scripts/clean.mjs && tsc -p tsconfig.build.json && node scripts/copy-css.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "storybook": "storybook dev -p 6006 --no-open",
-    "build-storybook": "storybook build && node scripts/check-storybook.mjs && node scripts/check-card.mjs && node scripts/check-dialog.mjs && node scripts/check-radio-group.mjs",
+    "build-storybook": "storybook build && node scripts/check-storybook.mjs && node scripts/check-card.mjs && node scripts/check-dialog.mjs && node scripts/check-radio-group.mjs && node scripts/check-tabs.mjs",
     "test:storybook-build": "node scripts/check-storybook.mjs",
     "test:dialog:firefox": "WK_BROWSER=firefox vitest run --project package test/dialog.browser.test.ts test/dialog-actions.browser.test.ts",
     "test:dialog:webkit": "WK_BROWSER=webkit vitest run --project package test/dialog.browser.test.ts test/dialog-actions.browser.test.ts",
