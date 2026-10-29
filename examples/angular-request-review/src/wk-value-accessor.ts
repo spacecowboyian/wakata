@@ -4,7 +4,7 @@ import { NG_VALUE_ACCESSOR, type ControlValueAccessor } from '@angular/forms';
 type WkField = HTMLElement & { value: string; disabled: boolean };
 
 /**
- * ControlValueAccessor for `wk-text-field` / `wk-select`.
+ * ControlValueAccessor for `wk-text-field` / `wk-text-area` / `wk-select`.
  * - Bridges the `wk-input` custom event once (Angular does not know it).
  * - `writeValue` sets `.value` programmatically; the elements emit no wk-input for that,
  *   so there is no feedback loop or duplicate update.
@@ -13,7 +13,7 @@ type WkField = HTMLElement & { value: string; disabled: boolean };
  */
 @Directive({
   selector:
-    'wk-text-field[formControlName],wk-text-field[formControl],wk-text-field[ngModel],wk-select[formControlName],wk-select[formControl],wk-select[ngModel]',
+    'wk-text-area[formControlName],wk-text-area[formControl],wk-text-area[ngModel],wk-text-field[formControlName],wk-text-field[formControl],wk-text-field[ngModel],wk-select[formControlName],wk-select[formControl],wk-select[ngModel]',
   providers: [
     { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => WkValueAccessor), multi: true },
   ],

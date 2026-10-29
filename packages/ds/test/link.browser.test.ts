@@ -70,15 +70,18 @@ test('variant defaults to inline and standalone changes display', async () => {
   el.remove();
 });
 
-test('native anchor receives focus and Enter activates a same-page destination', async () => {
-  const before = location.href;
+test('native anchor receives focus and Enter activates it once', async () => {
   const el = await make({ href: '#wk-link-activation' }, 'Read details');
   const anchor = el.shadowRoot!.querySelector('a')!;
   expect(el.textContent).toBe('Read details');
+  let activations = 0;
+  anchor.addEventListener('click', (event) => {
+    event.preventDefault();
+    activations++;
+  });
   anchor.focus();
   expect(el.shadowRoot!.activeElement).toBe(anchor);
   await userEvent.keyboard('{Enter}');
-  expect(location.hash).toBe('#wk-link-activation');
-  history.replaceState(null, '', before);
+  expect(activations).toBe(1);
   el.remove();
 });

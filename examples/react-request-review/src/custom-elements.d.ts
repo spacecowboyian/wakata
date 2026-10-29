@@ -8,6 +8,7 @@ declare module 'react' {
       'wk-card': El;
       'wk-form': El;
       'wk-text-field': El;
+      'wk-text-area': El;
       'wk-select': El;
       'wk-button': El;
       'wk-button-submit': El;

@@ -3,6 +3,8 @@ import '@wakata/ds/themes.css';
 import '@wakata/ds/define';
 import '@wakata/ds/mode-switch/define';
 import type { WkTextField } from '@wakata/ds/text-field';
+import '@wakata/ds/text-area/define';
+import type { WkTextArea } from '@wakata/ds/text-area';
 import type { WkSelect } from '@wakata/ds/select';
 import type { WkDialog } from '@wakata/ds/dialog';
 
@@ -47,13 +49,14 @@ function useWkField<T extends HTMLElement & { value: string }>(
 
 export interface RequestReviewProps {
   completionMs?: number;
-  onComplete?: (data: { traveller: string; destination: string }) => void;
+  onComplete?: (data: { traveller: string; destination: string; notes: string }) => void;
   externalError?: string;
   nameDisabled?: boolean;
   nameReadonly?: boolean;
   /** Parent-driven values; when defined they replace the field state (controlled use). */
   traveller?: string;
   destinationValue?: string;
+  notesValue?: string;
 }
 
 export function RequestReview({
@@ -64,6 +67,7 @@ export function RequestReview({
   nameReadonly = false,
   traveller,
   destinationValue,
+  notesValue,
 }: RequestReviewProps) {
   const [name, setName] = useState(traveller ?? '');
   const [destination, setDestination] = useState(destinationValue ?? '');
@@ -73,16 +77,21 @@ export function RequestReview({
   useEffect(() => {
     if (destinationValue !== undefined) setDestination(destinationValue);
   }, [destinationValue]);
+  const [notes, setNotes] = useState(notesValue ?? '');
+  useEffect(() => {
+    if (notesValue !== undefined) setNotes(notesValue);
+  }, [notesValue]);
   const [status, setStatus] = useState('');
   useEffect(() => {
     setStatus((current) => (current.startsWith('Please correct') ? '' : current));
-  }, [name, destination]);
+  }, [name, destination, notes]);
   const [reviewReady, setReviewReady] = useState(false);
   const [processing, setProcessing] = useState(false);
   const busy = useRef(false);
   const validating = useRef(false);
   const nameRef = useWkField<WkTextField>(name, setName, traveller);
   const destRef = useWkField<WkSelect>(destination, setDestination, destinationValue);
+  const notesRef = useWkField<WkTextArea>(notes, setNotes, notesValue);
   const dialogRef = useRef<WkDialog>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const wrapperRef = useRef<HTMLElement & { hasFeedbackFor: string[] }>(null);
@@ -107,13 +116,15 @@ export function RequestReview({
       }
       validating.current = true;
       try {
-        await Promise.all([nameRef.current, destRef.current].map((f) => f?.updateComplete));
+        await Promise.all(
+          [nameRef.current, destRef.current, notesRef.current].map((f) => f?.updateComplete),
+        );
       } finally {
         validating.current = false;
       }
       const form = formRef.current!;
       const bad = [...form.elements].find((el) => !(el as HTMLInputElement).checkValidity?.());
-      const fields = [nameRef.current!, destRef.current!];
+      const fields = [nameRef.current!, destRef.current!, notesRef.current!];
       if (
         bad ||
         wrapper.hasFeedbackFor.includes('error') ||
@@ -128,7 +139,7 @@ export function RequestReview({
     };
     wrapper.addEventListener('submit', onSubmit);
     return () => wrapper.removeEventListener('submit', onSubmit);
-  }, [nameRef, destRef]);
+  }, [nameRef, destRef, notesRef]);
 
   const confirm = async () => {
     if (busy.current) return;
@@ -138,7 +149,7 @@ export function RequestReview({
     await new Promise((r) => setTimeout(r, completionMs));
     busy.current = false;
     setProcessing(false);
-    onComplete?.({ traveller: name, destination });
+    onComplete?.({ traveller: name, destination, notes });
     setStatus('Mock request complete. No real action was taken.');
     await dialogRef.current!.close();
   };
@@ -151,6 +162,7 @@ export function RequestReview({
     if (busy.current) return e.preventDefault();
     setName('');
     setDestination('');
+    setNotes('');
     setReviewReady(false);
     setStatus('');
   };
@@ -184,6 +196,13 @@ export function RequestReview({
                 <option value="bergen">Bergen</option>
               </select>
             </wk-select>
+            <wk-text-area
+              id="rr-notes"
+              ref={notesRef}
+              name="notes"
+              label="Notes (optional)"
+              help-text="Synthetic notes only."
+            ></wk-text-area>
             <div className="actions">
               <wk-button-submit id="rr-submit" variant="primary" disabled={processing || undefined}>
                 Review request
@@ -207,6 +226,11 @@ export function RequestReview({
                   Mock only: <span id="rr-summary">{`${name} → ${destination}`}</span>. Nothing is
                   sent.
                 </p>
+                {notes ? (
+                  <p id="rr-notes-summary" style={{ whiteSpace: 'pre-wrap' }}>
+                    {notes}
+                  </p>
+                ) : null}
                 <div className="actions">
                   <wk-button id="rr-cancel" disabled={processing || undefined} onClick={cancel}>
                     Cancel

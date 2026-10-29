@@ -9,6 +9,7 @@ Wakata design system (working title DS) and its Storybook. Private and provision
 | `@wakata/ds`                    | `WkButton`, `WkCard`, types, `wkTokens`, theme names. **No registration.** |
 | `@wakata/ds/button`             | Button class and styles only                                               |
 | `@wakata/ds/text-field`         | TextField class, styles and types only                                     |
+| `@wakata/ds/text-area`          | TextArea class and styles only                                             |
 | `@wakata/ds/define`             | Registers all DS elements (idempotent)                                     |
 | `@wakata/ds/button/define`      | Registers `wk-button` (`defineWkButton()` is safe to call twice)           |
 | `@wakata/ds/card`               | Card class only; no registration                                           |
@@ -20,6 +21,7 @@ Wakata design system (working title DS) and its Storybook. Private and provision
 | `@wakata/ds/dialog`             | Dialog class only; no registration                                         |
 | `@wakata/ds/dialog/define`      | Registers `wk-dialog` (`defineWkDialog()` is safe to call twice)           |
 | `@wakata/ds/text-field/define`  | Registers `wk-text-field` (`defineWkTextField()` is safe to call twice)    |
+| `@wakata/ds/text-area/define`   | Registers `wk-text-area` (`defineWkTextArea()` is safe to call twice)      |
 | `@wakata/ds/mode-switch`        | Mode switch class, styles and event/mode types; no registration            |
 | `@wakata/ds/mode-switch/define` | Registers `wk-mode-switch` (idempotent)                                    |
 | `@wakata/ds/themes.css`         | Neutral/Studio/Fieldwork themes, light/dark modes, wireframe               |
@@ -82,6 +84,40 @@ The component is registered by `@wakata/ds/define`, or separately with
 fixture using `wk-form` and the existing submit/reset buttons. Its submit event is an attempt
 notification: consumers must guard Lion validation errors, pending validation and external errors
 before processing. It does not demonstrate a React or Angular wrapper.
+
+## `wk-text-area`
+
+`WkTextArea` extends Lion's `LionTextarea` with `WkScalarFieldMixin`; the native `<textarea>`
+stays in light DOM. Props mirror `wk-text-field` (`name`, `value`, `label`, `help-text`,
+`required`, `disabled`, `readonly`, `error`, `wk-input`/`wk-change` events). Line breaks are
+preserved in the value and `FormData`.
+
+| Property / attribute               | Default  | Use                                                                               |
+| ---------------------------------- | -------- | --------------------------------------------------------------------------------- |
+| `name`                             | none     | Key in native `FormData`.                                                         |
+| `value`                            | `''`     | Multiline string. Programmatic updates and reset emit no user-edit events.        |
+| `label`                            | none     | Visible accessible name; supply one for every field.                              |
+| `help-text` / `error`              | `''`     | Persistent guidance / external validation feedback, associated with the textarea. |
+| `required`, `disabled`, `readonly` | `false`  | Native field semantics and shared validation.                                     |
+| `rows`, `max-rows`                 | `2`, `6` | Initial visible rows and auto-grow cap.                                           |
+
+```html
+<wk-text-area name="notes" label="Notes" help-text="Add details if helpful."></wk-text-area>
+```
+
+Listen to `wk-input` for user edits and `wk-change` for the native commit boundary. Both carry
+`{ value, name }`; use one path to update application state. A readonly field remains focusable
+and is submitted; a disabled field is neither focusable nor submitted. The component uses the
+native textarea for keyboard editing, selection, line breaks and focus.
+
+Sizing is Lion's built-in auto-grow: `rows` (default 2) sets the initial height and `max-rows`
+(default 6) caps growth, after which the control scrolls. Drag resizing is disabled; there is no
+fixed-height mode or auto-grow toggle. Registered by `@wakata/ds/define` or
+`@wakata/ds/text-area/define`. `examples/text-area.html` is a synthetic plain-HTML fixture.
+The React controlled and Angular reactive-form request/review examples include optional multiline
+Notes. Automated TextArea package checks run in Chromium, Firefox and WebKit, and the framework
+examples run in Chromium. This is provisional; manual assistive-technology and device evidence
+remains deferred to #59.
 
 ## `wk-card` (provisional presentational primitive)
 
