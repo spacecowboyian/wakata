@@ -59,6 +59,7 @@ const submit = async (q: Q) => {
 const fill = async (q: Q) => {
   await userEvent.type(q('rr-name').querySelector('input')!, 'Ada Example');
   await userEvent.selectOptions(q('rr-destination').querySelector('select')!, 'oslo');
+  await userEvent.click(q('rr-channel-email').querySelector('input')!);
   await tick();
 };
 
@@ -142,7 +143,13 @@ test('FormData serialisation and native reset', async () => {
   expect(new FormData(form).get('traveller')).toBe('Grace');
   await userEvent.click(host.querySelector<El>('wk-button-reset')!);
   await tick();
-  expect(c.form.getRawValue()).toEqual({ traveller: '', destination: '', notes: '' });
+  expect(c.form.getRawValue()).toEqual({
+    traveller: '',
+    destination: '',
+    notes: '',
+    email: false,
+    sms: false,
+  });
   expect(q('rr-name').value).toBe('');
   expect(new FormData(form).get('traveller')).toBe('');
   expect(q('rr-reopen').hasAttribute('disabled')).toBe(true);
@@ -194,7 +201,7 @@ test('invalid -> correction -> review -> cancel / reopen / confirm, repeated sub
 
 test('simultaneous submits open one review', async () => {
   const { host, q, dialog, c } = await mount();
-  c.form.setValue({ traveller: 'Ada', destination: 'oslo', notes: '' });
+  c.form.setValue({ traveller: 'Ada', destination: 'oslo', notes: '', email: true, sms: false });
   await tick();
   const wrapper = host.querySelector('wk-form')!;
   wrapper.dispatchEvent(new Event('submit'));
@@ -227,7 +234,7 @@ test('Notes text area: multiline edits, programmatic update, review and reset', 
   expect(ta.value).toBe('First\nSecond');
   expect(inputs).toBe(0);
   expect(changes).toBe(1);
-  c.form.patchValue({ traveller: 'Ada', destination: 'oslo' });
+  c.form.patchValue({ traveller: 'Ada', destination: 'oslo', email: true });
   await tick();
   await submit(q);
   expect(q('rr-notes-summary').textContent).toBe('First\nSecond');

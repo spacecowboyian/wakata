@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wakata Checkbox and Switch (synthetic example)</title>
+    <!-- Bare imports require the workspace Vite dev server. All data is synthetic. -->
+    <script type="module">
+      import '@wakata/ds/themes.css';
+      import '@wakata/ds/define';
+      const form = document.querySelector('form');
+      const wrapper = document.querySelector('wk-form');
+      const group = document.querySelector('wk-checkbox-group');
+      const output = document.querySelector('#form-output');
+      const switchControl = document.querySelector('wk-switch');
+      const setting = document.querySelector('#setting-output');
+      for (const option of document.querySelectorAll('wk-checkbox[data-choice]')) {
+        option.choiceValue = option.dataset.choice;
+      }
+      switchControl.addEventListener('wk-change', (event) => {
+        setting.textContent = event.detail.checked
+          ? 'Synthetic alerts on.'
+          : 'Synthetic alerts off.';
+      });
+      wrapper.addEventListener('submit', async () => {
+        await group.validate();
+        if (wrapper.hasFeedbackFor.includes('error') || group.hasFeedbackFor.includes('error')) {
+          output.textContent = 'Choose at least one inspection area.';
+          return;
+        }
+        const data = new FormData(form);
+        output.textContent = `Review: ${data.getAll('areas[]').join(', ')}. Consent: ${data.get('consent') ?? 'no'}.`;
+      });
+      form.addEventListener('reset', () => {
+        output.textContent = 'Form reset.';
+      });
+    </script>
+  </head>
+  <body data-wk-theme="neutral" data-wk-mode="light">
+    <main
+      style="
+        display: grid;
+        gap: 24px;
+        max-width: 32rem;
+        margin: 24px auto;
+        padding: 16px;
+        font-family: var(--wk-font);
+        color: var(--wk-text);
+      "
+    >
+      <h1 style="margin: 0">Synthetic inspection choices</h1>
+      <wk-switch name="alerts" label="Synthetic alerts"></wk-switch>
+      <output id="setting-output" aria-live="polite">Synthetic alerts off.</output>
+      <wk-form>
+        <form novalidate style="display: grid; gap: 16px">
+          <wk-checkbox-group
+            name="areas[]"
+            label="Areas to review"
+            help-text="Choose at least one."
+            required
+          >
+            <wk-checkbox name="areas[]" label="Bodywork" data-choice="bodywork"></wk-checkbox>
+            <wk-checkbox name="areas[]" label="Engine" data-choice="engine"></wk-checkbox>
+            <wk-checkbox name="areas[]" label="Interior" data-choice="interior"></wk-checkbox>
+          </wk-checkbox-group>
+          <wk-checkbox name="consent" label="I agree to a synthetic review" required></wk-checkbox>
+          <div style="display: flex; flex-wrap: wrap; gap: 12px">
+            <wk-button-submit variant="primary">Review choices</wk-button-submit>
+            <wk-button-reset>Reset form</wk-button-reset>
+          </div>
+          <output id="form-output" aria-live="polite"></output>
+        </form>
+      </wk-form>
+    </main>
+  </body>
+</html>

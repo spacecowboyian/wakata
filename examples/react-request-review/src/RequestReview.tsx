@@ -47,6 +47,30 @@ function useWkField<T extends HTMLElement & { value: string }>(
   return ref;
 }
 
+const CHANNELS = [
+  ['email', 'Email'],
+  ['sms', 'Text message'],
+] as const;
+
+// Boolean controls report `{ checked }` via wk-input; programmatic `.checked` writes emit nothing.
+function useWkBoolean(checked: boolean, onChecked: (v: boolean) => void) {
+  const ref = useRef<HTMLElement & { checked: boolean }>(null);
+  const handler = useRef(onChecked);
+  handler.current = onChecked;
+  useEffect(() => {
+    const el = ref.current!;
+    const on = (e: Event) =>
+      handler.current((e as CustomEvent<{ checked: boolean }>).detail.checked);
+    el.addEventListener('wk-input', on);
+    return () => el.removeEventListener('wk-input', on);
+  }, []);
+  useLayoutEffect(() => {
+    const el = ref.current!;
+    if (el.checked !== checked) el.checked = checked;
+  }, [checked]);
+  return ref;
+}
+
 export interface RequestReviewProps {
   completionMs?: number;
   onComplete?: (data: { traveller: string; destination: string; notes: string }) => void;
@@ -81,10 +105,18 @@ export function RequestReview({
   useEffect(() => {
     if (notesValue !== undefined) setNotes(notesValue);
   }, [notesValue]);
+  const [channels, setChannels] = useState<string[]>([]);
+  const [compact, setCompact] = useState(false);
+  const toggle = (key: string) => (on: boolean) =>
+    setChannels((c) => (on ? [...new Set([...c, key])] : c.filter((k) => k !== key)));
+  const emailRef = useWkBoolean(channels.includes('email'), toggle('email'));
+  const smsRef = useWkBoolean(channels.includes('sms'), toggle('sms'));
+  const compactRef = useWkBoolean(compact, setCompact);
+  const groupRef = useRef<HTMLElement & { updateComplete: Promise<unknown>; error?: string }>(null);
   const [status, setStatus] = useState('');
   useEffect(() => {
     setStatus((current) => (current.startsWith('Please correct') ? '' : current));
-  }, [name, destination, notes]);
+  }, [name, destination, notes, channels]);
   const [reviewReady, setReviewReady] = useState(false);
   const [processing, setProcessing] = useState(false);
   const busy = useRef(false);
@@ -117,7 +149,9 @@ export function RequestReview({
       validating.current = true;
       try {
         await Promise.all(
-          [nameRef.current, destRef.current, notesRef.current].map((f) => f?.updateComplete),
+          [nameRef.current, destRef.current, notesRef.current, groupRef.current].map(
+            (f) => f?.updateComplete,
+          ),
         );
       } finally {
         validating.current = false;
@@ -127,6 +161,8 @@ export function RequestReview({
       const fields = [nameRef.current!, destRef.current!, notesRef.current!];
       if (
         bad ||
+        channels.length === 0 ||
+        groupRef.current?.error ||
         wrapper.hasFeedbackFor.includes('error') ||
         fields.some((f) => f.error || f.isPending)
       ) {
@@ -139,7 +175,7 @@ export function RequestReview({
     };
     wrapper.addEventListener('submit', onSubmit);
     return () => wrapper.removeEventListener('submit', onSubmit);
-  }, [nameRef, destRef, notesRef]);
+  }, [nameRef, destRef, notesRef, groupRef, channels]);
 
   const confirm = async () => {
     if (busy.current) return;
@@ -163,6 +199,7 @@ export function RequestReview({
     setName('');
     setDestination('');
     setNotes('');
+    setChannels([]);
     setReviewReady(false);
     setStatus('');
   };
@@ -203,6 +240,24 @@ export function RequestReview({
               label="Notes (optional)"
               help-text="Synthetic notes only."
             ></wk-text-area>
+            <wk-checkbox-group
+              id="rr-channels"
+              ref={groupRef}
+              name="channels[]"
+              label="Contact channels"
+              required
+            >
+              {CHANNELS.map(([value, label]) => (
+                <wk-checkbox
+                  key={value}
+                  id={`rr-channel-${value}`}
+                  ref={value === 'email' ? emailRef : smsRef}
+                  name="channels[]"
+                  label={label}
+                  choiceValue={value}
+                ></wk-checkbox>
+              ))}
+            </wk-checkbox-group>
             <div className="actions">
               <wk-button-submit id="rr-submit" variant="primary" disabled={processing || undefined}>
                 Review request
@@ -214,6 +269,12 @@ export function RequestReview({
             </output>
           </form>
         </wk-form>
+        <wk-switch
+          id="rr-compact"
+          ref={compactRef}
+          name="compact"
+          label="Compact summary"
+        ></wk-switch>
         <div slot="actions">
           <div id="rr-scope" data-wk-theme="studio">
             <wk-dialog ref={dialogRef}>

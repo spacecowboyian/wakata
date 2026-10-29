@@ -10,6 +10,9 @@ declare module 'react' {
       'wk-text-field': El;
       'wk-text-area': El;
       'wk-select': El;
+      'wk-checkbox': El;
+      'wk-checkbox-group': El;
+      'wk-switch': El;
       'wk-button': El;
       'wk-button-submit': El;
       'wk-button-reset': El;

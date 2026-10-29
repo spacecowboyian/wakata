@@ -13,6 +13,7 @@ import '@wakata/ds/define';
 import '@wakata/ds/mode-switch/define';
 import '@wakata/ds/text-area/define';
 import { WkValueAccessor } from './wk-value-accessor';
+import { WkBooleanAccessor } from './wk-boolean-accessor';
 
 type Wk = HTMLElement & {
   updateComplete: Promise<unknown>;
@@ -26,7 +27,7 @@ type Wk = HTMLElement & {
 @Component({
   selector: 'app-request-review',
   standalone: true,
-  imports: [ReactiveFormsModule, WkValueAccessor],
+  imports: [ReactiveFormsModule, WkValueAccessor, WkBooleanAccessor],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   template: `
     <main>
@@ -65,6 +66,22 @@ type Wk = HTMLElement & {
               label="Notes (optional)"
               help-text="Synthetic notes only."
             ></wk-text-area>
+            <wk-checkbox-group id="rr-channels" name="channels[]" label="Contact channels" required>
+              <wk-checkbox
+                id="rr-channel-email"
+                formControlName="email"
+                name="channels[]"
+                label="Email"
+                [choiceValue]="'email'"
+              ></wk-checkbox>
+              <wk-checkbox
+                id="rr-channel-sms"
+                formControlName="sms"
+                name="channels[]"
+                label="Text message"
+                [choiceValue]="'sms'"
+              ></wk-checkbox>
+            </wk-checkbox-group>
             <div class="actions">
               <wk-button-submit
                 id="rr-submit"
@@ -77,6 +94,13 @@ type Wk = HTMLElement & {
             <output id="rr-status" aria-live="polite">{{ status() }}</output>
           </form>
         </wk-form>
+        <wk-switch
+          id="rr-compact"
+          name="compact"
+          label="Compact summary"
+          [checked]="compact()"
+          (wk-input)="compact.set($any($event).detail.checked)"
+        ></wk-switch>
         <div slot="actions">
           <div id="rr-scope" data-wk-theme="studio">
             <wk-dialog #dialog>
@@ -123,7 +147,10 @@ export class RequestReviewComponent {
     traveller: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     destination: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     notes: new FormControl('', { nonNullable: true }),
+    email: new FormControl(false, { nonNullable: true }),
+    sms: new FormControl(false, { nonNullable: true }),
   });
+  readonly compact = signal(false);
   readonly status = signal('');
   readonly processing = signal(false);
   readonly reviewReady = signal(false);
@@ -175,6 +202,7 @@ export class RequestReviewComponent {
       this.find<Wk>('wk-text-field'),
       this.find<Wk>('wk-select'),
       this.find<Wk>('wk-text-area'),
+      this.find<Wk>('wk-checkbox-group'),
     ];
     try {
       await Promise.all(fields.map((f) => f.updateComplete));
@@ -184,8 +212,11 @@ export class RequestReviewComponent {
     const bad = [...this.find<HTMLFormElement>('form').elements].find(
       (el) => !(el as HTMLInputElement).checkValidity?.(),
     );
+    const { email, sms } = this.form.getRawValue();
     if (
       bad ||
+      !(email || sms) ||
+      this.find<Wk>('wk-checkbox-group').error ||
       this.form.invalid ||
       this.find<Wk & { hasFeedbackFor: string[] }>('wk-form').hasFeedbackFor.includes('error') ||
       fields.some((f) => f.error || f.isPending)
@@ -214,7 +245,8 @@ export class RequestReviewComponent {
     await new Promise((r) => setTimeout(r, this.completionMs));
     this.busy = false;
     this.processing.set(false);
-    this.onComplete?.(this.form.getRawValue());
+    const { traveller, destination, notes } = this.form.getRawValue();
+    this.onComplete?.({ traveller, destination, notes });
     this.status.set('Mock request complete. No real action was taken.');
     await this.find<Wk>('wk-dialog').close?.();
   }
@@ -224,7 +256,7 @@ export class RequestReviewComponent {
       e.preventDefault();
       return;
     }
-    this.form.reset({ traveller: '', destination: '', notes: '' });
+    this.form.reset({ traveller: '', destination: '', notes: '', email: false, sms: false });
     this.reviewReady.set(false);
     this.status.set('');
   }

@@ -84,6 +84,30 @@
       "types": "./dist/components/select/define.d.ts",
       "default": "./dist/components/select/define.js"
     },
+    "./checkbox": {
+      "types": "./dist/components/checkbox/index.d.ts",
+      "default": "./dist/components/checkbox/index.js"
+    },
+    "./checkbox/define": {
+      "types": "./dist/components/checkbox/define.d.ts",
+      "default": "./dist/components/checkbox/define.js"
+    },
+    "./checkbox-group": {
+      "types": "./dist/components/checkbox-group/index.d.ts",
+      "default": "./dist/components/checkbox-group/index.js"
+    },
+    "./checkbox-group/define": {
+      "types": "./dist/components/checkbox-group/define.d.ts",
+      "default": "./dist/components/checkbox-group/define.js"
+    },
+    "./switch": {
+      "types": "./dist/components/switch/index.d.ts",
+      "default": "./dist/components/switch/index.js"
+    },
+    "./switch/define": {
+      "types": "./dist/components/switch/define.d.ts",
+      "default": "./dist/components/switch/define.js"
+    },
     "./mode-switch": {
       "types": "./dist/components/mode-switch/index.d.ts",
       "default": "./dist/components/mode-switch/index.js"
