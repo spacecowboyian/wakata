@@ -12,6 +12,10 @@ Wakata design system (working title DS) and its Storybook. Private and provision
 | `@wakata/ds/define`             | Registers all DS elements (idempotent)                                     |
 | `@wakata/ds/button/define`      | Registers `wk-button` (`defineWkButton()` is safe to call twice)           |
 | `@wakata/ds/card`               | Card class only; no registration                                           |
+| `@wakata/ds/link`               | Link class only; no registration                                           |
+| `@wakata/ds/link/define`        | Registers `wk-link`                                                        |
+| `@wakata/ds/status`             | Status class and types only; no registration                               |
+| `@wakata/ds/status/define`      | Registers `wk-status`                                                      |
 | `@wakata/ds/card/define`        | Registers `wk-card` (`defineWkCard()` is safe to call twice)               |
 | `@wakata/ds/dialog`             | Dialog class only; no registration                                         |
 | `@wakata/ds/dialog/define`      | Registers `wk-dialog` (`defineWkDialog()` is safe to call twice)           |
@@ -123,6 +127,58 @@ Card geometry, and browser errors. This is automated Chromium evidence only:
 manual assistive-technology, zoom/contrast, Firefox/WebKit, real-device and
 framework checks remain unrun. The component remains provisional and is not
 evidence of production adoption or promotion.
+
+## `wk-status` (provisional status message)
+
+Import the class from `@wakata/ds/status` (no registration) or register with
+`@wakata/ds/status/define` / `@wakata/ds/define`. Non-interactive; variants `informational`
+(default), `success`, `warning`, `danger`. Text must carry the meaning. The `icon` slot is
+decorative (`aria-hidden`); no icon library or new token is added. No live region by default;
+`live="polite"` (role=status) or `live="assertive"` (role=alert) opts in via one persistent inner
+role and no `aria-live`. Green is success only; red is danger/error. Warning has no token, so it
+uses a dashed border plus text (open contract choice).
+
+```html
+<!-- HTML -->
+<wk-status variant="success" live="polite"><span slot="icon">✓</span>Saved</wk-status>
+```
+
+```jsx
+// React, after importing @wakata/ds/status/define
+<wk-status variant="danger" live="assertive">
+  Payment failed
+</wk-status>
+```
+
+```html
+<!-- Angular, with CUSTOM_ELEMENTS_SCHEMA -->
+<wk-status [attr.variant]="kind" [attr.live]="announce ? 'polite' : null">{{ message }}</wk-status>
+```
+
+Evidence is Storybook play functions and `test/status.browser.test.ts` only; no manual AT/device testing.
+
+## `wk-link` (provisional navigation primitive)
+
+`WkLink` wraps a native `<a>` in its shadow root. Import the class from `@wakata/ds/link`
+(no registration) or register with `@wakata/ds/link/define` / `@wakata/ds/define`.
+
+```html
+<p>Read the <wk-link href="/guide">style guide</wk-link>.</p>
+<wk-link variant="standalone" href="https://example.com" target="_blank" rel="author"
+  >Example</wk-link
+>
+```
+
+- `href`, `target`, `rel` are forwarded to the native anchor; native name, keyboard activation
+  and browser affordances are kept.
+- Missing/empty `href` or a `javascript:`, `data:`, or `vbscript:` href renders plain text: no role, tab stop, or
+  disabled/button behavior.
+- `target="_blank"` always adds `noopener noreferrer` to the effective `rel` (caller tokens kept).
+- `variant`: `inline` (default, underlined) or `standalone` (inline-block, bold, underlined).
+- Reads existing `--wk-accent`, `--wk-focus`, `--wk-radius`; no new tokens, router or icons.
+
+Evidence is Storybook play functions and `test/link.browser.test.ts` (Chromium) only; manual AT,
+device and cross-browser checks are deferred (#59). The component remains provisional.
 
 ## `wk-dialog` (provisional modal)
 

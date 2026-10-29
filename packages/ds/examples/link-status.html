@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en" data-wk-theme="neutral" data-wk-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wakata Link and Status (synthetic example)</title>
+    <!-- Use a dev server that resolves @wakata/ds package imports, such as Vite. -->
+    <script type="module">
+      import '@wakata/ds/themes.css';
+      import '@wakata/ds/define';
+
+      const button = document.querySelector('#save');
+      const status = document.querySelector('#save-status');
+      button.addEventListener('click', () => {
+        status.variant = 'success';
+        status.textContent = 'Success: synthetic changes saved locally.';
+        status.live = 'polite';
+      });
+    </script>
+    <style>
+      body {
+        margin: 0;
+        padding: 24px;
+        color: var(--wk-text);
+        background: var(--wk-surface);
+        font-family: var(--wk-font);
+        line-height: 1.5;
+      }
+      main {
+        max-width: 36rem;
+        margin-inline: auto;
+      }
+      wk-card {
+        display: block;
+        margin-block: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Link and Status</h1>
+      <p>Read the <wk-link href="#guide">guide below</wk-link> for this synthetic example.</p>
+      <wk-card>
+        <h2 slot="heading" id="guide">Local review</h2>
+        <p>
+          <wk-status variant="informational">Information: nothing has been saved yet.</wk-status>
+        </p>
+        <p><wk-status variant="warning">Warning: this example does not send data.</wk-status></p>
+        <wk-button id="save" slot="actions" variant="primary">Save locally</wk-button>
+      </wk-card>
+      <p><wk-status id="save-status">Waiting for an action.</wk-status></p>
+      <wk-link variant="standalone" href="https://example.com" target="_blank"
+        >External example</wk-link
+      >
+    </main>
+  </body>
+</html>
