@@ -10,6 +10,8 @@ const tokenNames = wkTokens.map(({ name }) => name);
 const focusableSelector =
   'a[href], area[href], button, input:not([type="hidden"]), select, textarea, iframe, object, embed, [contenteditable="true"], [tabindex], [role="button"]';
 
+const mobileSheetQuery = '(max-width: 600px)';
+
 type SavedInlineStyle = { value: string; priority: string };
 
 /** Provisional modal dialog built on Lion's public dialog and overlay APIs. */
@@ -117,7 +119,24 @@ export class WkDialog extends LionDialog {
 
   override firstUpdated(): void {
     this.renderRoot.addEventListener('slotchange', this.#onSlotChange);
+    this.renderRoot.addEventListener('click', this.#onBackdropClick);
   }
+
+  // Lion's outside-click option is not viewport-aware, so only the sheet layout's dim strip is handled here.
+  #onBackdropClick = (event: Event): void => {
+    const target = event.target;
+    if (
+      !this.opened ||
+      !(target instanceof HTMLElement) ||
+      !target.classList.contains('overlays__backdrop') ||
+      !window.matchMedia(mobileSheetQuery).matches
+    ) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    void this.close();
+  };
 
   override requestUpdate(
     name?: PropertyKey,

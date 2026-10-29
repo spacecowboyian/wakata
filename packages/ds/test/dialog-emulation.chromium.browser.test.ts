@@ -76,3 +76,60 @@ test('200% zoom equivalent (halved CSS viewport), reduced motion and forced colo
   expect(scrollLocked()).toBe(false);
   parent.remove();
 });
+
+const backdropOf = (dialog: HTMLElement) =>
+  dialog.shadowRoot!.querySelector<HTMLElement>('.overlays__backdrop')!;
+
+test('mobile: clicking the exposed strip closes without activating background content', async () => {
+  await page.viewport(414, 896);
+  const { dialog, parent, invoker, content } = await create();
+  let backgroundClicks = 0;
+  const count = (event: Event) => {
+    if (event.composedPath().includes(invoker)) backgroundClicks += 1;
+  };
+  document.addEventListener('click', count);
+  invoker.focus();
+  await dialog.open();
+  const sheetTop = content.getBoundingClientRect().top;
+  expect(sheetTop).toBeGreaterThan(0);
+
+  content.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+  await settle(dialog);
+  expect(dialog.opened).toBe(true);
+
+  backdropOf(dialog).dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  await settle(dialog);
+  document.removeEventListener('click', count);
+  expect(dialog.opened).toBe(false);
+  expect(backgroundClicks).toBe(0);
+  expect(scrollLocked()).toBe(false);
+  expect(document.activeElement).toBe(invoker);
+  parent.remove();
+});
+
+test('mobile: Escape still closes at short height', async () => {
+  await page.viewport(414, 400);
+  const { dialog, parent, content } = await create('dark');
+  await dialog.open();
+  backdropOf(dialog).dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  await settle(dialog);
+  expect(dialog.opened).toBe(false);
+  await dialog.open();
+  content.dispatchEvent(
+    new KeyboardEvent('keyup', { key: 'Escape', bubbles: true, composed: true }),
+  );
+  await settle(dialog);
+  expect(dialog.opened).toBe(false);
+  parent.remove();
+});
+
+test('desktop: backdrop click does not dismiss', async () => {
+  await page.viewport(900, 700);
+  const { dialog, parent } = await create();
+  await dialog.open();
+  backdropOf(dialog).dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  await settle(dialog);
+  expect(dialog.opened).toBe(true);
+  await dialog.close();
+  parent.remove();
+});

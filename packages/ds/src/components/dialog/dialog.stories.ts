@@ -9,7 +9,7 @@ const meta = {
     docs: {
       description: {
         component: `
-\`wk-dialog\` is a provisional modal built on Lion 0.25's public dialog API. Its content root needs a title via \`aria-label\` or \`aria-labelledby\`; \`aria-describedby\` references IDs inside that root. The modal traps focus, makes background content unavailable, locks page scrolling, closes on Escape and does not close from its backdrop.
+\`wk-dialog\` is a provisional modal built on Lion 0.25's public dialog API. Its content root needs a title via \`aria-label\` or \`aria-labelledby\`; \`aria-describedby\` references IDs inside that root. The modal traps focus, makes background content unavailable, locks page scrolling, closes on Escape and does not close from its desktop backdrop. At phone width (max 600px), tapping the exposed dimmed strip above the sheet also closes it without activating background content; taps inside the sheet do not. Manual accessibility and real-device touch testing are tracked in #59.
 `,
       },
     },
@@ -135,8 +135,10 @@ export const ReviewDialog: Story = {
     await expect(getComputedStyle(content).borderRadius).toBe('0px');
 
     const backdrop = dialog.shadowRoot?.querySelector<HTMLElement>('.overlays__backdrop');
-    if (backdrop) await userEvent.click(backdrop);
-    await expect(dialog.opened).toBe(true);
+    if (backdrop && !matchMedia('(max-width: 600px)').matches) {
+      await userEvent.click(backdrop);
+      await expect(dialog.opened).toBe(true);
+    }
     content.dispatchEvent(
       new KeyboardEvent('keyup', { key: 'Escape', bubbles: true, composed: true }),
     );
