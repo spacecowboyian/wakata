@@ -1,0 +1,32 @@
+# Issue #15: Link and Status provisional review
+
+Scope: new provisional `wk-link` and `wk-status` components in `@wakata/ds`. Owner: Ian. This review covers a component contribution, not shared production promotion. No production feature adoption or manual assistive-technology result is claimed. Visual and API acceptance from Ian is pending.
+
+## Contract proposed for review
+
+- Link uses a native anchor only when `href` is present and is not `javascript:`, `data:`, or `vbscript:`. Missing or rejected destinations render ordinary text without a tab stop. `target="_blank"` forces `noopener noreferrer` while retaining other `rel` tokens. Inline and standalone treatments both retain an underline. Buttons remain actions.
+- Status is informational, success, warning or danger, with explicit text carrying the meaning. The optional icon slot is decorative. It is non-interactive and non-live by default. `live="polite"` puts one `role="status"` on the persistent content node; `live="assertive"` uses one `role="alert"`. No duplicate `aria-live` is added. Success uses the existing positive token, danger the existing danger token. Warning uses a dashed text-colored border because the baseline has no warning token; this is a proposed visual choice.
+- Both use existing theme tokens, with no public icon library, router, toast layer, or component-specific styling token. The component examples are synthetic. HTML, React and Angular usage snippets are in `packages/ds/README.md`.
+
+## Automated evidence
+
+At the review branch revision, local macOS with Node 22.16.0, `@lion/ui` 0.25.0, Lit 3.3.1, Storybook 10.6.3, Vitest 4.1.12, Playwright 1.64.1:
+
+| Check                                                                                                                                 | Result                                                                                                                                                                                                                                                |
+| ------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm lint`, `pnpm typecheck`                                                                                                         | Pass                                                                                                                                                                                                                                                  |
+| `pnpm --filter @wakata/ds test`                                                                                                       | Pass: 23 files, 181 Chromium tests; includes Link native focus/Enter navigation, safe destination fallback, Status roles, icon and wrapping                                                                                                           |
+| `WK_BROWSER=firefox pnpm --filter @wakata/ds exec vitest run --project package test/link.browser.test.ts test/status.browser.test.ts` | Pass: 12 tests                                                                                                                                                                                                                                        |
+| Same focused command with `WK_BROWSER=webkit`                                                                                         | Pass: 12 tests                                                                                                                                                                                                                                        |
+| `pnpm --filter @wakata/ds build-storybook`                                                                                            | Pass; new stories indexed as `components-link--inline`, `--standalone`, `--new-tab`, `--no-href`, `--long-wrapped`, `--themes` and `components-status--variants`, `--with-icons`, `--long-text`, `--live-opt-in`, `--themes`, `--in-card-form-dialog` |
+| Chromium Storybook 390px captures, 320px and 160px viewport checks                                                                    | No horizontal page overflow in Link/Status long-content stories; theme and focus images in `packages/ds/review/link-status/`                                                                                                                          |
+| Computed Link text/surface contrast in the six named theme and light/dark cells                                                       | Minimum 8.19:1; this is a computed color check, not a manual visual or assistive-technology pass                                                                                                                                                      |
+| Vite-served `packages/ds/examples/link-status.html` in Chromium at 390px                                                              | Both links rendered; activating Save changed Status to success with one `role="status"`; no page errors. Capture: `packages/ds/review/link-status/html-example-phone.png`                                                                             |
+
+Chromium `ariaSnapshot()` of the Link and Status stories exposes a named native link (`style guide`), renders the no-href case as plain text, and shows one `status` and one `alert` for the opt-in story. This inspects the accessibility tree; it does not verify screen-reader announcements.
+
+`pnpm --filter @wakata/ds test` runs the package build before browser tests. The framework example projects passed repository typecheck, but their specific Link/Status rendering was not run in React or Angular; the snippets are usage guidance, not cross-framework certification. Physical-device, manual screen-reader, and Windows/NVDA evidence remains deferred under #59 and #45.
+
+## Governance decision
+
+The provisional contribution is reviewable with automated evidence above. Ian's visual/API acceptance is still needed before merging. Shared production promotion is not requested; the two-distinct-production-feature gate and governance approval evidence are absent. The post-promotion migration versus notification choice remains open.

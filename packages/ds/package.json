@@ -36,6 +36,22 @@
       "types": "./dist/components/card/define.d.ts",
       "default": "./dist/components/card/define.js"
     },
+    "./link": {
+      "types": "./dist/components/link/index.d.ts",
+      "default": "./dist/components/link/index.js"
+    },
+    "./link/define": {
+      "types": "./dist/components/link/define.d.ts",
+      "default": "./dist/components/link/define.js"
+    },
+    "./status": {
+      "types": "./dist/components/status/index.d.ts",
+      "default": "./dist/components/status/index.js"
+    },
+    "./status/define": {
+      "types": "./dist/components/status/define.d.ts",
+      "default": "./dist/components/status/define.js"
+    },
     "./dialog": {
       "types": "./dist/components/dialog/index.d.ts",
       "default": "./dist/components/dialog/index.js"
