@@ -1,4 +1,4 @@
-import{b as c}from"./iframe-Bs-pR7h_.js";import"./preload-helper-PPVm8Dsz.js";const{expect:e,userEvent:w,within:u}=__STORYBOOK_MODULE_TEST__,b={title:"Components/Dialog",tags:["autodocs"],parameters:{docs:{description:{component:"\n`wk-dialog` is a provisional modal built on Lion 0.25's public dialog API. Its content root needs a title via `aria-label` or `aria-labelledby`; `aria-describedby` references IDs inside that root. The modal traps focus, makes background content unavailable, locks page scrolling, closes on Escape and does not close from its backdrop.\n"}}}},p=n=>{if(!n.composedPath().some(t=>t instanceof HTMLElement&&t.hasAttribute("data-review-close")))return;n.currentTarget.querySelector("wk-dialog").close()},h=`
+import{b as c}from"./iframe-C5CqUWyW.js";import"./preload-helper-PPVm8Dsz.js";const{expect:e,userEvent:w,within:u}=__STORYBOOK_MODULE_TEST__,b={title:"Components/Dialog",tags:["autodocs"],parameters:{docs:{description:{component:"\n`wk-dialog` is a provisional modal built on Lion 0.25's public dialog API. Its content root needs a title via `aria-label` or `aria-labelledby`; `aria-describedby` references IDs inside that root. The modal traps focus, makes background content unavailable, locks page scrolling, closes on Escape and does not close from its desktop backdrop. At phone width (max 600px), tapping the exposed dimmed strip above the sheet also closes it without activating background content; taps inside the sheet do not. Manual accessibility and real-device touch testing are tracked in #59.\n"}}}},p=n=>{if(!n.composedPath().some(t=>t instanceof HTMLElement&&t.hasAttribute("data-review-close")))return;n.currentTarget.querySelector("wk-dialog").close()},h=`
   .review-page { box-sizing:border-box; width:min(100%, 960px); min-height:calc(100vh - 48px); margin:0 auto; padding:24px; color:var(--wk-text); background:var(--wk-surface); font-family:var(--wk-font); }
   .review-header { display:flex; align-items:center; justify-content:space-between; gap:16px; }
   .review-page h1, .review-page h2 { overflow-wrap:anywhere; }
@@ -58,7 +58,7 @@ import{b as c}from"./iframe-Bs-pR7h_.js";import"./preload-helper-PPVm8Dsz.js";co
         </section>
       </wk-dialog>
     </main>
-  `,play:async({canvasElement:n})=>{const o=u(n),t=n.querySelector("wk-dialog"),a=n.querySelector('[slot="content"]');await e(o.getByText("Review changes")).toBeVisible(),await t.open(),await e(t.opened).toBe(!0),await e(a.getAttribute("role")).toBe("dialog"),await e(a.getAttribute("aria-modal")).toBe("true"),await e(a.getAttribute("aria-labelledby")).toBe("review-dialog-title"),await e(a.getAttribute("aria-describedby")).toBe("review-dialog-description"),await e(a.contains(document.activeElement)).toBe(!0),await e(document.body.classList.contains("overlays-scroll-lock")).toBe(!0),await w.tab(),await e(a.contains(document.activeElement)).toBe(!0);const i=n.querySelector("[data-review-origin]");i.dataset.wkMode="dark",i.dataset.wkWireframe="true",i.dataset.wkTheme="fieldwork",i.style.setProperty("--wk-font","monospace"),await new Promise(d=>setTimeout(d,0)),await e(a.dataset.wkMode).toBe("dark"),await e(a.dataset.wkTheme).toBe("fieldwork"),await e(a.dataset.wkWireframe).toBe("true"),await e(getComputedStyle(a).fontFamily).toContain("monospace"),await e(getComputedStyle(a).borderRadius).toBe("0px");const m=t.shadowRoot?.querySelector(".overlays__backdrop");m&&await w.click(m),await e(t.opened).toBe(!0),a.dispatchEvent(new KeyboardEvent("keyup",{key:"Escape",bubbles:!0,composed:!0})),await g(t,a),await e(t.opened).toBe(!1),await e(a.hasAttribute("data-wk-dialog-content")).toBe(!1),i.dataset.wkTheme="fieldwork",i.dataset.wkWireframe="false",i.style.removeProperty("--wk-font");for(const d of["Cancel","Confirm changes"])await t.open(),await w.click(u(a).getByText(d)),await g(t,a),await e(t.opened).toBe(!1);t.dataset.reviewPlayComplete="true"}},s={name:"Mobile Sheet / Short Content",parameters:{a11y:{test:"todo"}},render:()=>c`
+  `,play:async({canvasElement:n})=>{const o=u(n),t=n.querySelector("wk-dialog"),a=n.querySelector('[slot="content"]');await e(o.getByText("Review changes")).toBeVisible(),await t.open(),await e(t.opened).toBe(!0),await e(a.getAttribute("role")).toBe("dialog"),await e(a.getAttribute("aria-modal")).toBe("true"),await e(a.getAttribute("aria-labelledby")).toBe("review-dialog-title"),await e(a.getAttribute("aria-describedby")).toBe("review-dialog-description"),await e(a.contains(document.activeElement)).toBe(!0),await e(document.body.classList.contains("overlays-scroll-lock")).toBe(!0),await w.tab(),await e(a.contains(document.activeElement)).toBe(!0);const i=n.querySelector("[data-review-origin]");i.dataset.wkMode="dark",i.dataset.wkWireframe="true",i.dataset.wkTheme="fieldwork",i.style.setProperty("--wk-font","monospace"),await new Promise(d=>setTimeout(d,0)),await e(a.dataset.wkMode).toBe("dark"),await e(a.dataset.wkTheme).toBe("fieldwork"),await e(a.dataset.wkWireframe).toBe("true"),await e(getComputedStyle(a).fontFamily).toContain("monospace"),await e(getComputedStyle(a).borderRadius).toBe("0px");const m=t.shadowRoot?.querySelector(".overlays__backdrop");m&&!matchMedia("(max-width: 600px)").matches&&(await w.click(m),await e(t.opened).toBe(!0)),a.dispatchEvent(new KeyboardEvent("keyup",{key:"Escape",bubbles:!0,composed:!0})),await g(t,a),await e(t.opened).toBe(!1),await e(a.hasAttribute("data-wk-dialog-content")).toBe(!1),i.dataset.wkTheme="fieldwork",i.dataset.wkWireframe="false",i.style.removeProperty("--wk-font");for(const d of["Cancel","Confirm changes"])await t.open(),await w.click(u(a).getByText(d)),await g(t,a),await e(t.opened).toBe(!1);t.dataset.reviewPlayComplete="true"}},s={name:"Mobile Sheet / Short Content",parameters:{a11y:{test:"todo"}},render:()=>c`
     <style>
       ${h}
       ${v}
@@ -107,7 +107,7 @@ import{b as c}from"./iframe-Bs-pR7h_.js";import"./preload-helper-PPVm8Dsz.js";co
         </section>
       </wk-dialog>
     </main>
-  `,play:async({canvasElement:n})=>{const o=n.querySelector("wk-dialog"),t=n.querySelector('[slot="content"]');await o.open(),await e(t.scrollWidth).toBeLessThanOrEqual(t.clientWidth),await e(document.documentElement.scrollWidth).toBeLessThanOrEqual(document.documentElement.clientWidth),await e(getComputedStyle(t).padding).toBe(window.matchMedia("(max-width: 600px)").matches?"0px":"24px"),o.dataset.longPlayComplete="true"}},f=["ReviewDialog","MobileSheetShort","LongContentAndNarrowReflow"];r.parameters={...r.parameters,docs:{...r.parameters?.docs,source:{originalSource:`{
+  `,play:async({canvasElement:n})=>{const o=n.querySelector("wk-dialog"),t=n.querySelector('[slot="content"]');await o.open(),await e(t.scrollWidth).toBeLessThanOrEqual(t.clientWidth),await e(document.documentElement.scrollWidth).toBeLessThanOrEqual(document.documentElement.clientWidth),await e(getComputedStyle(t).padding).toBe(window.matchMedia("(max-width: 600px)").matches?"0px":"24px"),o.dataset.longPlayComplete="true"}},x=["ReviewDialog","MobileSheetShort","LongContentAndNarrowReflow"];r.parameters={...r.parameters,docs:{...r.parameters?.docs,source:{originalSource:`{
   name: 'Review Dialog / Combined Slice',
   render: () => html\`
     <style>
@@ -180,8 +180,10 @@ import{b as c}from"./iframe-Bs-pR7h_.js";import"./preload-helper-PPVm8Dsz.js";co
     await expect(getComputedStyle(content).fontFamily).toContain('monospace');
     await expect(getComputedStyle(content).borderRadius).toBe('0px');
     const backdrop = dialog.shadowRoot?.querySelector<HTMLElement>('.overlays__backdrop');
-    if (backdrop) await userEvent.click(backdrop);
-    await expect(dialog.opened).toBe(true);
+    if (backdrop && !matchMedia('(max-width: 600px)').matches) {
+      await userEvent.click(backdrop);
+      await expect(dialog.opened).toBe(true);
+    }
     content.dispatchEvent(new KeyboardEvent('keyup', {
       key: 'Escape',
       bubbles: true,
@@ -289,4 +291,4 @@ import{b as c}from"./iframe-Bs-pR7h_.js";import"./preload-helper-PPVm8Dsz.js";co
     await expect(getComputedStyle(content).padding).toBe(window.matchMedia('(max-width: 600px)').matches ? '0px' : '24px');
     dialog.dataset.longPlayComplete = 'true';
   }
-}`,...l.parameters?.docs?.source}}};export{l as LongContentAndNarrowReflow,s as MobileSheetShort,r as ReviewDialog,f as __namedExportsOrder,b as default};
+}`,...l.parameters?.docs?.source}}};export{l as LongContentAndNarrowReflow,s as MobileSheetShort,r as ReviewDialog,x as __namedExportsOrder,b as default};
