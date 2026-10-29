@@ -82,6 +82,16 @@ type Wk = HTMLElement & {
                 [choiceValue]="'sms'"
               ></wk-checkbox>
             </wk-checkbox-group>
+            <wk-radio-group
+              id="rr-priority"
+              formControlName="priority"
+              name="priority"
+              label="Inspection priority (optional)"
+              help-text="Choose the first area to inspect."
+            >
+              <wk-radio label="Bodywork" [choiceValue]="'body'"></wk-radio>
+              <wk-radio label="Engine" [choiceValue]="'engine'"></wk-radio>
+            </wk-radio-group>
             <div class="actions">
               <wk-button-submit
                 id="rr-submit"
@@ -149,6 +159,7 @@ export class RequestReviewComponent {
     notes: new FormControl('', { nonNullable: true }),
     email: new FormControl(false, { nonNullable: true }),
     sms: new FormControl(false, { nonNullable: true }),
+    priority: new FormControl('', { nonNullable: true }),
   });
   readonly compact = signal(false);
   readonly status = signal('');
@@ -187,7 +198,9 @@ export class RequestReviewComponent {
 
   private updateSummary(): void {
     const v = this.form.getRawValue();
-    this.summary.set(`${v.traveller} → ${v.destination}`);
+    this.summary.set(
+      `${v.traveller} → ${v.destination}${v.priority ? ` · ${v.priority} inspection first` : ''}`,
+    );
     this.notesSummary.set(v.notes);
   }
 
@@ -256,7 +269,14 @@ export class RequestReviewComponent {
       e.preventDefault();
       return;
     }
-    this.form.reset({ traveller: '', destination: '', notes: '', email: false, sms: false });
+    this.form.reset({
+      traveller: '',
+      destination: '',
+      notes: '',
+      email: false,
+      sms: false,
+      priority: '',
+    });
     this.reviewReady.set(false);
     this.status.set('');
   }

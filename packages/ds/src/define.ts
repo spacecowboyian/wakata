@@ -10,5 +10,6 @@ import './components/select/define.js';
 import './components/mode-switch/define.js';
 import './components/checkbox/define.js';
 import './components/checkbox-group/define.js';
+import './components/radio-group/define.js';
 import './components/switch/define.js';
 import './form/define.js';

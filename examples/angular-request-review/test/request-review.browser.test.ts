@@ -149,6 +149,7 @@ test('FormData serialisation and native reset', async () => {
     notes: '',
     email: false,
     sms: false,
+    priority: '',
   });
   expect(q('rr-name').value).toBe('');
   expect(new FormData(form).get('traveller')).toBe('');
@@ -201,7 +202,14 @@ test('invalid -> correction -> review -> cancel / reopen / confirm, repeated sub
 
 test('simultaneous submits open one review', async () => {
   const { host, q, dialog, c } = await mount();
-  c.form.setValue({ traveller: 'Ada', destination: 'oslo', notes: '', email: true, sms: false });
+  c.form.setValue({
+    traveller: 'Ada',
+    destination: 'oslo',
+    notes: '',
+    email: true,
+    sms: false,
+    priority: '',
+  });
   await tick();
   const wrapper = host.querySelector('wk-form')!;
   wrapper.dispatchEvent(new Event('submit'));

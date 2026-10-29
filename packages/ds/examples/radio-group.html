@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wakata RadioGroup (synthetic example)</title>
+    <!-- Bare imports require the workspace Vite dev server. All data is synthetic. -->
+    <script type="module">
+      import '@wakata/ds/themes.css';
+      import '@wakata/ds/define';
+      const group = document.querySelector('wk-radio-group');
+      const form = document.querySelector('form');
+      const wrapper = document.querySelector('wk-form');
+      const output = document.querySelector('output');
+      // Lion choiceValue is a property, so plain HTML sets it after upgrading.
+      for (const option of document.querySelectorAll('wk-radio[data-choice]')) {
+        option.choiceValue = option.dataset.choice;
+      }
+      wrapper.addEventListener('submit', async () => {
+        await group.validate();
+        if (group.hasFeedbackFor.includes('error') || group.error) {
+          output.textContent = 'Choose one inspection priority.';
+          return;
+        }
+        output.textContent = `Priority: ${new FormData(form).get('priority')}. No request was sent.`;
+      });
+      form.addEventListener('reset', () => {
+        output.textContent = 'Form reset.';
+      });
+    </script>
+  </head>
+  <body data-wk-theme="neutral" data-wk-mode="light">
+    <main
+      style="
+        display: grid;
+        gap: 20px;
+        max-width: 32rem;
+        margin: 24px auto;
+        padding: 16px;
+        font-family: var(--wk-font);
+        color: var(--wk-text);
+      "
+    >
+      <h1 style="margin: 0">Synthetic inspection priority</h1>
+      <wk-form
+        ><form novalidate style="display: grid; gap: 16px">
+          <wk-radio-group
+            name="priority"
+            label="What should be inspected first?"
+            help-text="Choose one option."
+            required
+          >
+            <wk-radio label="Bodywork" data-choice="body"></wk-radio>
+            <wk-radio label="Engine" data-choice="engine"></wk-radio>
+            <wk-radio label="Interior" data-choice="interior"></wk-radio>
+          </wk-radio-group>
+          <div style="display: flex; flex-wrap: wrap; gap: 12px">
+            <wk-button-submit variant="primary">Review choice</wk-button-submit>
+            <wk-button-reset>Reset</wk-button-reset>
+          </div>
+          <output aria-live="polite"></output></form
+      ></wk-form>
+    </main>
+  </body>
+</html>
