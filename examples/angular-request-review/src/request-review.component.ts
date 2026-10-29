@@ -11,6 +11,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import '@wakata/ds/themes.css';
 import '@wakata/ds/define';
 import '@wakata/ds/mode-switch/define';
+import '@wakata/ds/text-area/define';
 import { WkValueAccessor } from './wk-value-accessor';
 
 type Wk = HTMLElement & {
@@ -57,6 +58,13 @@ type Wk = HTMLElement & {
                 <option value="bergen">Bergen</option>
               </select>
             </wk-select>
+            <wk-text-area
+              id="rr-notes"
+              formControlName="notes"
+              name="notes"
+              label="Notes (optional)"
+              help-text="Synthetic notes only."
+            ></wk-text-area>
             <div class="actions">
               <wk-button-submit
                 id="rr-submit"
@@ -81,6 +89,9 @@ type Wk = HTMLElement & {
                   Mock only: <span id="rr-summary">{{ summary() }}</span
                   >. Nothing is sent.
                 </p>
+                @if (notesSummary()) {
+                  <p id="rr-notes-summary" style="white-space: pre-wrap">{{ notesSummary() }}</p>
+                }
                 <div class="actions">
                   <wk-button
                     id="rr-cancel"
@@ -106,16 +117,18 @@ type Wk = HTMLElement & {
 })
 export class RequestReviewComponent {
   @Input() completionMs = 600;
-  @Input() onComplete?: (d: { traveller: string; destination: string }) => void;
+  @Input() onComplete?: (d: { traveller: string; destination: string; notes: string }) => void;
 
   readonly form = new FormGroup({
     traveller: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     destination: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    notes: new FormControl('', { nonNullable: true }),
   });
   readonly status = signal('');
   readonly processing = signal(false);
   readonly reviewReady = signal(false);
   readonly summary = signal(' → ');
+  readonly notesSummary = signal('');
 
   constructor() {
     this.form.valueChanges.subscribe(() => {
@@ -148,6 +161,7 @@ export class RequestReviewComponent {
   private updateSummary(): void {
     const v = this.form.getRawValue();
     this.summary.set(`${v.traveller} → ${v.destination}`);
+    this.notesSummary.set(v.notes);
   }
 
   async onSubmit(): Promise<void> {
@@ -157,7 +171,11 @@ export class RequestReviewComponent {
       return;
     }
     this.validating = true;
-    const fields = [this.find<Wk>('wk-text-field'), this.find<Wk>('wk-select')];
+    const fields = [
+      this.find<Wk>('wk-text-field'),
+      this.find<Wk>('wk-select'),
+      this.find<Wk>('wk-text-area'),
+    ];
     try {
       await Promise.all(fields.map((f) => f.updateComplete));
     } finally {
@@ -206,7 +224,7 @@ export class RequestReviewComponent {
       e.preventDefault();
       return;
     }
-    this.form.reset({ traveller: '', destination: '' });
+    this.form.reset({ traveller: '', destination: '', notes: '' });
     this.reviewReady.set(false);
     this.status.set('');
   }

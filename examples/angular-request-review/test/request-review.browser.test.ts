@@ -142,7 +142,7 @@ test('FormData serialisation and native reset', async () => {
   expect(new FormData(form).get('traveller')).toBe('Grace');
   await userEvent.click(host.querySelector<El>('wk-button-reset')!);
   await tick();
-  expect(c.form.getRawValue()).toEqual({ traveller: '', destination: '' });
+  expect(c.form.getRawValue()).toEqual({ traveller: '', destination: '', notes: '' });
   expect(q('rr-name').value).toBe('');
   expect(new FormData(form).get('traveller')).toBe('');
   expect(q('rr-reopen').hasAttribute('disabled')).toBe(true);
@@ -184,7 +184,7 @@ test('invalid -> correction -> review -> cancel / reopen / confirm, repeated sub
   confirm.click();
   confirm.click();
   await tick(300);
-  expect(completed).toEqual([{ traveller: 'Ada Example', destination: 'oslo' }]);
+  expect(completed).toEqual([{ traveller: 'Ada Example', destination: 'oslo', notes: '' }]);
   expect(c.processing()).toBe(false);
   expect(dialog.opened).toBe(false);
   expect(confirm.loading).toBeFalsy();
@@ -194,7 +194,7 @@ test('invalid -> correction -> review -> cancel / reopen / confirm, repeated sub
 
 test('simultaneous submits open one review', async () => {
   const { host, q, dialog, c } = await mount();
-  c.form.setValue({ traveller: 'Ada', destination: 'oslo' });
+  c.form.setValue({ traveller: 'Ada', destination: 'oslo', notes: '' });
   await tick();
   const wrapper = host.querySelector('wk-form')!;
   wrapper.dispatchEvent(new Event('submit'));
@@ -203,4 +203,38 @@ test('simultaneous submits open one review', async () => {
   await tick(200);
   expect(dialog.opened).toBe(true);
   expect(q('rr-status').textContent).toMatch(/Ready|already/);
+});
+
+test('Notes text area: multiline edits, programmatic update, review and reset', async () => {
+  const { host, q, c } = await mount();
+  const ctl = c.form.controls.notes;
+  let inputs = 0;
+  let changes = 0;
+  q('rr-notes').addEventListener('wk-input', () => inputs++);
+  ctl.valueChanges.subscribe(() => changes++);
+  const ta = q('rr-notes').querySelector('textarea')!;
+  const typed = 'Line one\nLine two';
+  await userEvent.type(ta, 'Line one{Enter}Line two');
+  await tick();
+  expect(inputs).toBe(typed.length);
+  expect(changes).toBe(typed.length);
+  expect(ctl.value).toBe(typed);
+  expect(new FormData(host.querySelector('form')!).get('notes')).toBe(typed);
+  inputs = 0;
+  changes = 0;
+  ctl.setValue('First\nSecond');
+  await tick();
+  expect(ta.value).toBe('First\nSecond');
+  expect(inputs).toBe(0);
+  expect(changes).toBe(1);
+  c.form.patchValue({ traveller: 'Ada', destination: 'oslo' });
+  await tick();
+  await submit(q);
+  expect(q('rr-notes-summary').textContent).toBe('First\nSecond');
+  q('rr-cancel').click();
+  await tick();
+  await userEvent.click(host.querySelector<El>('wk-button-reset')!);
+  await tick();
+  expect(ctl.value).toBe('');
+  expect(ta.value).toBe('');
 });

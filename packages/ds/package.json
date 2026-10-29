@@ -68,6 +68,14 @@
       "types": "./dist/components/text-field/define.d.ts",
       "default": "./dist/components/text-field/define.js"
     },
+    "./text-area": {
+      "types": "./dist/components/text-area/index.d.ts",
+      "default": "./dist/components/text-area/index.js"
+    },
+    "./text-area/define": {
+      "types": "./dist/components/text-area/define.d.ts",
+      "default": "./dist/components/text-area/define.js"
+    },
     "./select": {
       "types": "./dist/components/select/index.d.ts",
       "default": "./dist/components/select/index.js"

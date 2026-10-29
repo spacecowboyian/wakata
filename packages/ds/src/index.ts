@@ -5,6 +5,7 @@ export * from './components/link/index.js';
 export * from './components/status/index.js';
 export * from './components/dialog/index.js';
 export * from './components/text-field/index.js';
+export * from './components/text-area/index.js';
 export * from './components/select/index.js';
 export * from './components/mode-switch/index.js';
 export * from './form/index.js';

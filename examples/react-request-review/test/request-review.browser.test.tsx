@@ -209,9 +209,37 @@ test('invalid -> correction -> review -> cancel / reopen / confirm, repeated sub
   confirm.click();
   confirm.click();
   await tick(300);
-  expect(completed).toEqual([{ traveller: 'Ada Example', destination: 'oslo' }]);
+  expect(completed).toEqual([{ traveller: 'Ada Example', destination: 'oslo', notes: '' }]);
   expect(dialog.opened).toBe(false);
   expect(confirm.loading).toBeFalsy();
   expect(q<El>('rr-submit').disabled).toBeFalsy();
   expect(q('rr-status').textContent).toContain('No real action');
+});
+
+test('Notes text area: multiline edits, programmatic update, review and reset', async () => {
+  const { host, q, render } = await mount();
+  const notes = q<El>('rr-notes');
+  let inputs = 0;
+  notes.addEventListener('wk-input', () => inputs++);
+  const ta = notes.querySelector('textarea')!;
+  const typed = 'Line one\nLine two';
+  await userEvent.type(ta, 'Line one{Enter}Line two');
+  await tick();
+  expect(inputs).toBe(typed.length);
+  expect(notes.value).toBe(typed);
+  expect(new FormData(host.querySelector('form')!).get('notes')).toBe(typed);
+  inputs = 0;
+  await render({ notesValue: 'First\nSecond' });
+  expect(ta.value).toBe('First\nSecond');
+  expect(inputs).toBe(0);
+  await userEvent.click(host.querySelector<El>('wk-button-reset')!);
+  await tick();
+  expect(notes.value).toBe('');
+  expect(ta.value).toBe('');
+  expect(inputs).toBe(0);
+  await userEvent.type(q('rr-name').querySelector('input')!, 'Ada');
+  await userEvent.selectOptions(q('rr-destination').querySelector('select')!, 'oslo');
+  await userEvent.type(ta, 'A{Enter}B');
+  await submit(q);
+  expect(q('rr-notes-summary').textContent).toBe('A\nB');
 });
