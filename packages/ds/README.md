@@ -152,6 +152,33 @@ Notes. Automated TextArea package checks run in Chromium, Firefox and WebKit, an
 examples run in Chromium. This is provisional; manual assistive-technology and device evidence
 remains deferred to #59.
 
+## `wk-radio-group` and `wk-radio` (provisional)
+
+`WkRadioGroup` and `WkRadio` extend Lion's radio group and radio. Import their classes from
+`@wakata/ds/radio-group` and `@wakata/ds/radio`; register through `@wakata/ds/define` or the
+matching `/define` entry points. The group has a visible `label`, optional `help-text`,
+`required`, `disabled`, and external `error`. Each option has a visible `label`, string
+`choiceValue`, optional initial `checked`, and optional `disabled`. Its `value` is the selected
+string or `''` when none; setting it programmatically selects the matching option without
+`wk-input` or `wk-change`. The events bubble from user selection with `{ value, name }`.
+Native radio inputs stay in light DOM, share the group's `name`, and put one selected value into
+`FormData`. No selection or a disabled group contributes no value. Reset restores an initially
+checked option and clears external error. Required validation means one option selected.
+
+```ts
+import '@wakata/ds/define';
+const group = document.querySelector('wk-radio-group')!;
+group.querySelector('wk-radio')!.choiceValue = 'body';
+```
+
+Lion's `choiceValue` is a **property**, not a `choice-value` HTML attribute. In a plain HTML file,
+set it in a module script after custom elements upgrade, as in `examples/radio-group.html`.
+Lit, React 19, and Angular can assign the property directly. Native radio keyboard behavior
+handles Tab and arrow navigation, including disabled options. The React request/review example
+uses controlled group value; Angular uses its string `ControlValueAccessor` in a reactive form.
+Automated browser and framework evidence is recorded in `docs/ds/issue-18-evidence.md`.
+Manual assistive technology and physical device checks remain deferred to #59.
+
 ## `wk-card` (provisional presentational primitive)
 
 `WkCard` is a Lit primitive, not a Lion component. Import its class and styles

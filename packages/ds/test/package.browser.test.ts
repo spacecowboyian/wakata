@@ -8,6 +8,12 @@ test('class entry points do not register the element', async () => {
   const textField = await import('@wakata/ds/text-field');
   const select = await import('@wakata/ds/select');
   const modeSwitch = await import('@wakata/ds/mode-switch');
+  const radioGroup = await import('@wakata/ds/radio-group');
+  const radio = await import('@wakata/ds/radio');
+  expect(pkg.WkRadioGroup).toBe(radioGroup.WkRadioGroup);
+  expect(pkg.WkRadio).toBe(radio.WkRadio);
+  expect(customElements.get('wk-radio-group')).toBeUndefined();
+  expect(customElements.get('wk-radio')).toBeUndefined();
   expect(pkg.WkModeSwitch).toBe(modeSwitch.WkModeSwitch);
   expect(customElements.get('wk-mode-switch')).toBeUndefined();
   expect(pkg.WkSelect).toBe(select.WkSelect);
@@ -32,6 +38,12 @@ test('define entry points register once and tolerate repeats', async () => {
   expect(() => defineWkSelect()).not.toThrow();
   const { defineWkModeSwitch } = await import('@wakata/ds/mode-switch/define');
   expect(() => defineWkModeSwitch()).not.toThrow();
+  const { defineWkRadioGroup } = await import('@wakata/ds/radio-group/define');
+  const { defineWkRadio } = await import('@wakata/ds/radio/define');
+  expect(() => defineWkRadioGroup()).not.toThrow();
+  expect(() => defineWkRadio()).not.toThrow();
+  expect(customElements.get('wk-radio-group')).toBe((await import('@wakata/ds')).WkRadioGroup);
+  expect(customElements.get('wk-radio')).toBe((await import('@wakata/ds')).WkRadio);
   expect(customElements.get('wk-mode-switch')).toBe((await import('@wakata/ds')).WkModeSwitch);
   expect(customElements.get('wk-select')).toBe((await import('@wakata/ds/select')).WkSelect);
   expect(customElements.get('wk-button')).toBe(WkButton);

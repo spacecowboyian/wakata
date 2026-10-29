@@ -13,7 +13,7 @@ type WkField = HTMLElement & { value: string; disabled: boolean };
  */
 @Directive({
   selector:
-    'wk-text-area[formControlName],wk-text-area[formControl],wk-text-area[ngModel],wk-text-field[formControlName],wk-text-field[formControl],wk-text-field[ngModel],wk-select[formControlName],wk-select[formControl],wk-select[ngModel]',
+    'wk-text-area[formControlName],wk-text-area[formControl],wk-text-area[ngModel],wk-text-field[formControlName],wk-text-field[formControl],wk-text-field[ngModel],wk-select[formControlName],wk-select[formControl],wk-select[ngModel],wk-radio-group[formControlName],wk-radio-group[formControl],wk-radio-group[ngModel]',
   providers: [
     { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => WkValueAccessor), multi: true },
   ],

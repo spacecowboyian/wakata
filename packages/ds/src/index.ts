@@ -10,6 +10,8 @@ export * from './components/select/index.js';
 export * from './components/mode-switch/index.js';
 export * from './components/checkbox/index.js';
 export * from './components/checkbox-group/index.js';
+export * from './components/radio/index.js';
+export * from './components/radio-group/index.js';
 export * from './components/switch/index.js';
 export * from './form/index.js';
 export * from './tokens/index.js';

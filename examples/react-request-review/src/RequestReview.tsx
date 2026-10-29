@@ -6,6 +6,7 @@ import type { WkTextField } from '@wakata/ds/text-field';
 import '@wakata/ds/text-area/define';
 import type { WkTextArea } from '@wakata/ds/text-area';
 import type { WkSelect } from '@wakata/ds/select';
+import type { WkRadioGroup } from '@wakata/ds/radio-group';
 import type { WkDialog } from '@wakata/ds/dialog';
 
 // Adapter: React does not subscribe to custom events; bridge `wk-input` into controlled state.
@@ -106,6 +107,7 @@ export function RequestReview({
     if (notesValue !== undefined) setNotes(notesValue);
   }, [notesValue]);
   const [channels, setChannels] = useState<string[]>([]);
+  const [priority, setPriority] = useState('');
   const [compact, setCompact] = useState(false);
   const toggle = (key: string) => (on: boolean) =>
     setChannels((c) => (on ? [...new Set([...c, key])] : c.filter((k) => k !== key)));
@@ -124,6 +126,7 @@ export function RequestReview({
   const nameRef = useWkField<WkTextField>(name, setName, traveller);
   const destRef = useWkField<WkSelect>(destination, setDestination, destinationValue);
   const notesRef = useWkField<WkTextArea>(notes, setNotes, notesValue);
+  const priorityRef = useWkField<WkRadioGroup>(priority, setPriority);
   const dialogRef = useRef<WkDialog>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const wrapperRef = useRef<HTMLElement & { hasFeedbackFor: string[] }>(null);
@@ -200,6 +203,7 @@ export function RequestReview({
     setDestination('');
     setNotes('');
     setChannels([]);
+    setPriority('');
     setReviewReady(false);
     setStatus('');
   };
@@ -258,6 +262,16 @@ export function RequestReview({
                 ></wk-checkbox>
               ))}
             </wk-checkbox-group>
+            <wk-radio-group
+              id="rr-priority"
+              ref={priorityRef}
+              name="priority"
+              label="Inspection priority (optional)"
+              help-text="Choose the first area to inspect."
+            >
+              <wk-radio label="Bodywork" choiceValue="body"></wk-radio>
+              <wk-radio label="Engine" choiceValue="engine"></wk-radio>
+            </wk-radio-group>
             <div className="actions">
               <wk-button-submit id="rr-submit" variant="primary" disabled={processing || undefined}>
                 Review request
@@ -284,8 +298,9 @@ export function RequestReview({
               <section slot="content" aria-labelledby="rr-title" aria-describedby="rr-desc">
                 <h2 id="rr-title">Review request</h2>
                 <p id="rr-desc">
-                  Mock only: <span id="rr-summary">{`${name} → ${destination}`}</span>. Nothing is
-                  sent.
+                  Mock only:{' '}
+                  <span id="rr-summary">{`${name} → ${destination}${priority ? ` · ${priority} inspection first` : ''}`}</span>
+                  . Nothing is sent.
                 </p>
                 {notes ? (
                   <p id="rr-notes-summary" style={{ whiteSpace: 'pre-wrap' }}>
