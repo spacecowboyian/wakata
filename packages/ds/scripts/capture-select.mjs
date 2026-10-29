@@ -11,6 +11,7 @@ try {
     ['empty', 'empty.png', 390],
     ['selected', 'selected.png', 390],
     ['required-invalid', 'required-invalid.png', 390],
+    ['help-and-external-error', 'help-and-external-error.png', 390],
     ['disabled', 'disabled.png', 390],
     ['long-content', 'long-content-280.png', 320],
     ['themes-modes-and-wireframe', 'themes-modes-wireframe.png', 1000],
@@ -79,6 +80,22 @@ try {
         throw new Error('Selected long option overflows 320px viewport');
       }
     }
+    await page.close();
+  }
+  for (const [story, filename] of [
+    ['selected', 'selected-studio-dark.png'],
+    ['help-and-external-error', 'help-and-external-error-studio-dark.png'],
+  ]) {
+    const page = await browser.newPage({
+      viewport: { width: 390, height: 900 },
+      deviceScaleFactor: 2,
+    });
+    await page.goto(
+      `${origin}/iframe.html?id=components-select--${story}&viewMode=story&globals=theme:studio;mode:dark`,
+    );
+    await page.locator('wk-select select').waitFor();
+    await page.evaluate(() => document.fonts.ready);
+    await page.locator('#storybook-root').screenshot({ path: resolve(output, filename) });
     await page.close();
   }
   const forced = await browser.newPage({

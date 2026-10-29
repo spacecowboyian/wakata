@@ -24,6 +24,13 @@ export const wkSelectStyles = css`
     line-height: 18px;
     overflow-wrap: anywhere;
   }
+  :host([help-text]:not([help-text=''])) .form-field__help-text {
+    margin-block-end: 8px;
+  }
+  :host([shows-feedback-for~='error']) .form-field__feedback,
+  ::slotted([data-wk-external-error]) {
+    margin-block-start: 8px;
+  }
   .input-group__container {
     min-width: 0;
     min-height: 44px;
@@ -50,8 +57,8 @@ export const wkSelectStyles = css`
       linear-gradient(-45deg, transparent 42%, currentColor 42% 58%, transparent 58%);
     background-size: 8px 8px;
     background-position:
-      right 26px center,
-      right 18px center;
+      right 20px center,
+      right 12px center;
     background-repeat: no-repeat;
     color: var(--wk-text, #222);
     font: inherit;
