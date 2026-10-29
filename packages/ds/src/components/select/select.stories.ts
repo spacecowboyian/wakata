@@ -72,6 +72,11 @@ export const RequiredInvalid: Story = {
       await expect(feedback).toContain('Please select an option.');
       await expect(feedback).not.toContain('Please configure an error message');
     });
+    const box = field.shadowRoot!.querySelector('.input-group__container')!.getBoundingClientRect();
+    const feedbackBox = field
+      .shadowRoot!.querySelector('.form-field__feedback')!
+      .getBoundingClientRect();
+    await expect(feedbackBox.top - box.bottom).toBe(8);
   },
 };
 
@@ -98,6 +103,16 @@ export const HelpAndExternalError: Story = {
       </select>
     </wk-select>
   `,
+  play: async ({ canvasElement }) => {
+    const field = canvasElement.querySelector('wk-select')!;
+    const root = field.shadowRoot!;
+    const help = root.querySelector('.form-field__help-text')!.getBoundingClientRect();
+    const box = root.querySelector('.input-group__container')!.getBoundingClientRect();
+    const feedback = field.querySelector('[data-wk-external-error]')!.getBoundingClientRect();
+    const above = box.top - help.bottom;
+    await expect(above).toBeGreaterThanOrEqual(8);
+    await expect(Math.abs(feedback.top - box.bottom - above)).toBeLessThanOrEqual(1);
+  },
 };
 
 export const LongContent: Story = {
