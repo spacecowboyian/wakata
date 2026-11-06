@@ -1,14 +1,14 @@
-import{b as a}from"./iframe-BTaqqi5X.js";import"./preload-helper-PPVm8Dsz.js";const{expect:o,userEvent:h,waitFor:v,within:g}=__STORYBOOK_MODULE_TEST__,i=()=>a`
+import{b as a}from"./iframe-DBHZ5tyn.js";import"./preload-helper-PPVm8Dsz.js";const{expect:n,userEvent:h,waitFor:v,within:k}=__STORYBOOK_MODULE_TEST__,l=()=>a`
   <option value="">Choose a destination</option>
   <option value="oslo">Oslo</option>
   <option value="bergen">Bergen</option>
-`,x=["neutral","studio","fieldwork"],S=["light","dark"],B=async(t,e)=>{const n=getComputedStyle(e);await o(n.outlineStyle).toBe("solid"),await o(n.outlineWidth).toBe("2px"),await o(n.outlineOffset).toBe("2px"),await o(n.borderTopLeftRadius).toBe(getComputedStyle(t).getPropertyValue("--wk-radius").trim()||"0px")},E={title:"Components/Select",tags:["autodocs"],render:()=>a`
+`,x=["neutral","studio","fieldwork"],S=["light","dark"],B=async(t,e,o)=>{const s=t.shadowRoot.querySelector(".input-group__container"),r=getComputedStyle(s);await n(getComputedStyle(e).outlineStyle).toBe("none"),await n(r.borderColor).not.toBe(o),await n(r.boxShadow).not.toBe("none"),await n(r.borderTopLeftRadius).toBe(getComputedStyle(t).getPropertyValue("--wk-radius").trim()||"0px")},E={title:"Components/Select",tags:["autodocs"],render:()=>a`
     <wk-select name="destination" label="Destination" help-text="Choose one synthetic destination.">
       <select slot="input">
-        ${i()}
+        ${l()}
       </select>
     </wk-select>
-  `,parameters:{docs:{description:{component:'Single native select using Lion and the shared scalar field facade. Supply a select in slot="input", direct option children with unique string values, and an empty first option for the prompt. The closed control has a decorative chevron; the picker remains native. Browsers supporting select:open turn it upward while open; other browsers retain the downward chevron. No readonly, search, multiselect or custom popup. Native menus vary by OS; long option text may truncate in the closed control. Use wk-input for value updates and wk-change only for commit notification.'}}}},r={play:async({canvasElement:t})=>{await o(g(t).getByRole("combobox",{name:"Destination"})).toHaveValue("")}},c={render:()=>a`
+  `,parameters:{docs:{description:{component:'Single native select using Lion and the shared scalar field facade. Supply a select in slot="input", direct option children with unique string values, and an empty first option for the prompt. The closed control has a decorative chevron; the picker remains native. Browsers supporting select:open turn it upward while open; other browsers retain the downward chevron. No readonly, search, multiselect or custom popup. Native menus vary by OS; long option text may truncate in the closed control. Use wk-input for value updates and wk-change only for commit notification.'}}}},i={play:async({canvasElement:t})=>{await n(k(t).getByRole("combobox",{name:"Destination"})).toHaveValue("")}},c={render:()=>a`
     ${x.flatMap(t=>S.map(e=>a`<div
             data-wk-theme=${t}
             data-wk-mode=${e}
@@ -16,26 +16,26 @@ import{b as a}from"./iframe-BTaqqi5X.js";import"./preload-helper-PPVm8Dsz.js";co
           >
             <wk-select name="focus-${t}-${e}" label="Destination">
               <select slot="input">
-                ${i()}
+                ${l()}
               </select>
             </wk-select>
           </div>`))}
-  `,play:async({canvasElement:t})=>{const e=Array.from(t.querySelectorAll("wk-select"));for(const n of e){const s=n.querySelector('[slot="input"]');await h.tab(),await o(s).toHaveFocus(),await B(n,s)}}},d={render:()=>a`
+  `,play:async({canvasElement:t})=>{const e=Array.from(t.querySelectorAll("wk-select"));for(const o of e){const s=o.querySelector('[slot="input"]'),r=o.shadowRoot.querySelector(".input-group__container"),g=getComputedStyle(r).borderColor;await h.tab(),await n(s).toHaveFocus(),await B(o,s,g)}}},d={render:()=>a`
     <wk-select name="destination" label="Destination" value="bergen">
       <select slot="input">
-        ${i()}
+        ${l()}
       </select>
     </wk-select>
-  `,play:async({canvasElement:t})=>{await o(g(t).getByRole("combobox",{name:"Destination"})).toHaveValue("bergen")}},p={render:()=>a`
+  `,play:async({canvasElement:t})=>{await n(k(t).getByRole("combobox",{name:"Destination"})).toHaveValue("bergen")}},p={render:()=>a`
     <wk-select name="destination" label="Destination" required>
       <select slot="input">
-        ${i()}
+        ${l()}
       </select>
     </wk-select>
-  `,play:async({canvasElement:t})=>{const e=t.querySelector("wk-select");e.submitted=!0,await e.validate(),await o(e.querySelector("select")).toHaveAttribute("aria-invalid","true"),await v(async()=>{const l=e.querySelector('[slot="feedback"]')?.shadowRoot?.textContent;await o(l).toContain("Please select an option."),await o(l).not.toContain("Please configure an error message")});const n=e.shadowRoot.querySelector(".input-group__container").getBoundingClientRect(),s=e.shadowRoot.querySelector(".form-field__feedback").getBoundingClientRect();await o(s.top-n.bottom).toBe(8)}},u={render:()=>a`
+  `,play:async({canvasElement:t})=>{const e=t.querySelector("wk-select");e.submitted=!0,await e.validate(),await n(e.querySelector("select")).toHaveAttribute("aria-invalid","true"),await v(async()=>{const r=e.querySelector('[slot="feedback"]')?.shadowRoot?.textContent;await n(r).toContain("Please select an option."),await n(r).not.toContain("Please configure an error message")});const o=e.shadowRoot.querySelector(".input-group__container").getBoundingClientRect(),s=e.shadowRoot.querySelector(".form-field__feedback").getBoundingClientRect();await n(s.top-o.bottom).toBe(8)}},u={render:()=>a`
     <wk-select name="destination" label="Destination" disabled value="oslo">
       <select slot="input">
-        ${i()}
+        ${l()}
       </select>
     </wk-select>
   `},m={render:()=>a`
@@ -46,10 +46,10 @@ import{b as a}from"./iframe-BTaqqi5X.js";import"./preload-helper-PPVm8Dsz.js";co
       error="This destination is temporarily unavailable."
     >
       <select slot="input">
-        ${i()}
+        ${l()}
       </select>
     </wk-select>
-  `,play:async({canvasElement:t})=>{const e=t.querySelector("wk-select"),n=e.shadowRoot,s=n.querySelector(".form-field__help-text").getBoundingClientRect(),l=n.querySelector(".input-group__container").getBoundingClientRect(),b=e.querySelector("[data-wk-external-error]").getBoundingClientRect(),k=l.top-s.bottom;await o(k).toBeGreaterThanOrEqual(8),await o(Math.abs(b.top-l.bottom-k)).toBeLessThanOrEqual(1)}},w={render:()=>a`
+  `,play:async({canvasElement:t})=>{const e=t.querySelector("wk-select"),o=e.shadowRoot,s=o.querySelector(".form-field__help-text").getBoundingClientRect(),r=o.querySelector(".input-group__container").getBoundingClientRect(),g=e.querySelector("[data-wk-external-error]").getBoundingClientRect(),b=r.top-s.bottom;await n(b).toBeGreaterThanOrEqual(8),await n(Math.abs(g.top-r.bottom-b)).toBeLessThanOrEqual(1)}},w={render:()=>a`
     <div style="max-width:280px">
       <wk-select
         label="Destination for the next synthetic regional planning workshop and team gathering"
@@ -63,12 +63,12 @@ import{b as a}from"./iframe-BTaqqi5X.js";import"./preload-helper-PPVm8Dsz.js";co
         </select>
       </wk-select>
     </div>
-  `,play:async({canvasElement:t})=>{const e=t.querySelector("wk-select");await o(e.scrollWidth).toBeLessThanOrEqual(e.clientWidth),await o(e.querySelector("select").getBoundingClientRect().height).toBeGreaterThanOrEqual(44)}},y={render:()=>a`
+  `,play:async({canvasElement:t})=>{const e=t.querySelector("wk-select");await n(e.scrollWidth).toBeLessThanOrEqual(e.clientWidth),await n(e.querySelector("select").getBoundingClientRect().height).toBeGreaterThanOrEqual(44)}},y={render:()=>a`
     <wk-form>
       <form novalidate style="display:grid;gap:12px;max-width:24rem">
         <wk-select name="destination" label="Destination" required>
           <select slot="input">
-            ${i()}
+            ${l()}
           </select>
         </wk-select>
         <div style="display:flex;gap:8px">
@@ -77,26 +77,26 @@ import{b as a}from"./iframe-BTaqqi5X.js";import"./preload-helper-PPVm8Dsz.js";co
         </div>
       </form>
     </wk-form>
-  `,play:async({canvasElement:t})=>{const e=g(t),n=t.querySelector("wk-select");await h.click(e.getByText("Continue")),await o(n.hasFeedbackFor).toContain("error");const s=e.getByRole("combobox",{name:"Destination"});await h.selectOptions(s,"oslo"),await o(new FormData(t.querySelector("form")).get("destination")).toBe("oslo"),await h.click(e.getByText("Reset")),await o(s).toHaveValue(""),await o(n.submitted).toBe(!1)}},f={render:()=>a`
+  `,play:async({canvasElement:t})=>{const e=k(t),o=t.querySelector("wk-select");await h.click(e.getByText("Continue")),await n(o.hasFeedbackFor).toContain("error");const s=e.getByRole("combobox",{name:"Destination"});await h.selectOptions(s,"oslo"),await n(new FormData(t.querySelector("form")).get("destination")).toBe("oslo"),await h.click(e.getByText("Reset")),await n(s).toHaveValue(""),await n(o.submitted).toBe(!1)}},f={render:()=>a`
     <div
       style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr));gap:16px"
     >
-      ${["neutral","studio","fieldwork"].flatMap(t=>["light","dark"].flatMap(e=>["false","true"].map(n=>a`
+      ${["neutral","studio","fieldwork"].flatMap(t=>["light","dark"].flatMap(e=>["false","true"].map(o=>a`
               <div
                 data-wk-theme=${t}
                 data-wk-mode=${e}
-                data-wk-wireframe=${n}
+                data-wk-wireframe=${o}
                 style="padding:12px;background:var(--wk-surface);color:var(--wk-text)"
               >
                 <wk-select label="${t} ${e}" help-text="Synthetic destination">
                   <select slot="input">
-                    ${i()}
+                    ${l()}
                   </select>
                 </wk-select>
               </div>
             `)))}
     </div>
-  `,play:async({canvasElement:t})=>{const e=[...t.querySelectorAll("wk-select")];await o(new Set(e.map(n=>getComputedStyle(n).fontFamily)).size).toBe(3),await o(new Set(e.map(n=>getComputedStyle(n.querySelector("select")).backgroundColor)).size).toBe(2)}},$=["Empty","Focus","Selected","RequiredInvalid","Disabled","HelpAndExternalError","LongContent","RealForm","ThemesModesAndWireframe"];r.parameters={...r.parameters,docs:{...r.parameters?.docs,source:{originalSource:`{
+  `,play:async({canvasElement:t})=>{const e=[...t.querySelectorAll("wk-select")];await n(new Set(e.map(o=>getComputedStyle(o).fontFamily)).size).toBe(3),await n(new Set(e.map(o=>getComputedStyle(o.querySelector("select")).backgroundColor)).size).toBe(2)}},R=["Empty","Focus","Selected","RequiredInvalid","Disabled","HelpAndExternalError","LongContent","RealForm","ThemesModesAndWireframe"];i.parameters={...i.parameters,docs:{...i.parameters?.docs,source:{originalSource:`{
   play: async ({
     canvasElement
   }) => {
@@ -104,7 +104,7 @@ import{b as a}from"./iframe-BTaqqi5X.js";import"./preload-helper-PPVm8Dsz.js";co
       name: 'Destination'
     })).toHaveValue('');
   }
-}`,...r.parameters?.docs?.source}}};c.parameters={...c.parameters,docs:{...c.parameters?.docs,source:{originalSource:`{
+}`,...i.parameters?.docs?.source}}};c.parameters={...c.parameters,docs:{...c.parameters?.docs,source:{originalSource:`{
   render: () => html\`
     \${focusThemes.flatMap(theme => focusModes.map(mode => html\`<div
             data-wk-theme=\${theme}
@@ -124,9 +124,11 @@ import{b as a}from"./iframe-BTaqqi5X.js";import"./preload-helper-PPVm8Dsz.js";co
     const hosts = Array.from(canvasElement.querySelectorAll('wk-select'));
     for (const host of hosts) {
       const control = host.querySelector('[slot="input"]')!;
+      const wrapper = host.shadowRoot!.querySelector<HTMLElement>('.input-group__container')!;
+      const beforeBorder = getComputedStyle(wrapper).borderColor;
       await userEvent.tab();
       await expect(control).toHaveFocus();
-      await expectFocusGeometry(host, control);
+      await expectFocusGeometry(host, control, beforeBorder);
     }
   }
 }`,...c.parameters?.docs?.source}}};d.parameters={...d.parameters,docs:{...d.parameters?.docs,source:{originalSource:`{
@@ -284,4 +286,4 @@ import{b as a}from"./iframe-BTaqqi5X.js";import"./preload-helper-PPVm8Dsz.js";co
     await expect(new Set(fields.map(field => getComputedStyle(field).fontFamily)).size).toBe(3);
     await expect(new Set(fields.map(field => getComputedStyle(field.querySelector('select')!).backgroundColor)).size).toBe(2);
   }
-}`,...f.parameters?.docs?.source}}};export{u as Disabled,r as Empty,c as Focus,m as HelpAndExternalError,w as LongContent,y as RealForm,p as RequiredInvalid,d as Selected,f as ThemesModesAndWireframe,$ as __namedExportsOrder,E as default};
+}`,...f.parameters?.docs?.source}}};export{u as Disabled,i as Empty,c as Focus,m as HelpAndExternalError,w as LongContent,y as RealForm,p as RequiredInvalid,d as Selected,f as ThemesModesAndWireframe,R as __namedExportsOrder,E as default};
