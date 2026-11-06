@@ -13,6 +13,7 @@ export * from './components/checkbox-group/index.js';
 export * from './components/radio/index.js';
 export * from './components/radio-group/index.js';
 export * from './components/switch/index.js';
+export * from './components/tabs/index.js';
 export * from './form/index.js';
 export * from './tokens/index.js';
 export * from './themes/index.js';

@@ -12,4 +12,5 @@ import './components/checkbox/define.js';
 import './components/checkbox-group/define.js';
 import './components/radio-group/define.js';
 import './components/switch/define.js';
+import './components/tabs/define.js';
 import './form/define.js';

@@ -13,6 +13,8 @@ Wakata design system (working title DS) and its Storybook. Private and provision
 | `@wakata/ds/checkbox`              | Checkbox class and Boolean event type; no registration                     |
 | `@wakata/ds/checkbox-group`        | CheckboxGroup class; no registration                                       |
 | `@wakata/ds/switch`                | Switch class; no registration                                              |
+| `@wakata/ds/tabs`                  | Tabs, Tab and TabPanel classes; no registration                            |
+| `@wakata/ds/tabs/define`           | Registers `wk-tabs`, `wk-tab`, `wk-tab-panel`                              |
 | `@wakata/ds/define`                | Registers all DS elements (idempotent)                                     |
 | `@wakata/ds/button/define`         | Registers `wk-button` (`defineWkButton()` is safe to call twice)           |
 | `@wakata/ds/card`                  | Card class only; no registration                                           |
@@ -177,6 +179,37 @@ Lit, React 19, and Angular can assign the property directly. Native radio keyboa
 handles Tab and arrow navigation, including disabled options. The React request/review example
 uses controlled group value; Angular uses its string `ControlValueAccessor` in a reactive form.
 Automated browser and framework evidence is recorded in `docs/ds/issue-18-evidence.md`.
+Manual assistive technology and physical device checks remain deferred to #59.
+
+## `wk-tabs`, `wk-tab`, and `wk-tab-panel` (provisional)
+
+Tabs are a narrow Lit exception to the usual Lion subclass convention: Lion 0.25.0 activates a
+panel when an arrow key moves focus, while Wakata's accepted contract requires manual activation.
+The component supports horizontal tabs only. Give `wk-tabs` a `label` for its accessible tablist
+name. Pair each `wk-tab slot="tab" value="…"` with a `wk-tab-panel slot="panel" value="…"`.
+Each value must be nonempty and unique. An incomplete or duplicate tab is inert; its panel stays
+hidden. The first enabled complete pair is the default selection. A missing or invalid `value`
+normalizes silently to that pair, or to `''` when none is available. Programmatic updates emit no
+event. A user click, Enter or Space activation emits one bubbling, composed `wk-change` with
+`{ value }` only when selection changes.
+
+Left/Right arrows and Home/End move tab focus, wrap and skip disabled tabs **without selecting a
+panel**. Tab leaves the group; after focus leaves, the selected tab regains the tab stop. Inactive
+panels are hidden and unfocusable. Narrow tablists wrap to keep each tab visible. Tabs are a view
+control outside form submission; they do not serialize in `FormData`.
+
+```html
+<wk-tabs label="Vehicle details" value="body">
+  <wk-tab slot="tab" value="body">Body</wk-tab>
+  <wk-tab slot="tab" value="records">Records</wk-tab>
+  <wk-tab-panel slot="panel" value="body">Inspect corrosion.</wk-tab-panel>
+  <wk-tab-panel slot="panel" value="records">Review service records.</wk-tab-panel>
+</wk-tabs>
+```
+
+`@wakata/ds/tabs` exports the classes without registration. Import `@wakata/ds/tabs/define` or
+`@wakata/ds/define` to register them. Synthetic examples are in `packages/ds/examples/tabs.html`,
+`examples/react-request-review/tabs.html`, and `examples/angular-request-review/tabs.html`.
 Manual assistive technology and physical device checks remain deferred to #59.
 
 ## `wk-card` (provisional presentational primitive)
