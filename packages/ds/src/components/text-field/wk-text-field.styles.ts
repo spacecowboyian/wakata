@@ -47,12 +47,12 @@ export const wkTextFieldStyles = css`
     font: inherit;
     line-height: 24px;
   }
-  ::slotted(input[slot='input']:focus-visible) {
-    outline: 2px solid var(--wk-focus, #111);
-    outline-offset: 2px;
-    border-radius: var(--wk-radius, 0px);
+  :host(:focus-within) .input-group__container {
+    border-color: var(--wk-focus, #111);
+    box-shadow: inset 0 0 0 1px var(--wk-focus, #111);
   }
-  :host(:has(> input[slot='input'][aria-invalid='true'])) .input-group__container {
+  :host(:not(:focus-within):has(> input[slot='input'][aria-invalid='true']))
+    .input-group__container {
     border-color: var(--wk-danger, #a02222);
   }
   ::slotted([data-wk-external-error]) {
@@ -79,8 +79,11 @@ export const wkTextFieldStyles = css`
     }
   }
   @media (forced-colors: active) {
-    ::slotted(input[slot='input']:focus-visible) {
-      outline-color: Highlight;
+    :host(:focus-within) .input-group__container {
+      border-color: Highlight;
+      box-shadow: none;
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
     }
     .input-group__container {
       border-color: CanvasText;

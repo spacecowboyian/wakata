@@ -17,11 +17,12 @@ interface TextFieldArgs {
 const themes = ['neutral', 'studio', 'fieldwork'] as const;
 const modes = ['light', 'dark'] as const;
 
-const expectFocusGeometry = async (host: Element, control: Element) => {
-  const style = getComputedStyle(control);
-  await expect(style.outlineStyle).toBe('solid');
-  await expect(style.outlineWidth).toBe('2px');
-  await expect(style.outlineOffset).toBe('2px');
+const expectFocusGeometry = async (host: Element, control: Element, beforeBorder: string) => {
+  const wrapper = host.shadowRoot!.querySelector<HTMLElement>('.input-group__container')!;
+  const style = getComputedStyle(wrapper);
+  await expect(getComputedStyle(control).outlineStyle).toBe('none');
+  await expect(style.borderColor).not.toBe(beforeBorder);
+  await expect(style.boxShadow).not.toBe('none');
   await expect(style.borderTopLeftRadius).toBe(
     getComputedStyle(host).getPropertyValue('--wk-radius').trim() || '0px',
   );
@@ -129,9 +130,11 @@ export const Focus: Story = {
     const hosts = Array.from(canvasElement.querySelectorAll('wk-text-field'));
     for (const host of hosts) {
       const control = host.querySelector('[slot="input"]')!;
+      const wrapper = host.shadowRoot!.querySelector<HTMLElement>('.input-group__container')!;
+      const beforeBorder = getComputedStyle(wrapper).borderColor;
       await userEvent.tab();
       await expect(control).toHaveFocus();
-      await expectFocusGeometry(host, control);
+      await expectFocusGeometry(host, control, beforeBorder);
     }
   },
 };

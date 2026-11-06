@@ -2,9 +2,9 @@
 
 ## Scope and decision status
 
-This is a corrective change to provisional TextField, Select and TextArea focus styling, not shared production promotion. Ian's visual acceptance of the final appearance is pending. The separate comparison worktree's uncommitted TextField/Select experiment remains intact; its `:focus-within` wrapper stroke was reviewed and replaced here because it broadened the prior `:focus-visible` trigger and relied on a shadow that forced-colors mode removes.
+This is a corrective change to provisional TextField, Select and TextArea focus styling, not shared production promotion. Ian rejected the spaced outer ring on the first PR #70 preview and requested a single focus-colored field edge. Acceptance of the revised appearance is pending. The separate comparison worktree's uncommitted TextField/Select experiment remains intact.
 
-The candidate retains each native control's `:focus-visible` outline, gives the slotted control the configured `--wk-radius`, and keeps the forced-colors `Highlight` outline. The Select chevron and dark corner rules from #36 are unchanged.
+The revised candidate keeps native keyboard focus, removes the native outline and colors the rounded wrapper border on focus. A same-color inset stroke makes a continuous 2px edge without a gap or layout shift. Forced-colors mode uses a 2px `Highlight` outline over the same edge because box shadows are suppressed there. The Select chevron and dark corner rules from #36 are unchanged.
 
 ## Reproduction and review images
 
@@ -22,12 +22,12 @@ The original client-theme TextArea reproduction shows a square focus edge outsid
 
 ## Automated evidence
 
-- Focus stories render all three approved themes in light/dark and check keyboard focus, the 2px outline, offset and computed radius: 35/35 focused story tests in each of Chromium, Firefox and WebKit.
-- A Chromium package test emulates forced colors and verifies actual `Highlight` outline color, 2px outline and 16px Studio radius for all three native controls: 1/1.
-- Full root `pnpm test` passes: DS 268/268, Angular example 11/11, React example 13/13, plus the mode-switch HTML smoke.
+- Focus stories render all three approved themes in light/dark and check keyboard focus, the focus-colored wrapper border, the same-color inset stroke and computed radius.
+- Chromium package tests verify that focused invalid fields use the same focus-colored edge, and emulate forced colors to check actual `Highlight` border/outline color, 2px outline and 16px Studio radius for all three native controls.
+- Full root `pnpm test` passes: DS 269/269, Angular example 11/11, React example 13/13, plus the mode-switch HTML smoke.
 - Root lint and typecheck pass. Static Storybook build and its component smoke scripts pass.
 - Local GitHub Copilot CLI used 69.18 AI credits of the 100-credit issue cap. Codex reviewed, tightened the story fixtures and added the forced-colors emulation test and captures.
 
 ## Remaining evidence
 
-Owner visual acceptance and PR CI/preview review remain pending. Manual AT and physical-device evidence remain under #59; Windows/NVDA remains untested under #45. These automated checks do not certify accessibility or production use.
+Owner visual acceptance and revised PR CI/preview review remain pending. Manual AT and physical-device evidence remain under #59; Windows/NVDA remains untested under #45. WCAG 2.4.13 AAA focus-area and contrast assessment has not been completed. These automated checks do not certify accessibility or production use.
