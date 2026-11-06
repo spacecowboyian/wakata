@@ -50,6 +50,7 @@ export const wkTextFieldStyles = css`
   ::slotted(input[slot='input']:focus-visible) {
     outline: 2px solid var(--wk-focus, #111);
     outline-offset: 2px;
+    border-radius: var(--wk-radius, 0px);
   }
   :host(:has(> input[slot='input'][aria-invalid='true'])) .input-group__container {
     border-color: var(--wk-danger, #a02222);
@@ -78,11 +79,11 @@ export const wkTextFieldStyles = css`
     }
   }
   @media (forced-colors: active) {
-    .input-group__container {
-      border-color: CanvasText;
-    }
     ::slotted(input[slot='input']:focus-visible) {
       outline-color: Highlight;
+    }
+    .input-group__container {
+      border-color: CanvasText;
     }
   }
 `;

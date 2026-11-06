@@ -17,6 +17,16 @@ interface TextFieldArgs {
 const themes = ['neutral', 'studio', 'fieldwork'] as const;
 const modes = ['light', 'dark'] as const;
 
+const expectFocusGeometry = async (host: Element, control: Element) => {
+  const style = getComputedStyle(control);
+  await expect(style.outlineStyle).toBe('solid');
+  await expect(style.outlineWidth).toBe('2px');
+  await expect(style.outlineOffset).toBe('2px');
+  await expect(style.borderTopLeftRadius).toBe(
+    getComputedStyle(host).getPropertyValue('--wk-radius').trim() || '0px',
+  );
+};
+
 const meta = {
   title: 'Components/Text Field',
   tags: ['autodocs'],
@@ -101,12 +111,28 @@ export const Empty: Story = {
 };
 
 export const Focus: Story = {
+  render: () => html`
+    ${themes.flatMap((theme) =>
+      modes.map(
+        (mode) =>
+          html`<div
+            data-wk-theme=${theme}
+            data-wk-mode=${mode}
+            style="padding:12px;background:var(--wk-surface, #fff)"
+          >
+            <wk-text-field name="focus-${theme}-${mode}" label="Display name"></wk-text-field>
+          </div>`,
+      ),
+    )}
+  `,
   play: async ({ canvasElement }) => {
-    const input = within(canvasElement).getByRole('textbox', { name: 'Display name' });
-    await userEvent.tab();
-    await expect(input).toHaveFocus();
-    await expect(getComputedStyle(input).outlineStyle).toBe('solid');
-    await expect(Number.parseFloat(getComputedStyle(input).outlineWidth)).toBeGreaterThan(0);
+    const hosts = Array.from(canvasElement.querySelectorAll('wk-text-field'));
+    for (const host of hosts) {
+      const control = host.querySelector('[slot="input"]')!;
+      await userEvent.tab();
+      await expect(control).toHaveFocus();
+      await expectFocusGeometry(host, control);
+    }
   },
 };
 

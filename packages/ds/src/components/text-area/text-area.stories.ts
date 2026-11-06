@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
-import { expect, within } from 'storybook/test';
+import { expect, userEvent, within } from 'storybook/test';
 import { html } from 'lit';
 import type { WkTextArea } from './index.js';
 
@@ -17,6 +17,16 @@ interface TextAreaArgs {
 const themes = ['neutral', 'studio', 'fieldwork'] as const;
 const modes = ['light', 'dark'] as const;
 const lines = (n: number) => Array.from({ length: n }, (_, i) => `Line ${i + 1}`).join('\n');
+
+const expectFocusGeometry = async (host: Element, control: Element) => {
+  const style = getComputedStyle(control);
+  await expect(style.outlineStyle).toBe('solid');
+  await expect(style.outlineWidth).toBe('2px');
+  await expect(style.outlineOffset).toBe('2px');
+  await expect(style.borderTopLeftRadius).toBe(
+    getComputedStyle(host).getPropertyValue('--wk-radius').trim() || '0px',
+  );
+};
 
 const meta = {
   title: 'Components/Text Area',
@@ -85,6 +95,32 @@ type Story = StoryObj<TextAreaArgs>;
 export const Empty: Story = {
   play: async ({ canvasElement }) => {
     await expect(within(canvasElement).getByRole('textbox', { name: 'Notes' })).toHaveValue('');
+  },
+};
+
+export const Focus: Story = {
+  render: () => html`
+    ${themes.flatMap((theme) =>
+      modes.map(
+        (mode) =>
+          html`<div
+            data-wk-theme=${theme}
+            data-wk-mode=${mode}
+            style="padding:12px;background:var(--wk-surface, #fff)"
+          >
+            <wk-text-area name="focus-${theme}-${mode}" label="Notes"></wk-text-area>
+          </div>`,
+      ),
+    )}
+  `,
+  play: async ({ canvasElement }) => {
+    const hosts = Array.from(canvasElement.querySelectorAll('wk-text-area'));
+    for (const host of hosts) {
+      const control = host.querySelector('[slot="input"]')!;
+      await userEvent.tab();
+      await expect(control).toHaveFocus();
+      await expectFocusGeometry(host, control);
+    }
   },
 };
 

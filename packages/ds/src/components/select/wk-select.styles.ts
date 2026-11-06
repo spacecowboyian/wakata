@@ -72,6 +72,7 @@ export const wkSelectStyles = css`
   ::slotted(select[slot='input']:focus-visible) {
     outline: 2px solid var(--wk-focus, #111);
     outline-offset: 2px;
+    border-radius: var(--wk-radius, 0px);
   }
   :host(:has(> select[slot='input'][aria-invalid='true'])) .input-group__container {
     border-color: var(--wk-danger, #a02222);
@@ -91,6 +92,9 @@ export const wkSelectStyles = css`
     cursor: not-allowed;
   }
   @media (forced-colors: active) {
+    ::slotted(select[slot='input']:focus-visible) {
+      outline-color: Highlight;
+    }
     .input-group__container {
       border-color: CanvasText;
     }
@@ -99,9 +103,6 @@ export const wkSelectStyles = css`
       appearance: auto;
       background-image: none;
       color: CanvasText;
-    }
-    ::slotted(select[slot='input']:focus-visible) {
-      outline-color: Highlight;
     }
   }
 `;
