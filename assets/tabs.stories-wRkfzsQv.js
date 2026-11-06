@@ -1,4 +1,4 @@
-import{b as e}from"./iframe-BBu7yT8Y.js";import"./preload-helper-PPVm8Dsz.js";const a=(t="overview")=>e`<wk-tabs label="Vehicle details" value=${t}>
+import{b as e}from"./iframe-DBHZ5tyn.js";import"./preload-helper-PPVm8Dsz.js";const a=(t="overview")=>e`<wk-tabs label="Vehicle details" value=${t}>
     <wk-tab slot="tab" value="overview">Overview</wk-tab>
     <wk-tab slot="tab" value="inspection">Inspection</wk-tab>
     <wk-tab slot="tab" value="history">History</wk-tab>
