@@ -50,11 +50,12 @@ export const wkTextAreaStyles = css`
     overflow-wrap: anywhere;
     resize: none;
   }
-  ::slotted(textarea[slot='input']:focus-visible) {
-    outline: 2px solid var(--wk-focus, #111);
-    outline-offset: 2px;
+  :host(:focus-within) .input-group__container {
+    border-color: var(--wk-focus, #111);
+    box-shadow: inset 0 0 0 1px var(--wk-focus, #111);
   }
-  :host(:has(> textarea[slot='input'][aria-invalid='true'])) .input-group__container {
+  :host(:not(:focus-within):has(> textarea[slot='input'][aria-invalid='true']))
+    .input-group__container {
     border-color: var(--wk-danger, #a02222);
   }
   ::slotted([data-wk-external-error]) {
@@ -81,11 +82,14 @@ export const wkTextAreaStyles = css`
     }
   }
   @media (forced-colors: active) {
+    :host(:focus-within) .input-group__container {
+      border-color: Highlight;
+      box-shadow: none;
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+    }
     .input-group__container {
       border-color: CanvasText;
-    }
-    ::slotted(textarea[slot='input']:focus-visible) {
-      outline-color: Highlight;
     }
   }
 `;

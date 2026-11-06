@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
-import { expect, within } from 'storybook/test';
+import { expect, userEvent, within } from 'storybook/test';
 import { html } from 'lit';
 import type { WkTextArea } from './index.js';
 
@@ -17,6 +17,17 @@ interface TextAreaArgs {
 const themes = ['neutral', 'studio', 'fieldwork'] as const;
 const modes = ['light', 'dark'] as const;
 const lines = (n: number) => Array.from({ length: n }, (_, i) => `Line ${i + 1}`).join('\n');
+
+const expectFocusGeometry = async (host: Element, control: Element, beforeBorder: string) => {
+  const wrapper = host.shadowRoot!.querySelector<HTMLElement>('.input-group__container')!;
+  const style = getComputedStyle(wrapper);
+  await expect(getComputedStyle(control).outlineStyle).toBe('none');
+  await expect(style.borderColor).not.toBe(beforeBorder);
+  await expect(style.boxShadow).not.toBe('none');
+  await expect(style.borderTopLeftRadius).toBe(
+    getComputedStyle(host).getPropertyValue('--wk-radius').trim() || '0px',
+  );
+};
 
 const meta = {
   title: 'Components/Text Area',
@@ -85,6 +96,34 @@ type Story = StoryObj<TextAreaArgs>;
 export const Empty: Story = {
   play: async ({ canvasElement }) => {
     await expect(within(canvasElement).getByRole('textbox', { name: 'Notes' })).toHaveValue('');
+  },
+};
+
+export const Focus: Story = {
+  render: () => html`
+    ${themes.flatMap((theme) =>
+      modes.map(
+        (mode) =>
+          html`<div
+            data-wk-theme=${theme}
+            data-wk-mode=${mode}
+            style="padding:12px;background:var(--wk-surface, #fff)"
+          >
+            <wk-text-area name="focus-${theme}-${mode}" label="Notes"></wk-text-area>
+          </div>`,
+      ),
+    )}
+  `,
+  play: async ({ canvasElement }) => {
+    const hosts = Array.from(canvasElement.querySelectorAll('wk-text-area'));
+    for (const host of hosts) {
+      const control = host.querySelector('[slot="input"]')!;
+      const wrapper = host.shadowRoot!.querySelector<HTMLElement>('.input-group__container')!;
+      const beforeBorder = getComputedStyle(wrapper).borderColor;
+      await userEvent.tab();
+      await expect(control).toHaveFocus();
+      await expectFocusGeometry(host, control, beforeBorder);
+    }
   },
 };
 

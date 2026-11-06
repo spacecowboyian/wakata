@@ -134,10 +134,15 @@ test('keyboard editing can replace a selection after a line break', async () => 
 
 test('label names the control and focus is visible', async () => {
   const { fields } = await mount(`<wk-text-area name="n" label="Notes"></wk-text-area>`);
-  const input = control(first(fields));
+  const field = first(fields);
+  const input = control(field);
+  const wrapper = field.shadowRoot!.querySelector<HTMLElement>('.input-group__container')!;
+  const restingBorder = getComputedStyle(wrapper).borderColor;
   await userEvent.tab();
   expect(document.activeElement).toBe(input);
-  expect(getComputedStyle(input).outlineStyle).toBe('solid');
+  expect(getComputedStyle(input).outlineStyle).toBe('none');
+  expect(getComputedStyle(wrapper).borderColor).not.toBe(restingBorder);
+  expect(getComputedStyle(wrapper).boxShadow).not.toBe('none');
   expect(input.getAttribute('aria-labelledby')).toBeTruthy();
 });
 

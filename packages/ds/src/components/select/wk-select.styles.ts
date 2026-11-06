@@ -69,11 +69,15 @@ export const wkSelectStyles = css`
       linear-gradient(-45deg, transparent 42%, currentColor 42% 58%, transparent 58%),
       linear-gradient(45deg, transparent 42%, currentColor 42% 58%, transparent 58%);
   }
-  ::slotted(select[slot='input']:focus-visible) {
-    outline: 2px solid var(--wk-focus, #111);
-    outline-offset: 2px;
+  ::slotted(select[slot='input']:focus) {
+    outline: 0;
   }
-  :host(:has(> select[slot='input'][aria-invalid='true'])) .input-group__container {
+  :host(:focus-within) .input-group__container {
+    border-color: var(--wk-focus, #111);
+    box-shadow: inset 0 0 0 1px var(--wk-focus, #111);
+  }
+  :host(:not(:focus-within):has(> select[slot='input'][aria-invalid='true']))
+    .input-group__container {
     border-color: var(--wk-danger, #a02222);
   }
   ::slotted([data-wk-external-error]),
@@ -91,6 +95,12 @@ export const wkSelectStyles = css`
     cursor: not-allowed;
   }
   @media (forced-colors: active) {
+    :host(:focus-within) .input-group__container {
+      border-color: Highlight;
+      box-shadow: none;
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+    }
     .input-group__container {
       border-color: CanvasText;
     }
@@ -99,9 +109,6 @@ export const wkSelectStyles = css`
       appearance: auto;
       background-image: none;
       color: CanvasText;
-    }
-    ::slotted(select[slot='input']:focus-visible) {
-      outline-color: Highlight;
     }
   }
 `;

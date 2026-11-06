@@ -13,7 +13,7 @@ export const wkTokens = [
   { name: '--wk-text', fallback: '#222', description: 'Default text colour.' },
   { name: '--wk-surface', fallback: '#fff', description: 'Default control surface.' },
   { name: '--wk-border', fallback: '#999', description: 'Default control border.' },
-  { name: '--wk-focus', fallback: '#111', description: 'Focus ring colour.' },
+  { name: '--wk-focus', fallback: '#111', description: 'Focus indicator colour.' },
   { name: '--wk-accent', fallback: '#171717', description: 'Primary variant background.' },
   { name: '--wk-on-accent', fallback: '#fff', description: 'Text on the accent colour.' },
   {
