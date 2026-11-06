@@ -1,5 +1,5 @@
 import { Required } from '@lion/ui/form-core.js';
-import { LionRadioGroup } from '@lion/ui/radio-group.js';
+import { LionRadio, LionRadioGroup } from '@lion/ui/radio-group.js';
 import { html, type PropertyValues } from 'lit';
 import { wkRadioGroupStyles } from './wk-radio-group.styles.js';
 import { WkBooleanErrorController } from '../checkbox/wk-boolean-error-controller.js';
@@ -43,6 +43,8 @@ export class WkRadioGroup extends LionRadioGroup {
   declare required: boolean;
   declare error: string;
   declare name: string;
+  #upgradedInPlace = false;
+  #needsLateRegistration = false;
   #requiredValidator = new RadioRequired();
   // Not a #private: the value setter can run during the Lion constructor.
   declare _pendingValue?: string;
@@ -51,6 +53,8 @@ export class WkRadioGroup extends LionRadioGroup {
     super();
     this.required = false;
     this.error = '';
+    this.#upgradedInPlace = this.isConnected;
+    this.#needsLateRegistration = this.isConnected;
     new WkBooleanErrorController(this, () => this);
   }
 
@@ -75,8 +79,23 @@ export class WkRadioGroup extends LionRadioGroup {
 
   override connectedCallback(): void {
     super.connectedCallback();
+    this.#adoptUpgradedOptions();
     this.addEventListener('input', this.#onNative);
     this.addEventListener('change', this.#onNative);
+  }
+
+  // Options upgraded before this group fired their register event with no listener yet.
+  #adoptUpgradedOptions(): void {
+    if (!this.#upgradedInPlace) return;
+    this.#upgradedInPlace = false;
+    let adopted = false;
+    for (const el of this.querySelectorAll('wk-radio')) {
+      if (!(el instanceof LionRadio) || el.closest('wk-radio-group') !== this) continue;
+      if (this.isRegisteredFormElement(el)) continue;
+      this.addFormElement(el);
+      adopted = true;
+    }
+    if (adopted) this.requestUpdate();
   }
 
   override disconnectedCallback(): void {
@@ -92,6 +111,17 @@ export class WkRadioGroup extends LionRadioGroup {
 
   override updated(changed: PropertyValues): void {
     super.updated(changed);
+    // A parsed group's first registration event can precede its wk-form upgrade.
+    // Replay it after the synchronous define imports and attribute hydration finish.
+    if (this.#needsLateRegistration) {
+      this.#needsLateRegistration = false;
+      this.dispatchEvent(
+        new CustomEvent('form-element-register', {
+          detail: { element: this },
+          bubbles: true,
+        }),
+      );
+    }
     // Native radio grouping and FormData need one shared name.
     for (const el of this.formElements) if (el.name !== this.name) el.name = this.name;
     if (this._pendingValue !== undefined && this.formElements.length) {
