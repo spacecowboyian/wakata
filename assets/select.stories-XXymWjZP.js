@@ -1,4 +1,4 @@
-import{b as o}from"./iframe-IhVsOgoj.js";import"./preload-helper-PPVm8Dsz.js";const{expect:n,userEvent:g,waitFor:b,within:h}=__STORYBOOK_MODULE_TEST__,s=()=>o`
+import{b as o}from"./iframe-BBu7yT8Y.js";import"./preload-helper-PPVm8Dsz.js";const{expect:n,userEvent:g,waitFor:b,within:h}=__STORYBOOK_MODULE_TEST__,s=()=>o`
   <option value="">Choose a destination</option>
   <option value="oslo">Oslo</option>
   <option value="bergen">Bergen</option>
